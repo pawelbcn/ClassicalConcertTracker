@@ -80,15 +80,26 @@ def add_venue():
         url = request.form.get('url')
         scraper_type = request.form.get('scraper_type', 'generic')
         
+        # Basic validation
         if not name or not url:
-            flash('Name and URL are required', 'danger')
+            flash('Both name and URL are required!', 'danger')
             return redirect(url_for('add_venue'))
+        
+        # Normalize URL if needed
+        if not url.startswith('http'):
+            url = f"https://{url}"
+        
+        # Check if this is Filharmonia Narodowa's symphonic concerts page
+        if 'filharmonia.pl' in url.lower() and 'koncert-symfoniczny' in url.lower():
+            # Set a specific name to indicate it's the symphonic concerts page
+            if 'symphonic' not in name.lower():
+                name = f"{name} - Symphonic Concerts"
         
         try:
             venue = Venue(name=name, url=url, scraper_type=scraper_type)
             db.session.add(venue)
             db.session.commit()
-            flash(f'Venue "{name}" added successfully', 'success')
+            flash(f'Venue "{name}" added successfully. Use the scrape button to collect concert information.', 'success')
             return redirect(url_for('index'))
         except Exception as e:
             db.session.rollback()

@@ -538,6 +538,10 @@ class ClassicalMusicScraper(GenericScraper):
 class FilharmoniaNarodowaScraper(BaseScraper):
     """Specialized scraper for Filharmonia Narodowa website"""
     
+    def __init__(self, venue):
+        super().__init__(venue)
+        self.is_symphonic = False  # Flag to indicate if we're scraping the symphonic concerts page
+    
     def get_concert_details(self, url):
         """Get detailed concert information from the concert's dedicated page"""
         try:
@@ -909,6 +913,10 @@ class FilharmoniaNarodowaScraper(BaseScraper):
         soup = BeautifulSoup(html, 'html.parser')
         concert_count = 0
         
+        logger.info(f"Scraping Filharmonia Narodowa website: {self.base_url}")
+        if self.is_symphonic:
+            logger.info("Detected symphonic concerts specific page")
+        
         # List of common Polish and international composers
         composers = [
             'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
@@ -923,7 +931,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
         # Find all concert items with the event-date class that are in the repertuar section
         event_items = []
         
-        # Look for event-date elements as per the selector
+        # APPROACH 1: Look for event-date elements specifically as per the selector
         date_elements = soup.find_all('div', class_='event-date')
         
         for date_elem in date_elements:
@@ -938,7 +946,14 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 if parent_article not in event_items:
                     event_items.append(parent_article)
         
-        # If we still haven't found events, look for event links
+        # APPROACH 2: Look directly for article elements with class='item item-calendar'
+        if not event_items:
+            calendar_items = soup.find_all('article', class_='item-calendar')
+            for item in calendar_items:
+                if item not in event_items:
+                    event_items.append(item)
+        
+        # APPROACH 3: Look for event links and find their parent articles
         if not event_items:
             event_links = soup.find_all('a', class_='event-link')
             for link in event_links:
@@ -947,6 +962,21 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     parent = parent.parent
                 if parent and parent.name == 'article' and parent not in event_items:
                     event_items.append(parent)
+        
+        # APPROACH 4: For Symphonic Concerts page, find concert items by layout structure
+        if self.is_symphonic and not event_items:
+            # Look for the main container that holds concert listings
+            main_container = soup.find('div', class_='calendar-main')
+            if main_container:
+                # Find rows that contain concert information 
+                rows = main_container.find_all('div', class_='row')
+                for row in rows:
+                    # Each row could be a concert
+                    if row not in event_items:
+                        event_items.append(row)
+        
+        # Log how many event items we found
+        logger.info(f"Found {len(event_items)} potential concert events to process")
         
         # Process each concert
         for item in event_items:
@@ -957,6 +987,10 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 time_text = None
                 venue_text = None
                 program_text = ""
+                
+                # Debug what we're working with
+                item_text = item.get_text().strip()
+                logger.info(f"Processing item: {item_text[:50]}...")
                 
                 # Get the concert URL - needed for detailed information
                 concert_link = None
@@ -972,6 +1006,16 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     inner_elem = date_elem.find('div', class_='inner')
                     if inner_elem:
                         date_text = inner_elem.get_text().strip()
+                        logger.info(f"Found date text: {date_text}")
+                
+                # If we're on a symphonic concert page, look for date in standard div formats
+                if not date_text and self.is_symphonic:
+                    # They might use different date formatting on this page
+                    date_pattern = r'\d{1,2}\.\d{1,2}'
+                    date_matches = re.findall(date_pattern, item.get_text())
+                    if date_matches:
+                        date_text = date_matches[0]
+                        logger.info(f"Found date using pattern: {date_text}")
                 
                 # EXTRACT DAY AND TIME using the exact selector
                 day_time_elem = item.find('div', class_='day-time')
@@ -1137,6 +1181,12 @@ def get_scraper(venue):
     
     # Special domain-based scrapers - automatically select specialized scraper based on domain
     if 'filharmonia.pl' in venue.url.lower():
+        # Check if it's specifically a symphonic concert page
+        if 'koncert-symfoniczny' in venue.url.lower():
+            # Create a specialized instance for symphonic concerts
+            scraper = FilharmoniaNarodowaScraper(venue)
+            scraper.is_symphonic = True
+            return scraper
         return FilharmoniaNarodowaScraper(venue)
     
     scraper_class = scraper_map.get(venue.scraper_type, GenericScraper)
