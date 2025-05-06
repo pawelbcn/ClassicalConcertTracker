@@ -545,73 +545,155 @@ class FilharmoniaNarodowaScraper(BaseScraper):
     def get_concert_details(self, url):
         """Get detailed concert information from the concert's dedicated page"""
         try:
+            logger.info(f"Fetching detailed concert information from: {url}")
             html = self._get_html(url)
             if not html:
+                logger.error(f"Failed to fetch HTML from {url}")
                 return None
                 
             soup = BeautifulSoup(html, 'html.parser')
-            
-            # Extract more detailed information about the concert
             details = {}
             
-            # Get the title from the page title or header
-            title_elem = soup.find(['h1', 'h2'], class_=lambda c: c and ('title' in str(c) or 'heading' in str(c)))
-            if title_elem:
-                details['title'] = title_elem.get_text().strip()
+            # Set city location to Warsaw for all Filharmonia Narodowa concerts
+            details['city'] = 'Warsaw'
             
-            # Look for date with the specific selector provided
+            # TITLE: Get using the specific selector
+            # title-attr title-in-sidebar display-1 col-fn-s
+            title_elem = soup.find(class_='title-in-sidebar')
+            if not title_elem:
+                title_elem = soup.find(class_='display-1')
+            if not title_elem:
+                title_elem = soup.find(class_='title-attr')
+            
+            if title_elem:
+                title_text = title_elem.get_text().strip()
+                logger.info(f"Found title: {title_text}")
+                details['title'] = title_text
+            else:
+                # Fallback for title
+                title_elem = soup.find(['h1', 'h2'], class_=lambda c: c and any(title_class in str(c) for title_class in ['title', 'heading', 'display-1']))
+                if title_elem:
+                    details['title'] = title_elem.get_text().strip()
+            
+            # DATE: Using class="event-date d-flex align-items-center h3 mr-3 mb-sm-0"
             date_elem = soup.find('div', class_='event-date')
             if date_elem:
-                date_inner = date_elem.find('div', class_='inner')
-                if date_inner:
-                    details['date_text'] = date_inner.get_text().strip()
+                # Remove any inner divs and get just the text
+                date_text = ''.join(s for s in date_elem.strings).strip()
+                logger.info(f"Found date: {date_text}")
+                details['date_text'] = date_text
+                
+                # Try to find the date in inner div with class="inner" as a fallback
+                if not date_text:
+                    inner_elem = date_elem.find('div', class_='inner')
+                    if inner_elem:
+                        details['date_text'] = inner_elem.get_text().strip()
             
-            # Look for day and time with specific selector
+            # WEEKDAY/TIME: <div class="day-time"> with span class="time"
             day_time_elem = soup.find('div', class_='day-time')
             if day_time_elem:
-                time_elem = day_time_elem.find('div', class_='time')
+                # Extract the day of week and time
+                day_time_text = day_time_elem.get_text().strip()
+                logger.info(f"Found day/time: {day_time_text}")
+                
+                # Split into day and time
+                if '/' in day_time_text:
+                    day_part, time_part = day_time_text.split('/', 1)
+                    details['day'] = day_part.strip()
+                    details['day_time'] = day_time_text
+                
+                # Get time specifically from the span
+                time_elem = day_time_elem.find('span', class_='time')
                 if time_elem:
                     details['time'] = time_elem.get_text().strip()
+                else:
+                    # If no specific span, extract time using regex
+                    time_match = re.search(r'(\d{1,2})\s*[:\.](\d{2})', day_time_text)
+                    if time_match:
+                        details['time'] = f"{time_match.group(1)}:{time_match.group(2)}"
             
-            # If no specific time element was found, look for a time pattern
-            if 'time' not in details:
-                time_pattern = r'(\d{1,2})\s*[:\.](\d{2})'
-                time_match = re.search(time_pattern, soup.get_text())
-                if time_match:
-                    details['time'] = f"{time_match.group(1)}:{time_match.group(2)}"
-                
-            # Look for the venue information
-            venue_elem = soup.find('div', class_=lambda c: c and ('sala' in str(c).lower()))
-            if venue_elem:
-                details['venue'] = venue_elem.get_text().strip()
-            else:
-                # Use keyword search as fallback
-                venue_keywords = ['Sala Koncertowa', 'Sala Kameralna', 'Sala']
-                for keyword in venue_keywords:
-                    if keyword in soup.get_text():
-                        details['venue'] = keyword
+            # VENUE: Look for venue text
+            venue_texts = ['Sala Koncertowa', 'Sala Kameralna']
+            for venue_text in venue_texts:
+                # Try to find as a standalone element
+                venue_elem = soup.find(string=lambda s: s and s.strip() == venue_text)
+                if venue_elem:
+                    details['venue'] = venue_text
+                    logger.info(f"Found venue: {venue_text}")
+                    break
+            
+            # If venue not found, look in any element containing venue text
+            if 'venue' not in details:
+                for elem in soup.find_all(['div', 'span', 'p']):
+                    elem_text = elem.get_text().strip()
+                    for venue_text in venue_texts:
+                        if venue_text in elem_text and len(elem_text) < len(venue_text) + 10:
+                            details['venue'] = venue_text
+                            logger.info(f"Found venue in text: {venue_text}")
+                            break
+                    if 'venue' in details:
                         break
             
-            # Look for categories with the specific selector
+            # TICKET LINK: class="tickets-wrapper ml-sm-auto text-right text-sm-left"
+            tickets_elem = soup.find('div', class_='tickets-wrapper')
+            if tickets_elem:
+                ticket_link = tickets_elem.find('a')
+                if ticket_link and 'href' in ticket_link.attrs:
+                    ticket_url = ticket_link['href']
+                    if ticket_url and not ticket_url.startswith('#'):
+                        details['ticket_url'] = ticket_url
+                        logger.info(f"Found ticket URL: {ticket_url}")
+            
+            # PERFORMERS: class="performers-wrapper"
+            performers_elem = soup.find('div', class_='performers-wrapper')
+            if performers_elem:
+                performer_lines = []
+                # Each performer is likely in a separate element or line
+                for elem in performers_elem.find_all(['p', 'div', 'span', 'li']):
+                    performer_text = elem.get_text().strip()
+                    if performer_text:
+                        performer_lines.append(performer_text)
+                
+                if performer_lines:
+                    details['performers_list'] = performer_lines
+                    logger.info(f"Found performers: {', '.join(performer_lines[:3])}{'...' if len(performer_lines) > 3 else ''}")
+                else:
+                    # If no specific elements, use the entire text
+                    details['performers_text'] = performers_elem.get_text().strip()
+            
+            # REPERTOIRE: event-meta-composer meta-area py-3 border-bottom
+            repertoire_elem = soup.find('div', class_='event-meta-composer')
+            if repertoire_elem:
+                repertoire_text = repertoire_elem.get_text().strip()
+                details['repertoire'] = repertoire_text
+                logger.info(f"Found repertoire: {repertoire_text[:50]}{'...' if len(repertoire_text) > 50 else ''}")
+                
+                # Try to extract individual pieces from specific elements
+                pieces = []
+                for piece_elem in repertoire_elem.find_all(['p', 'div', 'li']):
+                    piece_text = piece_elem.get_text().strip()
+                    if piece_text and len(piece_text) > 5:
+                        pieces.append(piece_text)
+                
+                if pieces:
+                    details['repertoire_pieces'] = pieces
+            
+            # CATEGORIES
             categories_elem = soup.find('div', class_='event-meta-categories')
             if categories_elem:
                 details['categories'] = categories_elem.get_text().strip()
             
-            # Look for description with the specific selector
+            # DESCRIPTION
             description_elem = soup.find('div', class_='event-meta-info')
             if description_elem:
                 details['description'] = description_elem.get_text().strip()
-            
-            # As a backup, look for any program description
-            if 'description' not in details:
-                program_elem = soup.find(['div', 'section'], class_=lambda c: c and ('program' in str(c) or 'repertoire' in str(c) or 'description' in str(c)))
-                if program_elem:
-                    details['description'] = program_elem.get_text().strip()
             
             return details
             
         except Exception as e:
             logger.error(f"Error fetching concert details from {url}: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
             return None
     
     def extract_date_from_text(self, text, current_year=None):
