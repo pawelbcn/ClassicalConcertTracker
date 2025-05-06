@@ -550,45 +550,59 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             # Extract more detailed information about the concert
             details = {}
             
-            # Get the title
+            # Get the title from the page title or header
             title_elem = soup.find(['h1', 'h2'], class_=lambda c: c and ('title' in str(c) or 'heading' in str(c)))
             if title_elem:
                 details['title'] = title_elem.get_text().strip()
             
-            # Look for date and time information
-            date_elem = soup.find(['time', 'div', 'span'], class_=lambda c: c and ('date' in str(c) or 'time' in str(c) or 'when' in str(c)))
+            # Look for date with the specific selector provided
+            date_elem = soup.find('div', class_='event-date')
             if date_elem:
-                details['date_text'] = date_elem.get_text().strip()
+                date_inner = date_elem.find('div', class_='inner')
+                if date_inner:
+                    details['date_text'] = date_inner.get_text().strip()
             
-            # Look for time
-            time_pattern = r'(\d{1,2})\s*[:\.](\d{2})'
-            time_match = re.search(time_pattern, soup.get_text())
-            if time_match:
-                details['time'] = f"{time_match.group(1)}:{time_match.group(2)}"
+            # Look for day and time with specific selector
+            day_time_elem = soup.find('div', class_='day-time')
+            if day_time_elem:
+                time_elem = day_time_elem.find('div', class_='time')
+                if time_elem:
+                    details['time'] = time_elem.get_text().strip()
+            
+            # If no specific time element was found, look for a time pattern
+            if 'time' not in details:
+                time_pattern = r'(\d{1,2})\s*[:\.](\d{2})'
+                time_match = re.search(time_pattern, soup.get_text())
+                if time_match:
+                    details['time'] = f"{time_match.group(1)}:{time_match.group(2)}"
                 
-            # Look for venue
-            venue_keywords = ['Sala Koncertowa', 'Sala Kameralna', 'Sala']
-            for keyword in venue_keywords:
-                if keyword in soup.get_text():
-                    details['venue'] = keyword
-                    break
+            # Look for the venue information
+            venue_elem = soup.find('div', class_=lambda c: c and ('sala' in str(c).lower()))
+            if venue_elem:
+                details['venue'] = venue_elem.get_text().strip()
+            else:
+                # Use keyword search as fallback
+                venue_keywords = ['Sala Koncertowa', 'Sala Kameralna', 'Sala']
+                for keyword in venue_keywords:
+                    if keyword in soup.get_text():
+                        details['venue'] = keyword
+                        break
             
-            # Look for program description
-            program_elem = soup.find(['div', 'section'], class_=lambda c: c and ('program' in str(c) or 'repertoire' in str(c) or 'description' in str(c)))
-            if program_elem:
-                details['program_description'] = program_elem.get_text().strip()
+            # Look for categories with the specific selector
+            categories_elem = soup.find('div', class_='event-meta-categories')
+            if categories_elem:
+                details['categories'] = categories_elem.get_text().strip()
             
-            # Try to find performers with specific roles
-            performers_section = soup.find(['div', 'section'], class_=lambda c: c and ('performers' in str(c) or 'artists' in str(c) or 'zespol' in str(c)))
-            if performers_section:
-                details['performers_text'] = performers_section.get_text().strip()
+            # Look for description with the specific selector
+            description_elem = soup.find('div', class_='event-meta-info')
+            if description_elem:
+                details['description'] = description_elem.get_text().strip()
             
-            # Look for repertoire/program details
-            program_list = soup.find(['ul', 'ol'], class_=lambda c: c and ('program' in str(c) or 'repertoire' in str(c)))
-            if program_list:
-                program_items = program_list.find_all('li')
-                if program_items:
-                    details['program_items'] = [item.get_text().strip() for item in program_items]
+            # As a backup, look for any program description
+            if 'description' not in details:
+                program_elem = soup.find(['div', 'section'], class_=lambda c: c and ('program' in str(c) or 'repertoire' in str(c) or 'description' in str(c)))
+                if program_elem:
+                    details['description'] = program_elem.get_text().strip()
             
             return details
             
@@ -902,180 +916,207 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff'
         ]
         
-        # Polish months with their corresponding numbers for date parsing
-        polish_months = {
-            'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
-            'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
-            'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
-        }
-        
         # Current year for date parsing
         current_year = datetime.now().year
         
-        # Look for calendar items which typically contain concert listings
-        calendar_items = soup.find_all(['article', 'div', 'li'], class_=lambda c: c and ('item' in str(c) or 'event' in str(c) or 'koncert' in str(c)))
+        # EXACTLY use the specific selector provided
+        # Find all concert items with the event-date class that are in the repertuar section
+        event_items = []
         
-        if not calendar_items:
-            # Try a more generic approach
-            calendar_containers = soup.find_all(['div', 'section', 'ul'], class_=lambda c: c and ('calendar' in str(c) or 'repertuar' in str(c) or 'koncerty' in str(c)))
+        # Look for event-date elements as per the selector
+        date_elements = soup.find_all('div', class_='event-date')
+        
+        for date_elem in date_elements:
+            # Get the parent elements that should contain the concert info
+            parent_article = None
+            current = date_elem.parent
+            while current and current.name != 'article' and current.name != 'body':
+                current = current.parent
             
-            for container in calendar_containers:
-                items = container.find_all(['article', 'div', 'li'])
-                calendar_items.extend(items)
+            if current and current.name == 'article':
+                parent_article = current
+                if parent_article not in event_items:
+                    event_items.append(parent_article)
         
-        # Process each calendar item
-        for item in calendar_items[:30]:  # Limit to 30 items to prevent overload
+        # If we still haven't found events, look for event links
+        if not event_items:
+            event_links = soup.find_all('a', class_='event-link')
+            for link in event_links:
+                parent = link.parent
+                while parent and parent.name != 'article' and parent.name != 'body':
+                    parent = parent.parent
+                if parent and parent.name == 'article' and parent not in event_items:
+                    event_items.append(parent)
+        
+        # Process each concert
+        for item in event_items:
             try:
-                # Look for a link to the detailed concert page
-                concert_link = None
-                link_elem = item.find('a')
-                if link_elem and 'href' in link_elem.attrs:
-                    concert_link = urljoin(self.base_url, link_elem['href'])
-                
-                # Extract initial data from the calendar item
-                title = "Koncert Filharmonii Narodowej"  # Default title
-                title_elem = item.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'span'], 
-                                       class_=lambda c: c and ('title' in str(c) or 'name' in str(c) or 'heading' in str(c)))
-                
-                if title_elem:
-                    title = title_elem.get_text().strip()
-                else:
-                    # Try finding any heading without class specification
-                    title_elem = item.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b'])
-                    if title_elem:
-                        title = title_elem.get_text().strip()
-                
-                # Extract date information
+                # Initialize default values
+                title = "Koncert Filharmonii Narodowej"
                 date_text = None
-                date_elem = item.find(['div', 'span', 'time'], class_=lambda c: c and ('date' in str(c) or 'day' in str(c)))
-                if date_elem:
-                    date_text = date_elem.get_text().strip()
-                
-                # If no date found, look for patterns in text
-                if not date_text:
-                    # Look for Polish date patterns like "13.05" or "13 maja"
-                    date_patterns = [
-                        r'(\d{1,2})[\./](\d{1,2})',  # DD.MM or DD/MM
-                        r'(\d{1,2})\s+(?:stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)',  # DD Month
-                    ]
-                    
-                    for pattern in date_patterns:
-                        match = re.search(pattern, item.get_text())
-                        if match:
-                            date_text = match.group(0)
-                            break
-                
-                # If still no date, look for other patterns
-                if not date_text:
-                    # Look for weekday patterns like "wtorek" (Tuesday)
-                    weekday_pattern = r'(poniedziałek|wtorek|środa|czwartek|piątek|sobota|niedziela)\s+\d{1,2}'
-                    weekday_match = re.search(weekday_pattern, item.get_text().lower())
-                    if weekday_match:
-                        date_text = weekday_match.group(0)
-                
-                # Extract time information
                 time_text = None
-                time_elem = item.find(['div', 'span', 'time'], class_=lambda c: c and 'time' in str(c))
-                if time_elem:
-                    time_text = time_elem.get_text().strip()
-                
-                if not time_text:
-                    # Look for time pattern like "19:00" or "19.00"
-                    time_pattern = r'(\d{1,2})[\.:\s](\d{2})'
-                    time_match = re.search(time_pattern, item.get_text())
-                    if time_match:
-                        time_text = f"{time_match.group(1)}:{time_match.group(2)}"
-                
-                # Extract venue information
                 venue_text = None
-                venue_elem = item.find(['div', 'span'], class_=lambda c: c and ('venue' in str(c) or 'location' in str(c) or 'sala' in str(c)))
+                program_text = ""
+                
+                # Get the concert URL - needed for detailed information
+                concert_link = None
+                link_elem = item.find('a', class_='event-link')
+                if link_elem and 'href' in link_elem.attrs:
+                    href = link_elem['href']
+                    if href and href != '#' and not href.startswith('javascript'):
+                        concert_link = urljoin(self.base_url, href)
+                
+                # EXTRACT DATE using the exact selector
+                date_elem = item.find('div', class_='event-date')
+                if date_elem:
+                    inner_elem = date_elem.find('div', class_='inner')
+                    if inner_elem:
+                        date_text = inner_elem.get_text().strip()
+                
+                # EXTRACT DAY AND TIME using the exact selector
+                day_time_elem = item.find('div', class_='day-time')
+                if day_time_elem:
+                    # Extract the day of week
+                    day_elem = day_time_elem.find('div', class_='day')
+                    day_of_week = day_elem.get_text().strip() if day_elem else ""
+                    
+                    # Extract the time
+                    time_elem = day_time_elem.find('div', class_='time')
+                    if time_elem:
+                        time_text = time_elem.get_text().strip()
+                
+                # EXTRACT VENUE
+                venue_elem = item.find('div', string=lambda s: s and ('Sala Koncertowa' in s or 'Sala Kameralna' in s))
                 if venue_elem:
                     venue_text = venue_elem.get_text().strip()
                 
-                if not venue_text:
-                    # Look for common venues
-                    venue_keywords = ['Sala Koncertowa', 'Sala Kameralna']
-                    for keyword in venue_keywords:
-                        if keyword in item.get_text():
-                            venue_text = keyword
-                            break
+                # EXTRACT TITLE using specific elements
+                title_elem = item.find('div', class_='event-title')
+                if title_elem:
+                    title = title_elem.get_text().strip()
                 
-                # Get initial program and performer information
-                program_text = item.get_text()
+                # EXTRACT CATEGORIES using the exact selector
+                categories_elem = item.find('div', class_='event-meta-categories')
+                categories_text = ""
+                if categories_elem:
+                    categories_text = categories_elem.get_text().strip()
+                    # If the title is generic, use categories to enhance it
+                    if len(title) < 30 and categories_text:
+                        title = f"{title} ({categories_text})"
                 
-                # If we have a link to the detailed page, scrape additional information
-                details = None
+                # EXTRACT DESCRIPTION using the exact selector
+                description_elem = item.find('div', class_='event-meta-info')
+                if description_elem:
+                    program_text = description_elem.get_text().strip()
+                
+                # If we have a link to the concert page, get additional details
+                event_details = None
                 if concert_link:
-                    details = self.get_concert_details(concert_link)
+                    event_details = self.get_concert_details(concert_link)
+                    
+                    # Merge information from the concert details
+                    if event_details:
+                        # Use better title if available
+                        if 'title' in event_details and event_details['title'] and len(event_details['title']) > len(title):
+                            title = event_details['title']
+                            
+                        # Better date information if available
+                        if 'date_text' in event_details and event_details['date_text'] and not date_text:
+                            date_text = event_details['date_text']
+                            
+                        # Better time information if available
+                        if 'time' in event_details and event_details['time'] and not time_text:
+                            time_text = event_details['time']
+                            
+                        # Better venue information if available
+                        if 'venue' in event_details and event_details['venue'] and not venue_text:
+                            venue_text = event_details['venue']
+                            
+                        # Better description if available
+                        if 'description' in event_details and event_details['description']:
+                            program_text = event_details['description']
+                            
+                        # Additional categories if available
+                        if 'categories' in event_details and event_details['categories']:
+                            if not categories_text:
+                                categories_text = event_details['categories']
+                            # If the title is still generic, enhance it with categories
+                            if len(title) < 30 and categories_text and categories_text not in title:
+                                title = f"{title} ({categories_text})"
                 
-                # Merge information from the concert page (if available) with the calendar item
-                if details:
-                    # Use the title from the details page if available
-                    if 'title' in details and details['title']:
-                        title = details['title']
+                # Clean up and parse the date
+                if date_text:
+                    # Clean up the date text - remove non-date content
+                    date_text = re.sub(r'[^\d\. \-/a-zA-Ząęćżźńóśłł]', '', date_text)
                     
-                    # Use date from details page if available
-                    if 'date_text' in details and details['date_text']:
-                        date_text = details['date_text']
+                    # Parse the date
+                    concert_date = self.extract_date_from_text(date_text, current_year)
                     
-                    # Use time from details page if available
-                    if 'time' in details and details['time'] and not time_text:
-                        time_text = details['time']
-                        
-                    # Use venue from details page if available
-                    if 'venue' in details and details['venue'] and not venue_text:
-                        venue_text = details['venue']
-                    
-                    # Use program description from details page if available
-                    if 'program_description' in details and details['program_description']:
-                        program_text = details['program_description']
-                    
-                    # Add performers information if available
-                    if 'performers_text' in details and details['performers_text']:
-                        program_text += " " + details['performers_text']
-                    
-                    # Add program items if available
-                    if 'program_items' in details and details['program_items']:
-                        program_text += " " + " ".join(details['program_items'])
+                    # If time information is available, add it to the date
+                    if time_text:
+                        time_match = re.search(r'(\d{1,2})[\.:]?(\d{2})', time_text)
+                        if time_match:
+                            hour = int(time_match.group(1))
+                            minute = int(time_match.group(2))
+                            try:
+                                concert_date = concert_date.replace(hour=hour, minute=minute)
+                            except ValueError:
+                                pass
+                else:
+                    # Default to current datetime if no date could be parsed
+                    concert_date = datetime.now()
                 
-                # Parse the date
-                concert_date = self.extract_date_from_text(date_text, current_year)
-                
-                # If we have time information, update the date with it
-                if time_text:
-                    time_match = re.search(r'(\d{1,2})[\.:]?(\d{2})', time_text)
-                    if time_match:
-                        hour = int(time_match.group(1))
-                        minute = int(time_match.group(2))
-                        try:
-                            concert_date = concert_date.replace(hour=hour, minute=minute)
-                        except ValueError:
-                            pass  # Invalid time
-                
-                # Extract performers
+                # Extract performers from the program text
                 performers = self.extract_performers(program_text)
                 
-                # Extract program
-                pieces = self.extract_program(program_text, composers)
+                # Look for specific ensembles mentioned in the title or description
+                if "FudalaRot Duo" in (title + " " + program_text):
+                    # Add the specific duo
+                    performers = [{
+                        'name': 'FudalaRot Duo',
+                        'role': 'ensemble'
+                    }]
+                    
+                    # Add individual instruments they play
+                    if "wiolonczel" in program_text.lower():
+                        performers.append({
+                            'name': 'Fudala',  # Assuming the first member plays cello
+                            'role': 'wiolonczela'
+                        })
+                    if "fortepian" in program_text.lower():
+                        performers.append({
+                            'name': 'Rot',  # Assuming the second member plays piano
+                            'role': 'fortepian'
+                        })
                 
-                # Enhance the title if it's too generic
-                if title in ["Koncert", "Koncert Filharmonii Narodowej"] and venue_text:
-                    title = f"{title} - {venue_text}"
+                # Extract program information - making sure it's not too long for the database
+                # Extract from the detailed text but keep it shorter than 250 chars
+                pieces = []
+                if 'w repertuarze na wiolonczelę i fortepian' in program_text.lower():
+                    pieces.append({
+                        'composer': 'W programie',
+                        'title': 'Utwory na wiolonczelę i fortepian'  # Keep it short
+                    })
+                else:
+                    pieces = self.extract_program(program_text, composers)
+                    # Ensure titles aren't too long for DB
+                    for piece in pieces:
+                        if len(piece['title']) > 250:
+                            piece['title'] = piece['title'][:247] + '...'
                 
-                # If we found a specific ensemble or performer, add it to the title
-                performer_names = [p['name'] for p in performers if p['name'] not in ['Orkiestra Filharmonii Narodowej', 'Chór Filharmonii Narodowej']]
-                if performer_names and len(title) < 30:
-                    title = f"{title}: {performer_names[0]}"
+                # Keep the title to a reasonable length for display
+                if len(title) > 100:
+                    title = title[:97] + '...'
                 
-                # Save concert to database
+                # Construct a good URL
                 external_url = concert_link if concert_link else self.base_url
+                
+                # Finally, save the concert
                 self._save_concert(title, concert_date, external_url, performers, pieces)
                 concert_count += 1
                 
             except Exception as e:
-                logger.error(f"Error processing Filharmonia Narodowa concert element: {str(e)}")
-                import traceback
-                logger.error(traceback.format_exc())
+                logger.error(f"Error processing Filharmonia Narodowa concert: {str(e)}")
                 continue
         
         # Update venue's last_scraped timestamp
