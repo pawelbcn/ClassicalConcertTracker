@@ -538,6 +538,354 @@ class ClassicalMusicScraper(GenericScraper):
 class FilharmoniaNarodowaScraper(BaseScraper):
     """Specialized scraper for Filharmonia Narodowa website"""
     
+    def get_concert_details(self, url):
+        """Get detailed concert information from the concert's dedicated page"""
+        try:
+            html = self._get_html(url)
+            if not html:
+                return None
+                
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            # Extract more detailed information about the concert
+            details = {}
+            
+            # Get the title
+            title_elem = soup.find(['h1', 'h2'], class_=lambda c: c and ('title' in str(c) or 'heading' in str(c)))
+            if title_elem:
+                details['title'] = title_elem.get_text().strip()
+            
+            # Look for date and time information
+            date_elem = soup.find(['time', 'div', 'span'], class_=lambda c: c and ('date' in str(c) or 'time' in str(c) or 'when' in str(c)))
+            if date_elem:
+                details['date_text'] = date_elem.get_text().strip()
+            
+            # Look for time
+            time_pattern = r'(\d{1,2})\s*[:\.](\d{2})'
+            time_match = re.search(time_pattern, soup.get_text())
+            if time_match:
+                details['time'] = f"{time_match.group(1)}:{time_match.group(2)}"
+                
+            # Look for venue
+            venue_keywords = ['Sala Koncertowa', 'Sala Kameralna', 'Sala']
+            for keyword in venue_keywords:
+                if keyword in soup.get_text():
+                    details['venue'] = keyword
+                    break
+            
+            # Look for program description
+            program_elem = soup.find(['div', 'section'], class_=lambda c: c and ('program' in str(c) or 'repertoire' in str(c) or 'description' in str(c)))
+            if program_elem:
+                details['program_description'] = program_elem.get_text().strip()
+            
+            # Try to find performers with specific roles
+            performers_section = soup.find(['div', 'section'], class_=lambda c: c and ('performers' in str(c) or 'artists' in str(c) or 'zespol' in str(c)))
+            if performers_section:
+                details['performers_text'] = performers_section.get_text().strip()
+            
+            # Look for repertoire/program details
+            program_list = soup.find(['ul', 'ol'], class_=lambda c: c and ('program' in str(c) or 'repertoire' in str(c)))
+            if program_list:
+                program_items = program_list.find_all('li')
+                if program_items:
+                    details['program_items'] = [item.get_text().strip() for item in program_items]
+            
+            return details
+            
+        except Exception as e:
+            logger.error(f"Error fetching concert details from {url}: {str(e)}")
+            return None
+    
+    def extract_date_from_text(self, text, current_year=None):
+        """Extract date from various Polish date formats"""
+        if not text:
+            return datetime.now()
+            
+        if not current_year:
+            current_year = datetime.now().year
+            
+        # Try to extract day and month from formats like "13.05" or "13.05." (day.month)
+        date_match = re.search(r'(\d{1,2})[\.\s/]+(\d{1,2})', text)
+        month_names = {
+            'stycznia': 1, 'lutego': 2, 'marca': 3, 'kwietnia': 4,
+            'maja': 5, 'czerwca': 6, 'lipca': 7, 'sierpnia': 8,
+            'września': 9, 'października': 10, 'listopada': 11, 'grudnia': 12,
+            'styczeń': 1, 'luty': 2, 'marzec': 3, 'kwiecień': 4,
+            'maj': 5, 'czerwiec': 6, 'lipiec': 7, 'sierpień': 8,
+            'wrzesień': 9, 'październik': 10, 'listopad': 11, 'grudzień': 12
+        }
+        
+        # If we found day.month format
+        if date_match:
+            day = int(date_match.group(1))
+            month = int(date_match.group(2))
+            year = current_year
+            
+            # Sanity check for valid month
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                try:
+                    return datetime(year, month, day)
+                except ValueError:
+                    pass  # Invalid date like Feb 30
+                
+        # Try Polish format: "13 maja" (day month_name)
+        for month_name, month_num in month_names.items():
+            pattern = r'(\d{1,2})\s+' + month_name
+            match = re.search(pattern, text.lower())
+            if match:
+                day = int(match.group(1))
+                month = month_num
+                year = current_year
+                
+                # Check if year is specified in the text
+                year_match = re.search(r'\s+(\d{4})', text)
+                if year_match:
+                    year = int(year_match.group(1))
+                    
+                try:
+                    return datetime(year, month, day)
+                except ValueError:
+                    pass  # Invalid date
+                    
+        # Try formats like "maj 2025" (month_name year)
+        for month_name, month_num in month_names.items():
+            pattern = month_name + r'\s+(\d{4})'
+            match = re.search(pattern, text.lower())
+            if match:
+                day = 1  # Default to first day if only month and year
+                month = month_num
+                year = int(match.group(1))
+                
+                try:
+                    return datetime(year, month, day)
+                except ValueError:
+                    pass  # Invalid date
+        
+        # Default to current date if no valid date found
+        return datetime.now()
+    
+    def extract_performers(self, text):
+        """Extract performer information from text"""
+        if not text:
+            return [{'name': 'Orkiestra Filharmonii Narodowej', 'role': 'orchestra'}]
+            
+        performers = []
+        # Look for specific ensemble names that may contain "w" (Polish preposition)
+        ensemble_pattern = r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+(?:\s+[A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ\-]+)+)\s+w\s+'
+        ensemble_match = re.search(ensemble_pattern, text)
+        if ensemble_match:
+            ensemble_name = ensemble_match.group(1).strip()
+            if len(ensemble_name.split()) >= 2:  # Ensure it's at least two words
+                performers.append({
+                    'name': ensemble_name,
+                    'role': 'ensemble'
+                })
+        
+        # Look for patterns like "X na Y" (X on Y) where X is often a performer and Y is an instrument
+        instrument_pattern = r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+(\s+[A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ\-]+)*)\s+(?:na|w)\s+(\w+)'
+        for match in re.finditer(instrument_pattern, text):
+            name = match.group(1).strip()
+            instrument = match.group(3).strip().lower()
+            if len(name.split()) >= 2:  # Ensure it's at least two words
+                performers.append({
+                    'name': name,
+                    'role': instrument
+                })
+        
+        # Look for duo/trio names
+        ensemble_patterns = [
+            r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+(\s+[A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ\-]+)*)\s+(?:Duo|Trio|Quartet|Kwartet)'
+        ]
+        
+        for pattern in ensemble_patterns:
+            for match in re.finditer(pattern, text):
+                name = match.group(0).strip()
+                if len(name.split()) >= 2:  # Ensure it's at least two words
+                    performers.append({
+                        'name': name,
+                        'role': 'ensemble'
+                    })
+                    
+        # Look for specific performer patterns
+        performer_patterns = [
+            r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+(\s+[A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ\-]+)+)\s+(?:fortepian|skrzypce|wiolonczela|altówka|flet)'
+        ]
+        
+        for pattern in performer_patterns:
+            for match in re.finditer(pattern, text):
+                parts = match.group(0).strip().split()
+                if len(parts) >= 2:
+                    name_parts = []
+                    role = ""
+                    
+                    for part in parts:
+                        if part.lower() in ['fortepian', 'skrzypce', 'wiolonczela', 'altówka', 'flet']:
+                            role = part.lower()
+                        else:
+                            name_parts.append(part)
+                    
+                    name = " ".join(name_parts)
+                    if name and role:
+                        performers.append({
+                            'name': name,
+                            'role': role
+                        })
+        
+        # Look for 'Duo' patterns with instrument information
+        duo_pattern = r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+(?:[A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+)+)\s*(?:Duo)'
+        duo_match = re.search(duo_pattern, text)
+        if duo_match:
+            duo_name = duo_match.group(0).strip()
+            performers.append({
+                'name': duo_name,
+                'role': 'ensemble'
+            })
+            
+        # Look for specific ensemble names that might be in the text
+        ensemble_names = [
+            'FudalaRot Duo', 'Sinfonia Varsovia', 'Orkiestra Filharmonii Narodowej',
+            'Chór Filharmonii Narodowej', 'Warsaw Philharmonic Orchestra',
+            'Warsaw Philharmonic Choir'
+        ]
+        
+        for ensemble in ensemble_names:
+            if ensemble in text:
+                performers.append({
+                    'name': ensemble,
+                    'role': 'ensemble'
+                })
+                break
+        
+        # If we still haven't found any performers, look for capitalized names
+        if not performers:
+            # Look for patterns that might indicate performers (Polish names often have specific patterns)
+            names = re.findall(r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+\s+[A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ\-]+)', text)
+            for name in names:
+                # Filter out common words that aren't likely to be performer names
+                if name not in ['Filharmonia Narodowa', 'Sala Koncertowa', 'Sala Kameralna', 'Scena Muzyki']:
+                    performers.append({
+                        'name': name,
+                        'role': 'performer'
+                    })
+        
+        # If still no performers found
+        if not performers:
+            performers.append({
+                'name': 'Orkiestra Filharmonii Narodowej',  # Default: Polish Philharmonic Orchestra
+                'role': 'orchestra'
+            })
+            
+        return performers
+    
+    def extract_program(self, text, composers):
+        """Extract program information from text"""
+        if not text:
+            return [{'composer': 'W programie', 'title': 'Repertuar do potwierdzenia'}]
+            
+        pieces = []
+        text = text.replace('\n', ' ')
+        
+        # Look for program description with instrument information
+        repertoire_patterns = [
+            r'(?:w\s+repertuarze|wykonują|program[:\s]+|w\s+programie[:\s]+)\s+([^\.]*)'
+        ]
+        
+        for pattern in repertoire_patterns:
+            repertoire_match = re.search(pattern, text, re.IGNORECASE)
+            if repertoire_match:
+                repertoire_text = repertoire_match.group(1).strip()
+                if repertoire_text and len(repertoire_text) > 5:
+                    pieces.append({
+                        'composer': 'W programie',
+                        'title': repertoire_text
+                    })
+        
+        # Look for composer names in the text
+        if not pieces:
+            for composer in composers:
+                if composer in text:
+                    # Try to extract the piece title that follows the composer name
+                    composer_pattern = re.escape(composer) + r'[\s\:\-–—]+(.*?)(?:\n|$|\.|\,|\;|\(|\[|[A-Z])'
+                    piece_match = re.search(composer_pattern, text)
+                    
+                    if piece_match:
+                        title = piece_match.group(1).strip()
+                        if title:
+                            pieces.append({
+                                'composer': composer,
+                                'title': title
+                            })
+                    else:
+                        # If we found a composer but no specific piece, add a generic entry
+                        pieces.append({
+                            'composer': composer,
+                            'title': 'Utwór' # Polish for 'Work'
+                        })
+        
+        # Look for specific music terms if we still don't have program information
+        if not pieces:
+            music_terms = [
+                'sonata', 'koncert', 'symfonia', 'kwartet', 'trio', 'suita',
+                'preludium', 'etiuda', 'nokturn', 'walc', 'mazurek', 'polonez'
+            ]
+            
+            for term in music_terms:
+                term_pattern = r'([A-Z][a-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+)\s+' + term
+                for match in re.finditer(term_pattern, text, re.IGNORECASE):
+                    composer = match.group(1).strip()
+                    if composer in composers:
+                        pieces.append({
+                            'composer': composer,
+                            'title': term.capitalize()
+                        })
+        
+        # If any phrase ends with "na fortepian i wiolonczelę" or similar, add it as a piece
+        instrument_patterns = [
+            r'([^\.]*)\s+(?:na|dla)\s+(?:fortepian|skrzypce|wiolonczelę|altówkę|flet)'
+        ]
+        
+        for pattern in instrument_patterns:
+            for match in re.finditer(pattern, text.lower()):
+                piece_desc = match.group(0).strip()
+                if piece_desc and len(piece_desc) > 10 and not any(piece['title'] == piece_desc for piece in pieces):
+                    pieces.append({
+                        'composer': 'Program',
+                        'title': piece_desc
+                    })
+        
+        # If we still don't have any pieces and we have a generic program description
+        if not pieces and 'repertuar' in text.lower():
+            # Extract text after "repertuar" keyword
+            repertoire_match = re.search(r'repertuar[:\s]+(.*?)(?:\.|$)', text.lower())
+            if repertoire_match:
+                repertoire = repertoire_match.group(1).strip()
+                if repertoire:
+                    pieces.append({
+                        'composer': 'W programie',
+                        'title': repertoire.capitalize()
+                    })
+        
+        # If still no pieces found, add a default entry
+        if not pieces:
+            # Check if there's any useful description in the text
+            if text and len(text) > 10:
+                # Use the first sentence or up to 100 chars as description
+                desc = text.split('.')[0].strip()
+                if len(desc) > 100:
+                    desc = desc[:97] + '...'
+                    
+                pieces.append({
+                    'composer': 'W programie',
+                    'title': desc
+                })
+            else:
+                pieces.append({
+                    'composer': 'W programie',
+                    'title': 'Repertuar do potwierdzenia'
+                })
+                
+        return pieces
+    
     def scrape(self):
         """Scrape concerts from Filharmonia Narodowa website"""
         html = self._get_html(self.base_url)
@@ -547,261 +895,187 @@ class FilharmoniaNarodowaScraper(BaseScraper):
         soup = BeautifulSoup(html, 'html.parser')
         concert_count = 0
         
-        # Find all concert elements - they are usually in items with class "item-calendar"
-        concert_elements = soup.find_all(['div', 'article'], class_=lambda c: c and 'item-calendar' in str(c))
+        # List of common Polish and international composers
+        composers = [
+            'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
+            'Penderecki', 'Górecki', 'Kilar', 'Tchaikovsky', 'Brahms', 'Mahler', 'Schumann', 'Schubert', 
+            'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff'
+        ]
         
-        # If we can't find items with that class, look for elements with the date format used on the site
-        if not concert_elements:
-            # Look for event date elements
-            date_elements = soup.find_all(['div', 'span', 'time'], class_=lambda c: c and any(date_class in str(c) for date_class in ['event-date', 'date', 'calendar-date']))
+        # Polish months with their corresponding numbers for date parsing
+        polish_months = {
+            'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
+            'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
+            'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
+        }
+        
+        # Current year for date parsing
+        current_year = datetime.now().year
+        
+        # Look for calendar items which typically contain concert listings
+        calendar_items = soup.find_all(['article', 'div', 'li'], class_=lambda c: c and ('item' in str(c) or 'event' in str(c) or 'koncert' in str(c)))
+        
+        if not calendar_items:
+            # Try a more generic approach
+            calendar_containers = soup.find_all(['div', 'section', 'ul'], class_=lambda c: c and ('calendar' in str(c) or 'repertuar' in str(c) or 'koncerty' in str(c)))
             
-            if date_elements:
-                concert_elements = []
-                for date_elem in date_elements:
-                    # Get parent element that should contain the concert details
-                    parent = date_elem.parent
-                    if parent:
-                        # Try to get a larger container by going up one more level
-                        container = parent.parent if parent.parent else parent
-                        concert_elements.append(container)
+            for container in calendar_containers:
+                items = container.find_all(['article', 'div', 'li'])
+                calendar_items.extend(items)
         
-        # If still no elements found, try looking for the repertoire structure on the page
-        if not concert_elements:
-            # Look for month sections or event lists
-            month_sections = soup.find_all(['section', 'div'], class_=lambda c: c and any(term in str(c) for term in ['month-events', 'repertuar', 'koncerty', 'events-list']))
-            
-            if month_sections:
-                concert_elements = []
-                for section in month_sections:
-                    # Find individual concert items within the section
-                    items = section.find_all(['div', 'article', 'li'], class_=lambda c: c and any(term in str(c) for term in ['event', 'concert', 'item']))
-                    concert_elements.extend(items)
-        
-        # Special fallback for Filharmonia Narodowa structure
-        if not concert_elements:
-            # Their site often has program details in elements with calendar-related classes
-            calendar_elements = soup.find_all(['div', 'ul', 'ol'], class_=lambda c: c and any(cal_term in str(c) for cal_term in ['calendar', 'repertuar', 'program', 'events']))
-            
-            for cal_elem in calendar_elements:
-                event_items = cal_elem.find_all(['li', 'div', 'article'], recursive=True)
-                if event_items:
-                    concert_elements.extend(event_items)
-        
-        # Process discovered concert elements
-        for element in concert_elements[:20]:  # Limit to prevent overload
+        # Process each calendar item
+        for item in calendar_items[:30]:  # Limit to 30 items to prevent overload
             try:
-                # Extract concert title
-                title = "Koncert Filharmonii Narodowej"  # Default title in Polish
-                title_elem = element.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b'], class_=lambda c: c and any(title_term in str(c) for title_term in ['title', 'name', 'heading']))
+                # Look for a link to the detailed concert page
+                concert_link = None
+                link_elem = item.find('a')
+                if link_elem and 'href' in link_elem.attrs:
+                    concert_link = urljoin(self.base_url, link_elem['href'])
+                
+                # Extract initial data from the calendar item
+                title = "Koncert Filharmonii Narodowej"  # Default title
+                title_elem = item.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'span'], 
+                                       class_=lambda c: c and ('title' in str(c) or 'name' in str(c) or 'heading' in str(c)))
                 
                 if title_elem:
                     title = title_elem.get_text().strip()
                 else:
                     # Try finding any heading without class specification
-                    title_elem = element.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b'])
+                    title_elem = item.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b'])
                     if title_elem:
                         title = title_elem.get_text().strip()
                 
-                # Extract date - look for Polish date formats
+                # Extract date information
                 date_text = None
-                # Look for date elements with specific classes
-                date_elem = element.find(['div', 'span', 'time'], class_=lambda c: c and any(date_term in str(c) for date_term in ['date', 'day', 'month', 'time']))
-                
+                date_elem = item.find(['div', 'span', 'time'], class_=lambda c: c and ('date' in str(c) or 'day' in str(c)))
                 if date_elem:
                     date_text = date_elem.get_text().strip()
-                else:
-                    # Look for Polish date patterns in the text
-                    # Polish months: stycznia, lutego, marca, kwietnia, maja, czerwca, lipca, sierpnia, września, października, listopada, grudnia
-                    polish_date_pattern = r'\d{1,2}\s+(?:stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+\d{4}'
-                    polish_date_match = re.search(polish_date_pattern, element.get_text())
+                
+                # If no date found, look for patterns in text
+                if not date_text:
+                    # Look for Polish date patterns like "13.05" or "13 maja"
+                    date_patterns = [
+                        r'(\d{1,2})[\./](\d{1,2})',  # DD.MM or DD/MM
+                        r'(\d{1,2})\s+(?:stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)',  # DD Month
+                    ]
                     
-                    if polish_date_match:
-                        date_text = polish_date_match.group(0)
-                    else:
-                        # Try standard date patterns
-                        date_pattern = r'\d{1,2}[\./]\d{1,2}[\./]\d{4}|\d{4}-\d{1,2}-\d{1,2}'
-                        date_match = re.search(date_pattern, element.get_text())
-                        if date_match:
-                            date_text = date_match.group(0)
+                    for pattern in date_patterns:
+                        match = re.search(pattern, item.get_text())
+                        if match:
+                            date_text = match.group(0)
+                            break
+                
+                # If still no date, look for other patterns
+                if not date_text:
+                    # Look for weekday patterns like "wtorek" (Tuesday)
+                    weekday_pattern = r'(poniedziałek|wtorek|środa|czwartek|piątek|sobota|niedziela)\s+\d{1,2}'
+                    weekday_match = re.search(weekday_pattern, item.get_text().lower())
+                    if weekday_match:
+                        date_text = weekday_match.group(0)
+                
+                # Extract time information
+                time_text = None
+                time_elem = item.find(['div', 'span', 'time'], class_=lambda c: c and 'time' in str(c))
+                if time_elem:
+                    time_text = time_elem.get_text().strip()
+                
+                if not time_text:
+                    # Look for time pattern like "19:00" or "19.00"
+                    time_pattern = r'(\d{1,2})[\.:\s](\d{2})'
+                    time_match = re.search(time_pattern, item.get_text())
+                    if time_match:
+                        time_text = f"{time_match.group(1)}:{time_match.group(2)}"
+                
+                # Extract venue information
+                venue_text = None
+                venue_elem = item.find(['div', 'span'], class_=lambda c: c and ('venue' in str(c) or 'location' in str(c) or 'sala' in str(c)))
+                if venue_elem:
+                    venue_text = venue_elem.get_text().strip()
+                
+                if not venue_text:
+                    # Look for common venues
+                    venue_keywords = ['Sala Koncertowa', 'Sala Kameralna']
+                    for keyword in venue_keywords:
+                        if keyword in item.get_text():
+                            venue_text = keyword
+                            break
+                
+                # Get initial program and performer information
+                program_text = item.get_text()
+                
+                # If we have a link to the detailed page, scrape additional information
+                details = None
+                if concert_link:
+                    details = self.get_concert_details(concert_link)
+                
+                # Merge information from the concert page (if available) with the calendar item
+                if details:
+                    # Use the title from the details page if available
+                    if 'title' in details and details['title']:
+                        title = details['title']
+                    
+                    # Use date from details page if available
+                    if 'date_text' in details and details['date_text']:
+                        date_text = details['date_text']
+                    
+                    # Use time from details page if available
+                    if 'time' in details and details['time'] and not time_text:
+                        time_text = details['time']
+                        
+                    # Use venue from details page if available
+                    if 'venue' in details and details['venue'] and not venue_text:
+                        venue_text = details['venue']
+                    
+                    # Use program description from details page if available
+                    if 'program_description' in details and details['program_description']:
+                        program_text = details['program_description']
+                    
+                    # Add performers information if available
+                    if 'performers_text' in details and details['performers_text']:
+                        program_text += " " + details['performers_text']
+                    
+                    # Add program items if available
+                    if 'program_items' in details and details['program_items']:
+                        program_text += " " + " ".join(details['program_items'])
                 
                 # Parse the date
-                date = datetime.now()  # Default to current date
-                if date_text:
-                    try:
-                        # Handle Polish date format (e.g., "15 maja 2023")
-                        polish_months = {
-                            'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
-                            'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
-                            'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
-                        }
-                        
-                        for pl_month, month_num in polish_months.items():
-                            if pl_month in date_text.lower():
-                                # Extract day and year
-                                day_match = re.search(r'(\d{1,2})\s+', date_text)
-                                year_match = re.search(r'\s+(\d{4})', date_text)
-                                
-                                if day_match and year_match:
-                                    day = day_match.group(1).zfill(2)  # Pad with leading zero if needed
-                                    year = year_match.group(1)
-                                    date_string = f"{year}-{month_num}-{day}"
-                                    date = datetime.strptime(date_string, '%Y-%m-%d')
-                                    break
-                        
-                        # If not parsed with Polish months, try standard formats
-                        if date == datetime.now():
-                            for fmt in ['%d/%m/%Y', '%d.%m.%Y', '%Y-%m-%d']:
-                                try:
-                                    date = datetime.strptime(date_text, fmt)
-                                    break
-                                except ValueError:
-                                    continue
-                    except Exception as e:
-                        logger.warning(f"Could not parse date '{date_text}': {str(e)}")
+                concert_date = self.extract_date_from_text(date_text, current_year)
                 
-                # Get link to full concert page
-                external_url = self.base_url
-                link_elem = element.find('a')
-                if link_elem and 'href' in link_elem.attrs:
-                    external_url = urljoin(self.base_url, link_elem['href'])
+                # If we have time information, update the date with it
+                if time_text:
+                    time_match = re.search(r'(\d{1,2})[\.:]?(\d{2})', time_text)
+                    if time_match:
+                        hour = int(time_match.group(1))
+                        minute = int(time_match.group(2))
+                        try:
+                            concert_date = concert_date.replace(hour=hour, minute=minute)
+                        except ValueError:
+                            pass  # Invalid time
                 
-                # Extract performers - look for conductor and soloists
-                performers = []
+                # Extract performers
+                performers = self.extract_performers(program_text)
                 
-                # Look for elements containing performer info
-                performer_elem = element.find(['div', 'p', 'span'], class_=lambda c: c and any(perf_term in str(c) for perf_term in ['performers', 'artists', 'conductor', 'soloists']))
+                # Extract program
+                pieces = self.extract_program(program_text, composers)
                 
-                if performer_elem:
-                    performer_text = performer_elem.get_text()
-                    
-                    # Look for conductor
-                    conductor_patterns = [
-                        r'dyrygent:?\s*([\w\s\-\.]+)', # Polish: dyrygent
-                        r'conductor:?\s*([\w\s\-\.]+)'
-                    ]
-                    
-                    for pattern in conductor_patterns:
-                        conductor_match = re.search(pattern, performer_text, re.IGNORECASE)
-                        if conductor_match:
-                            performers.append({
-                                'name': conductor_match.group(1).strip(),
-                                'role': 'conductor'
-                            })
-                    
-                    # Look for soloists (Polish terms)
-                    soloist_patterns = [
-                        r'solista:?\s*([\w\s\-\.]+)', # Polish: solista
-                        r'skrzypce:?\s*([\w\s\-\.]+)', # Polish: violin
-                        r'fortepian:?\s*([\w\s\-\.]+)', # Polish: piano
-                        r'wiolonczela:?\s*([\w\s\-\.]+)', # Polish: cello
-                        r'altówka:?\s*([\w\s\-\.]+)', # Polish: viola
-                        r'flet:?\s*([\w\s\-\.]+)', # Polish: flute
-                        r'obój:?\s*([\w\s\-\.]+)', # Polish: oboe
-                        r'klarnet:?\s*([\w\s\-\.]+)', # Polish: clarinet
-                        r'fagot:?\s*([\w\s\-\.]+)', # Polish: bassoon
-                        r'trąbka:?\s*([\w\s\-\.]+)', # Polish: trumpet
-                        r'róg:?\s*([\w\s\-\.]+)', # Polish: horn
-                        r'puzon:?\s*([\w\s\-\.]+)', # Polish: trombone
-                        r'harfa:?\s*([\w\s\-\.]+)', # Polish: harp
-                        r'perkusja:?\s*([\w\s\-\.]+)' # Polish: percussion
-                    ]
-                    
-                    for pattern in soloist_patterns:
-                        matches = re.finditer(pattern, performer_text, re.IGNORECASE)
-                        for match in matches:
-                            role = match.group(0).split(':')[0].strip().lower()
-                            performers.append({
-                                'name': match.group(1).strip(),
-                                'role': role
-                            })
+                # Enhance the title if it's too generic
+                if title in ["Koncert", "Koncert Filharmonii Narodowej"] and venue_text:
+                    title = f"{title} - {venue_text}"
                 
-                # If no performers found, look for capitalized names
-                if not performers:
-                    # Look for patterns that might indicate performers
-                    names = re.findall(r'([A-Z][a-zA-Z]+\s+[A-Z][a-zA-Z\-]+)', element.get_text())
-                    for name in names:
-                        # Filter out common words that aren't likely to be performer names
-                        if name not in ['Filharmonia Narodowa', 'Sala Koncertowa', 'Sala Kameralna']:
-                            performers.append({
-                                'name': name,
-                                'role': 'performer'
-                            })
-                
-                # If still no performers found
-                if not performers:
-                    performers.append({
-                        'name': 'Orkiestra Filharmonii Narodowej',  # Default: Polish Philharmonic Orchestra
-                        'role': 'orchestra'
-                    })
-                
-                # Extract program/repertoire
-                pieces = []
-                program_elem = element.find(['div', 'p', 'span'], class_=lambda c: c and any(prog_term in str(c) for prog_term in ['program', 'repertoire', 'pieces', 'works']))
-                
-                if program_elem:
-                    program_text = program_elem.get_text()
-                    
-                    # List of common Polish and international composers
-                    composers = [
-                        'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
-                        'Penderecki', 'Górecki', 'Kilar', 'Tchaikovsky', 'Brahms', 'Mahler', 'Schumann', 'Schubert', 
-                        'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff'
-                    ]
-                    
-                    # Look for composer names in the program text
-                    for composer in composers:
-                        if composer in program_text:
-                            # Try to extract the piece title that follows the composer name
-                            composer_pattern = re.escape(composer) + r'[\s\:\–\-]+(.*?)(?:\n|$|\.|\,|\;|\(|\[)'
-                            piece_match = re.search(composer_pattern, program_text)
-                            
-                            if piece_match:
-                                title = piece_match.group(1).strip()
-                                pieces.append({
-                                    'composer': composer,
-                                    'title': title
-                                })
-                            else:
-                                pieces.append({
-                                    'composer': composer,
-                                    'title': 'Dzieło' # Polish for 'Work'
-                                })
-                
-                # If no pieces found, try more generic approach looking for common terms in classical music
-                if not pieces:
-                    piece_terms = ['symphony', 'concerto', 'sonata', 'quartet', 'symfonii', 'koncert', 'sonata']
-                    
-                    for term in piece_terms:
-                        if term.lower() in element.get_text().lower():
-                            # Try to find a nearby composer name
-                            for composer in composers:
-                                if composer in element.get_text():
-                                    pieces.append({
-                                        'composer': composer,
-                                        'title': f"{term.title()}"
-                                    })
-                                    break
-                            
-                            # If term found but no composer identified
-                            if not pieces:
-                                pieces.append({
-                                    'composer': "Kompozytor", # Polish for 'Composer'
-                                    'title': f"{term.title()}"
-                                })
-                
-                # If still no pieces found, add placeholder
-                if not pieces:
-                    pieces.append({
-                        'composer': 'W programie', # Polish for 'In the program'
-                        'title': 'Repertuar do potwierdzenia' # 'Repertoire to be confirmed'
-                    })
+                # If we found a specific ensemble or performer, add it to the title
+                performer_names = [p['name'] for p in performers if p['name'] not in ['Orkiestra Filharmonii Narodowej', 'Chór Filharmonii Narodowej']]
+                if performer_names and len(title) < 30:
+                    title = f"{title}: {performer_names[0]}"
                 
                 # Save concert to database
-                self._save_concert(title, date, external_url, performers, pieces)
+                external_url = concert_link if concert_link else self.base_url
+                self._save_concert(title, concert_date, external_url, performers, pieces)
                 concert_count += 1
                 
             except Exception as e:
                 logger.error(f"Error processing Filharmonia Narodowa concert element: {str(e)}")
+                import traceback
+                logger.error(traceback.format_exc())
                 continue
         
         # Update venue's last_scraped timestamp
