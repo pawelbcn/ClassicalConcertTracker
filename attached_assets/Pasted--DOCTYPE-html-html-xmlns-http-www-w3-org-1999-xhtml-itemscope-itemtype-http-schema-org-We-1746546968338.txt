@@ -1,0 +1,1611 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" itemscope itemtype="http://schema.org/WebPage" lang="pl" class="item-type-calendar">
+  <head>
+    
+<!--
+
+            #############    TM
+           ################
+          #################
+         ##### ###########
+        #####  ########
+       #####    #####
+      #####      #####
+     #####        #####
+    #####          #####
+
+  Developed with the involvement 
+  of the Rytm Digital Team
+  Rytm.org
+
+-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <script>
+      document.documentElement.classList.add("index-loading");
+      document.documentElement.classList.add("js");
+    </script>
+        <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="utf-8" />
+	<title>Repertuar Filharmonia Narodowa</title>
+	<link rel="alternate" hreflang="pl" href="https://filharmonia.pl/repertuar"/>
+	<link rel="alternate" hreflang="en" href="https://filharmonia.pl/en/repertuar"/>
+	<meta name="google-site-verification" content="ScLibG2eaqxagZzrxAMd_TcyFIvgnY4i7p3MSEJM-aQ" />
+ 
+	<link type="text/plain" rel="author" href="/humans.txt"/>
+	<meta name="robots" content="index, follow" />
+<link href='/local/dist/style.css?v=1.4.4' rel='stylesheet' type='text/css' title='' />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0636XQP4L0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0636XQP4L0');
+</script>
+<link rel="apple-touch-icon" sizes="180x180" href="/local/images/favicons/apple-touch-icon.png?v=1.4.4">
+<link rel="icon" type="image/png" sizes="32x32" href="/local/images/favicons/favicon-32x32.png?v=1.4.4">
+<link rel="icon" type="image/png" sizes="16x16" href="/local/images/favicons/favicon-16x16.png?v=1.4.4">
+<link rel="manifest" href="/local/images/favicons/site.webmanifest?v=1.4.4">	<!-- Schema.org markup for Google+ -->
+	<meta itemprop="name" content="Repertuar Filharmonia Narodowa">
+	<meta itemprop="description" content="">
+	
+	<!-- Twitter Card data -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Repertuar Filharmonia Narodowa">
+	<meta name="twitter:description" content="">
+	<!-- Twitter Summary card images must be at least 120x120px -->
+		<!-- Open Graph data -->
+	<meta property="og:title" content="Repertuar Filharmonia Narodowa" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="https://filharmonia.pl/repertuar" />
+		<meta property="og:description" content="" /> 
+	<meta property="og:site_name" content="Filharmonia Narodowa" />
+  </head>
+  <body  data-html-classes="item-type-calendar">
+    <div id="stage" aria-atomic="true">
+      <div id="stage-inner">
+        <div id="box-loading">
+  <div class="loading-bg"></div>
+  <svg class="" style="" viewBox="0 0 71 103" xmlns="http://www.w3.org/2000/svg"><g  fill-rule="nonzero"><path d="M35.2,0 C15.8,0 0,22.9 0,51.1 C0,79.3 15.8,102.2 35.2,102.2 C54.6,102.2 70.4,79.3 70.4,51.1 C70.4,22.9 54.6,0 35.2,0 Z M35.2,101.2 C16.3,101.2 3,78.7 3,51.1 C3,23.5 16.3,1 35.2,1 C54.1,1 67.4,23.4 67.4,51.1 C67.4,78.8 54,101.2 35.2,101.2 Z" transform="translate(0 .6)"/><path d="M53,46.6 C52.2,45.4 50.9,44.4 49.3,44.6 C47.2,45.2 45.2,46.1 43.2,47 C41.8,47.8 41.5,45.8 40.4,45.8 C37.6,46.5 35.3,48.3 32.3,48.2 C31.8,48 31.5,47.6 31.5,47.1 C31.8,43.3 32.7,39.3 31.9,35.4 C31.6,32.7 29.4,30.7 28.8,28 C28.3,25.3 29.3,22.7 31.6,21.3 C32,21.2 32.5,21.3 32.8,21.6 C33.7,23.7 31.4,25.3 32.1,27.5 C32.3,28.1 32.9,28.5 33.6,28.7 C35,28.9 36.3,28.6 37.3,27.7 C38.8,25.8 40.3,23.2 39,20.8 C36.2,17.2 31,19.3 28.1,21.5 C25,24 24.6,27.8 25.2,31.6 C26.3,35.5 24.1,38.7 23.4,42.1 C23.6,43.1 24.7,42.6 25.5,42.8 C25.8,43 26,43.2 26,43.6 C25.9,45.8 25.7,47.8 25.3,49.9 C24.4,51.6 22.3,51.6 20.6,51.7 C20.2,51.6 20.1,51.2 20.2,50.9 C21,49.8 22.2,48.8 22,47.3 C21.8,46.5 20.9,45.8 20.2,45.5 C18.7,45.3 17.2,45.8 16.1,46.7 C14.3,48.4 13.5,51 14.5,53.3 C14.9,54.2 15.9,54.7 16.9,54.7 C19.2,54.3 21.4,53.4 23.5,52.5 L24.3,52.5 C24.8,52.7 25,53.2 24.9,53.8 C23.6,61.2 23,68.9 21.8,76.4 C21.8,77.1 21.6,77.7 22,78.2 C22.3,78.4 22.7,78.6 23.1,78.4 L28.6,76.8 C29,76.6 29.3,76.2 29.2,75.7 C28,73.7 28.4,70.7 28.6,68.4 L30.5,52.9 L30.9,50.8 C31.9,49.5 33.5,49.5 34.9,48.9 C35.4,48.9 35.9,48.7 36.3,49.1 C36.7,49.5 36.7,50.2 36.7,50.8 L34.7,68.1 C34.2,71.5 33.9,75 32.7,78.2 L32.8,78.6 C33,79 33.5,79.3 33.9,79.1 L39,77.4 C39.6,77.2 39.9,76.5 40,76 C39.9,73.7 39.7,71.3 40,69 L41.1,57.7 C41.6,54.5 41.8,51.2 43.9,48.7 C44.6,48.1 45.6,47.9 46.5,48.2 C48.5,49.3 47.9,51.8 48,53.9 L46.4,68.4 L45.2,76.1 L45.3,77.1 C45.5,77.6 46.1,77.7 46.6,77.6 L50.9,75.8 C51.4,75.6 52,75.1 52,74.5 C51.3,72.4 51.6,70 51.6,67.8 L52.7,56.2 L53.4,50.9 C53.5,49.5 53.8,47.8 53,46.6 Z" transform="translate(0 .6)"/></g></svg></div>        <header>
+          <h1 class="sr-only as-focus-to">
+  Repertuar Filharmonia Narodowa</h1>
+<a href="#c-start" class="page-f1 no-as" data-focus-to="#c-start">
+  Przejdź do treści</a>          <div id="box-global-search" class="flex-center">
+  <div class="container-fluid container-limited">
+    <form action="/" method="get" class="global-search-form no-as" autocomplete="on">
+  <fieldset>
+    <legend class="sr-only">Wyszukaj na stronie</legend>
+    <div class="inner py-10 d-flex">
+      <div class="form-group mb-0">
+        <label for="ipt-box-g-s" class="sr-only">
+          Wpisz szukaną frazę        </label>
+        <input id="ipt-box-g-s" type="text" name="s" class="form-control form-control-lg" autocomplete="off" aria-label="Wpisz szukaną frazę" placeholder="Wpisz szukaną frazę" value="" />
+      </div>
+      <button type="submit" class="search-submit btn btn-primary">
+        <svg class="search-icon" style="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25"><path d="M25.5803356,23.3744141 L18.318031,16.1121094 C19.6954724,14.4115723 20.5246227,12.2496582 20.5246227,9.89584961 C20.5246227,4.43930664 16.0853161,0 10.6287731,0 C5.17223017,0 0.732972357,4.43930664 0.732972357,9.89584961 C0.732972357,15.3523926 5.172279,19.7916992 10.628822,19.7916992 C12.9826306,19.7916992 15.1445446,18.9625 16.8450817,17.5851074 L24.1073864,24.8474121 C24.3108532,25.0507812 24.6405407,25.0507812 24.8440075,24.8474121 L25.5803845,24.1109863 C25.7837536,23.9075684 25.7837536,23.5777832 25.5803356,23.3744141 Z M10.628822,17.7083496 C6.32076533,17.7083496 2.81632197,14.2039062 2.81632197,9.89584961 C2.81632197,5.58779297 6.32076533,2.08334961 10.628822,2.08334961 C14.9368786,2.08334961 18.441322,5.58779297 18.441322,9.89584961 C18.441322,14.2039062 14.9368786,17.7083496 10.628822,17.7083496 Z"/></svg>        <span class="sr-only">Szukaj</span>
+      </button>
+    </div>
+  </fieldset>
+</form> 
+    <div class="search-close-wrapper text-right">
+      <a href="#" class="search-close btn btn-sm btn-outline-primary no-as" data-dialog-close="search-open">
+        <div class="inner flex-center">
+          <svg class="mr-3" style="" viewBox="0 0 386.667 386.667" xmlns="http://www.w3.org/2000/svg"><path d="m386.667 45.564-45.564-45.564-147.77 147.769-147.769-147.769-45.564 45.564 147.769 147.769-147.769 147.77 45.564 45.564 147.769-147.769 147.769 147.769 45.564-45.564-147.768-147.77z"/></svg>          <span>Zamknij wyszukiwarkę</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>          <div class="header-full" data-as-view="header" data-as-id="hdr-967485927-7780">
+  <div class="container-fluid">
+    <nav class="main-nav d-flex align-items-center">
+      
+<a href="/" class="header-brand fn-brand d-block py-2 pr-2 mr-2">
+      <img class="d-none d-sm-inline-block" src="/local/images/logo_pl.svg" alt="Filharmonia Narodowa">
+        <img class="d-inline-block d-sm-none" src="/local/images/logo_pl.svg" alt="Filharmonia Narodowa">
+    <span class="sr-only">Powrót do strony głównej</span>
+</a>      <a href="#" class="search-toggle no-as ml-auto" data-dialog-toggle="search-open" data-target="#box-global-search">
+        <svg class="i-m" style="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25"><path d="M25.5803356,23.3744141 L18.318031,16.1121094 C19.6954724,14.4115723 20.5246227,12.2496582 20.5246227,9.89584961 C20.5246227,4.43930664 16.0853161,0 10.6287731,0 C5.17223017,0 0.732972357,4.43930664 0.732972357,9.89584961 C0.732972357,15.3523926 5.172279,19.7916992 10.628822,19.7916992 C12.9826306,19.7916992 15.1445446,18.9625 16.8450817,17.5851074 L24.1073864,24.8474121 C24.3108532,25.0507812 24.6405407,25.0507812 24.8440075,24.8474121 L25.5803845,24.1109863 C25.7837536,23.9075684 25.7837536,23.5777832 25.5803356,23.3744141 Z M10.628822,17.7083496 C6.32076533,17.7083496 2.81632197,14.2039062 2.81632197,9.89584961 C2.81632197,5.58779297 6.32076533,2.08334961 10.628822,2.08334961 C14.9368786,2.08334961 18.441322,5.58779297 18.441322,9.89584961 C18.441322,14.2039062 14.9368786,17.7083496 10.628822,17.7083496 Z"/></svg>        <span class="sr-only">rozwiń / zwiń wyszukiwarkę</span>
+      </a>
+              <ul class="main-menu fn-horizontal-menu d-none d-lg-block pl-3 ml-4">
+          <li class="menu-item menu-level1 menu-item-7783 "><a href="/aktualnosci" data-id="7783">Aktualności</a></li><li class="menu-item menu-level1 menu-item-7784 "><a href="/o-nas/filharmonia" data-id="7784">O nas</a></li><li class="menu-item menu-level1 menu-item-7785 "><a href="/edukacja/o-edukacji" data-id="7785">Edukacja</a></li><li class="menu-item menu-level1 menu-item-7786 "><a href="/multimedia/polecane" data-id="7786">Multimedia</a></li>        </ul>
+            <a href="#" class="wcag-contrast-toggle no-as ml-4">
+        <svg class="i-xxs" style="" viewBox="0 0 17 17" xmlns="http://www.w3.org/2000/svg"><path d="M8.23891626,0 C3.68549896,0 0,3.68984473 0,8.25 C0,12.809543 3.68488748,16.5 8.23891626,16.5 C12.7923336,16.5 16.4778325,12.8101553 16.4778325,8.25 C16.4778325,3.69045703 12.792945,0 8.23891626,0 Z M8.88258159,15.1812568 L8.88258159,1.31874316 C12.399569,1.63997754 15.1905018,4.59885937 15.1905018,8.25 C15.1905018,11.900625 12.4000195,14.8599902 8.88258159,15.1812568 Z"/></svg>        <span class="sr-only">Przełącz wersję kontrastową</span>
+      </a>
+              <div class="language-menu pr-1 ml-4">
+          
+	  <a href="/repertuar" class=" active">
+    <span aria-hidden="true">pl</span>
+    <span class="sr-only">
+      <span lang="pl">Przełącz język na PL</span>
+    </span>
+  </a>
+	  <a href="/en/repertuar" class=" non-active">
+    <span aria-hidden="true">en</span>
+    <span class="sr-only">
+      <span lang="en">Change language to EN</span>
+    </span>
+  </a>
+        </div>
+            <a href="#" class="hamburger flex-center no-as ml-4" data-dialog-toggle="main-menu-open" data-target=".header-hambruger-menu">
+        <div class="inner">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="sr-only">rozwiń menu główne</span>
+      </a>
+    </nav>
+  </div>
+  <div class="header-sticku-menu">
+  <ul class="list-unstyled">
+          <li class="li-calendar">
+        <a href="/repertuar" class="calendar-list-sticky-menu item-list-sticky-menu d-block navi font-weight-bold active">
+  <div class="inner flex-center">
+          <svg class="mr-2" style="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M492 60.163h-98.489V40c0-11.046-8.954-20-20-20s-20 8.954-20 20v20.163H158.489V40c0-11.046-8.954-20-20-20s-20 8.954-20 20v20.163H20c-11.046 0-20 8.955-20 20V472c0 11.045 8.954 20 20 20h472c11.046 0 20-8.955 20-20V80.163c0-11.045-8.954-20-20-20zM472 452H40V100.163h78.489v20.164c0 11.046 8.954 20 20 20s20-8.954 20-20v-20.164H353.51v20.164c0 11.046 8.954 20 20 20s20-8.954 20-20v-20.164H472V452z"/><circle cx="256" cy="234.95" r="27"/><circle cx="256" cy="352.46" r="27"/><circle cx="138.49" cy="234.95" r="27"/><circle cx="373.51" cy="234.95" r="27"/><circle cx="138.49" cy="352.46" r="27"/><circle cx="373.51" cy="352.46" r="27"/></svg>        <div class="title-attr">
+      Repertuar    </div>
+  </div>
+</a>
+      </li>
+          <li class="li-section">
+        <a href="/zaplanuj-wizyte/rezerwacje" class="item-list-sticky-menu d-block navi font-weight-bold section-list-sticky-menu ">
+  <div class="inner flex-center">
+          <svg class="mr-2" style="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.993 511.993" xml:space="preserve"><path d="M501.039,182.351L329.395,10.707c-14.281-14.281-36.642-14.268-50.911,0l-267.76,267.76 c-7.026,7.026-10.934,16.675-10.716,26.462c0.205,9.486,4.089,18.237,10.946,24.683l36.558,36.558 c6.332,6.344,16.349,7.08,23.544,1.761c20.993-15.505,50.211-13.484,67.971,4.722c18.194,18.641,20.408,47.925,5.144,68.122 c-5.446,7.207-4.746,17.314,1.64,23.7l36.787,36.787c6.845,6.839,16.168,10.729,25.696,10.729c0.253,0,0.513-0.006,0.766-0.012 c9.486-0.205,18.237-4.083,24.683-10.946l267.525-267.543c7.026-7.02,10.928-16.663,10.716-26.456 C511.779,197.548,507.902,188.798,501.039,182.351z M304.308,36.102c-0.084,0.048-0.223,0.072-0.338,0.096L291.282,23.51 L304.308,36.102z M208.059,475.548l-26.601-26.601c16.228-32.897,10.192-74.177-16.536-101.568 c-26.637-27.271-68.122-33.446-101.833-16.801L36.44,303.934l267.506-267.5l171.613,171.613L208.059,475.548z"/><path transform="rotate(-44.631 250.573 108.56)" d="M232.47 75.508H268.646V141.6H232.47z"/><path transform="rotate(-45.372 404.066 262.019)" d="M385.973 228.974H422.157V295.076H385.973z"/><path transform="rotate(-45.001 327.445 185.143)" d="M309.356 151.88H345.533V218.397H309.356z"/></svg>        <div class="title-attr">
+      Bilety    </div>
+  </div>
+</a>      </li>
+      </ul>
+</div>  <div class="header-hambruger-menu bg-white wcag-dialog" role="dialog" aria-labelledby="hamburger-menu-label">
+  <div class="hamburger-close-wrapper container-padding-right">
+    <a href="#" class="hamburger-close d-block no-as" data-dialog-close="main-menu-open">
+      <div class="sr-only">zwiń menu główne</div>
+    </a>
+  </div>
+  <div class="container-fluid container-limited">
+    <div id="hamburger-menu-label" class="sr-only">Menu</div>
+    <div class="row">
+      <div class="col-lg-8 col-md-7 d-none d-md-block">
+        <picture>
+  <source media="(min-width: 1200px)" srcset="/upload/thumb/2021/02/sala-koncertowa-26_01_2021_mini-37_auto_1200x900.jpg"  data-min-width="1200" />
+  <source media="(min-width: 992px)" srcset="/upload/thumb/2021/02/sala-koncertowa-26_01_2021_mini-37_auto_1100x800.jpg"  data-min-width="992" />
+  <source media="(min-width: 768px)" srcset="/upload/thumb/2021/02/sala-koncertowa-26_01_2021_mini-37_auto_900x700.jpg"  data-min-width="768" />
+  <source media="(min-width: 576px)" srcset="/upload/thumb/2021/02/sala-koncertowa-26_01_2021_mini-37_auto_700x500.jpg"  data-min-width="576" />
+  <img src="/upload/thumb/2021/02/sala-koncertowa-26_01_2021_mini-37_auto_600x400.jpg" srcset="/upload/thumb/2021/02/sala-koncertowa-26_01_2021_mini-37_auto_600x400.jpg" alt="Nagłówek" title="" style="" />
+</picture>      </div>
+      <div class="col-lg-4 col-md-5">
+        <div class="menu-wrapper">
+                      <ul class="primary-menu list-unstyled text-right h4-md font-weight-bold mb-40">
+              <li class="menu-item menu-level1 menu-item-7779 "><a href="/" data-id="7779">Strona główna</a></li><li class="menu-item menu-level1 menu-item-7780 active"><a href="/repertuar" data-id="7780">Repertuar</a></li><li class="menu-item menu-level1 menu-item-7781 "><a href="/zaplanuj-wizyte/rezerwacje" data-id="7781">Bilety</a></li><li class="menu-item menu-level1 menu-item-7783 "><a href="/aktualnosci" data-id="7783">Aktualności</a></li><li class="menu-item menu-level1 menu-item-7784 "><a href="/o-nas/filharmonia" data-id="7784">O nas</a></li><li class="menu-item menu-level1 menu-item-7785 "><a href="/edukacja/o-edukacji" data-id="7785">Edukacja</a></li><li class="menu-item menu-level1 menu-item-7786 "><a href="/multimedia/polecane" data-id="7786">Multimedia</a></li><li class="menu-item menu-level1 menu-item-7787 "><a href="/sponsorzy-i-partnerzy/info" data-id="7787">Sponsorzy i Partnerzy</a></li>            </ul>
+                                <ul class="secondary-menu list-unstyled text-right navi-lg font-weight-bold mb-20">
+              <li class="menu-item menu-level1 menu-item-7864 "><a href="/sponsorzy-i-partnerzy/klub-przyjaciol-fn" data-id="7864">Klub Przyjaciół Filharmonii Narodowej</a></li><li class="menu-item menu-level1 menu-item-671173980 "><a href="/wynajem-sal" data-id="671173980">Wynajem sal</a></li><li class="menu-item menu-level1 menu-item-7788 "><a href="/logowanie/dla-pracownikow" data-id="7788">Logowanie</a></li><li class="menu-item menu-level1 menu-item-516232762 "><a href="/kontakt" data-id="516232762">Kontakt</a></li>            </ul>
+                    <ul class="sociallinks-full">
+        <li class="sociallink sociallink-facebook">
+      <a href="https://www.facebook.com/FilharmoniaNarodowaWarszawa" target="_blank">
+        <svg class="" style="" enable-background="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg"><path d="m15.997 3.985h2.191v-3.816c-.378-.052-1.678-.169-3.192-.169-3.159 0-5.323 1.987-5.323 5.639v3.361h-3.486v4.266h3.486v10.734h4.274v-10.733h3.345l.531-4.266h-3.877v-2.939c.001-1.233.333-2.077 2.051-2.077z"/></svg>        <span class="sr-only"><span lang="en">facebook</span></span>
+      </a>
+    </li>
+      <li class="sociallink sociallink-instagram">
+      <a href="https://www.instagram.com/warsawphil/" target="_blank">
+        <svg class="" style="" viewBox="0 0 511 511.9" xmlns="http://www.w3.org/2000/svg"><path d="M510.95 150.5c-1.2-27.2-5.598-45.898-11.9-62.102-6.5-17.199-16.5-32.597-29.6-45.398-12.802-13-28.302-23.102-45.302-29.5-16.296-6.3-34.898-10.7-62.097-11.898C334.648.3 325.949 0 256.449 0s-78.199.3-105.5 1.5c-27.199 1.2-45.898 5.602-62.097 11.898-17.204 6.5-32.602 16.5-45.403 29.602-13 12.8-23.097 28.3-29.5 45.3-6.3 16.302-10.699 34.9-11.898 62.098C.75 177.801.449 186.5.449 256s.301 78.2 1.5 105.5c1.2 27.2 5.602 45.898 11.903 62.102 6.5 17.199 16.597 32.597 29.597 45.398 12.801 13 28.301 23.102 45.301 29.5 16.3 6.3 34.898 10.7 62.102 11.898 27.296 1.204 36 1.5 105.5 1.5s78.199-.296 105.5-1.5c27.199-1.199 45.898-5.597 62.097-11.898a130.934 130.934 0 0074.903-74.898c6.296-16.301 10.699-34.903 11.898-62.102 1.2-27.3 1.5-36 1.5-105.5s-.102-78.2-1.3-105.5zm-46.098 209c-1.102 25-5.301 38.5-8.801 47.5-8.602 22.3-26.301 40-48.602 48.602-9 3.5-22.597 7.699-47.5 8.796-27 1.204-35.097 1.5-103.398 1.5s-76.5-.296-103.403-1.5c-25-1.097-38.5-5.296-47.5-8.796C94.551 451.5 84.45 445 76.25 436.5c-8.5-8.3-15-18.3-19.102-29.398-3.5-9-7.699-22.602-8.796-47.5-1.204-27-1.5-35.102-1.5-103.403s.296-76.5 1.5-103.398c1.097-25 5.296-38.5 8.796-47.5C61.25 94.199 67.75 84.1 76.352 75.898c8.296-8.5 18.296-15 29.398-19.097 9-3.5 22.602-7.7 47.5-8.801 27-1.2 35.102-1.5 103.398-1.5 68.403 0 76.5.3 103.403 1.5 25 1.102 38.5 5.3 47.5 8.8 11.097 4.098 21.199 10.598 29.398 19.098 8.5 8.301 15 18.301 19.102 29.403 3.5 9 7.699 22.597 8.8 47.5 1.2 27 1.5 35.097 1.5 103.398s-.3 76.301-1.5 103.301zm0 0"/><path d="M256.45 124.5c-72.598 0-131.5 58.898-131.5 131.5s58.902 131.5 131.5 131.5c72.6 0 131.5-58.898 131.5-131.5s-58.9-131.5-131.5-131.5zm0 216.8c-47.098 0-85.302-38.198-85.302-85.3s38.204-85.3 85.301-85.3c47.102 0 85.301 38.198 85.301 85.3s-38.2 85.3-85.3 85.3zm0 0"/><path d="M423.852 119.3c0 16.954-13.747 30.7-30.704 30.7-16.953 0-30.699-13.746-30.699-30.7 0-16.956 13.746-30.698 30.7-30.698 16.956 0 30.703 13.742 30.703 30.699zm0 0"/></svg>        <span class="sr-only"><span lang="en">instagram</span></span>
+      </a>
+    </li>
+      <li class="sociallink sociallink-youtube">
+      <a href="https://www.youtube.com/user/FilharmoniaNarodowa" target="_blank">
+        <svg class="" style="" viewBox="-21 -117 682.667 682" xmlns="http://www.w3.org/2000/svg"><path d="M626.813 64.035c-7.375-27.418-28.993-49.031-56.407-56.414C520.324-6.082 319.992-6.082 319.992-6.082s-200.324 0-250.406 13.184c-26.887 7.375-49.031 29.52-56.406 56.933C0 114.113 0 217.97 0 217.97s0 104.379 13.18 153.933c7.382 27.414 28.992 49.028 56.41 56.41C120.195 442.02 320 442.02 320 442.02s200.324 0 250.406-13.184c27.418-7.379 49.032-28.992 56.414-56.406 13.176-50.082 13.176-153.934 13.176-153.934s.527-104.383-13.183-154.46zM256.21 313.915V122.022l166.586 95.946zm0 0"/></svg>        <span class="sr-only"><span lang="en">youtube</span></span>
+      </a>
+    </li>
+  </ul>        </div>      </div>
+    </div>  </div></div></div>        </header>
+        <main id="c-start" class="main">
+          <div class="item-full calendar-full">
+  <div class="container-fluid container-limited">
+    <div class="item-full-header border-bottom mb-30 mb-sm-50" data-as-view="basic" data-as-id="fhead-it-7780">
+  <div class="row">
+    <div class="col-xl-4 col-md-5">
+      <div class="item-section-nav col-fn-s">  
+  <nav class="section-title d-flex align-items-center justify-content-between mb-20">
+    <h2  class="title-attr h4 mb-0">
+      <span>Repertuar</span>
+    </h2>
+      </nav>
+</div>    
+    </div>
+  </div>
+  </div>    <div class="calendar-main">
+  <div class="calendar-main-header mt--20 mb-lg-60" data-as-view="basic" data-as-id="cal-main-head-7780">
+  <nav class="mb-15 border-bottom border-black">
+    <div class="row align-items-center">
+      <div class="col-sm-6 mb-10">
+        <div class="calendar-main-menu">
+      <a href="/repertuar" class="btn btn-link h6 mb-0 active">
+      Nadchodzące    </a>
+      <a href="/repertuar,m:archive" class="btn btn-link h6 mb-0 text-muted">
+      Archiwalne    </a>
+  </div>      </div>
+      <div class="col-sm-6 mb-10">
+        <div class="filters-toggler-wrapper text-sm-right d-lg-none">
+          <button type="button" data-toggle="collapse" data-target="#cal-filters-7780" aria-expanded="false" aria-controls="#cal-filters-7780" class="btn-toggle btn btn-lg btn-outline-primary collapsed">
+            <div class="inner">
+              <span>Filtrowanie</span>
+              <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>            </div>
+          </button>
+        </div>
+      </div>
+    </div>    <div class="collapse  d-lg-none" id="cal-filters-7780" data-cookie="fn_cal_taxonomy_expand">
+      <div class="calendar-filters">  
+  <div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-120380" data-as-view="taxon_dropdown" data-as-id="taxdr_120380" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=120380">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Kategorie wydarzeń</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm120380">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-576459288" data-as-view="taxon_dropdown" data-as-id="taxdr_576459288" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=576459288">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Artyści</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm576459288">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-113384225" data-as-view="taxon_dropdown" data-as-id="taxdr_113384225" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=113384225">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Kompozytorzy</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm113384225">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-698087903" data-as-view="taxon_dropdown" data-as-id="taxdr_698087903" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=698087903">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Instrumenty i&nbsp;głosy</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm698087903">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-7793" data-as-view="taxon_dropdown" data-as-id="taxdr_7793" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=7793">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Abonamenty</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm7793">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div></div>    </div>
+    <div class="d-none d-lg-block">
+      <div class="calendar-filters">  
+  <div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-120380" data-as-view="taxon_dropdown" data-as-id="taxdr_120380" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=120380">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Kategorie wydarzeń</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm120380">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-576459288" data-as-view="taxon_dropdown" data-as-id="taxdr_576459288" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=576459288">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Artyści</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm576459288">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-113384225" data-as-view="taxon_dropdown" data-as-id="taxdr_113384225" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=113384225">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Kompozytorzy</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm113384225">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-698087903" data-as-view="taxon_dropdown" data-as-id="taxdr_698087903" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=698087903">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Instrumenty i&nbsp;głosy</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm698087903">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div><div class="item-taxonomy-dropdown box-taxonomie-dropdown dropdown searchable" id="box-taxonomy-7793" data-as-view="taxon_dropdown" data-as-id="taxdr_7793" data-dropdown-async-url="/o/taxonomy_dropdown.ajax?id=7793">
+  <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-toggle btn btn-outline-secondary collapsed ">
+    <span class="inner">
+      <span>Abonamenty</span>
+      <svg class="" style="" viewBox="0 0 15 9" xmlns="http://www.w3.org/2000/svg"><path d="M0,0.0198 L7.5,8.98017097 L15,0.0198 L0,0.0198 Z M2.48894531,1.17850645 L12.5110254,1.17850645 L7.5,7.16527742 L2.48894531,1.17850645 Z"/></svg>    </span>
+  </button>
+  <div class="dropdown-menu" id="dm7793">
+    <div class="flex-center pb-50">
+      <div class="fn-loading-bar"></div>
+    </div>
+  </div>
+</div></div>    </div>
+  </nav>
+  </div>  <div class="row flex-lg-row-reverse">
+    <div class="col-lg-4">
+      <div class="choclate-wrapper">
+        <div class="calendar-chocolate-ext" data-as-view="chocolate_ext" data-as-id="cal-choc-ext-it-7780calMain" data-ajaxed="true">
+  <div class="calendar-chocolate-ext-inner calendar-chocolate-menu">
+  <nav class="months-nav">
+    <a href="/repertuar,ts:1743465600" class="prev">
+      <svg class="" style="" viewBox="0 0 17 13" xmlns="http://www.w3.org/2000/svg"><path d="M17.9336965 10.4226824L16.2335101 12.1282123 19.3477938 15.2673759 8.77067289 15.2673759 8.77067289 17.6814834 19.3396198 17.6814834 16.2335101 20.8206471 17.9255225 22.5261769 23.9333926 16.47031z" transform="rotate(-180 12.412 11.32)" fill-rule="evenodd"/></svg>      <span class="sr-only">Poprzedni Miesiąc</span>
+    </a>
+    <span class="current-month">
+      maj 2025    </span>
+    <a href="/repertuar,ts:1748736000" class="next">
+      <svg class="" style="" viewBox="0 0 16 13" xmlns="http://www.w3.org/2000/svg"><path d="M17.9336965 10.4226824L16.2335101 12.1282123 19.3477938 15.2673759 8.77067289 15.2673759 8.77067289 17.6814834 19.3396198 17.6814834 16.2335101 20.8206471 17.9255225 22.5261769 23.9333926 16.47031z" transform="translate(-7.982 -10.181)" fill-rule="evenodd"/></svg>      <span class="sr-only">Następny Miesiąc</span>
+    </a>
+  </nav>
+  <div class="month-body">
+    <div class="headline d-flex">
+      <div class="day">
+        <div class="day-label">Pn</div>
+      </div>
+      <div class="day">
+        <div class="day-label">Wt</div>
+      </div>
+      <div class="day">
+        <div class="day-label">Śr</div>
+      </div>
+      <div class="day">
+        <div class="day-label">Cz</div>
+      </div>
+      <div class="day">
+        <div class="day-label">Pt</div>
+      </div>
+      <div class="day">
+        <div class="day-label">So</div>
+      </div>
+      <div class="day">
+        <div class="day-label">Nd</div>
+      </div>
+    </div>
+    <div class="week d-flex"><div class="day out-of-range"><span>28</span></div><div class="day out-of-range"><span>29</span></div><div class="day out-of-range"><span>30</span></div><div class="day"><span>1</span></div><div class="day"><span>2</span></div><div class="day"><span>3</span></div><div class="day has-events e-t-away"><a href="/repertuar/chor-filharmonii-narodowej-w-nbsp-bazylice-sw-michala-archaniola-i-sw-floriana" data-target="#d-prev-20250504"><span>4</span></a><div id="d-prev-20250504" class="day-preview text-left"><a href="/repertuar/chor-filharmonii-narodowej-w-nbsp-bazylice-sw-michala-archaniola-i-sw-floriana" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/12/chor-filharmonii-narodowej-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/12/chor-filharmonii-narodowej-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej na II Festiwalu Musica Sacra" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Chór Filharmonii Narodowej na&nbsp;II Festiwalu Musica Sacra        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>4.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">20:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div></div><div class="week d-flex"><div class="day"><span>5</span></div><div class="day today"><span>6</span></div><div class="day"><span>7</span></div><div class="day has-events e-t-away"><a href="/repertuar/chor-filharmonii-narodowej-w-stuttgarcie" data-target="#d-prev-20250508"><span>8</span></a><div id="d-prev-20250508" class="day-preview text-left"><a href="/repertuar/chor-filharmonii-narodowej-w-stuttgarcie" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej w Stuttgarcie" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Chór Filharmonii Narodowej w&nbsp;Stuttgarcie        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>8.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          czwartek / <span class="time">19:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar,ts:1746748800,te:1746835200" data-target="#d-prev-20250509"><span>9</span></a><div id="d-prev-20250509" class="day-preview text-left"><a href="/repertuar/-o-czym-gramy-mariusz-gradowski-20250509" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/11/mariusz-gradowski-fot_-ksawery-zamoyski-m-kadr_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/11/mariusz-gradowski-fot_-ksawery-zamoyski-m-kadr_auto_900x800.jpg" alt="„O czym gramy?” - Mariusz Gradowski" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          „O czym gramy?” - Mariusz Gradowski        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>9.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">18:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/chor-filharmonii-narodowej-w-stuttgarcie-838617781" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej w Stuttgarcie" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Chór Filharmonii Narodowej w&nbsp;Stuttgarcie        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>9.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">19:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/koncert-muzyki-filmowej-nbsp-korngold-w-hollywood" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg" alt="Koncert muzyki filmowej:&amp;nbsp;Korngold w Hollywood" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert muzyki filmowej:&nbsp;<em>Korngold w&nbsp;Hollywood</em>        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>9.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">19:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar/koncert-muzyki-filmowej-nbsp-korngold-w-hollywood-803238056" data-target="#d-prev-20250510"><span>10</span></a><div id="d-prev-20250510" class="day-preview text-left"><a href="/repertuar/koncert-muzyki-filmowej-nbsp-korngold-w-hollywood-803238056" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg" alt="Koncert muzyki filmowej:&amp;nbsp;Korngold w Hollywood" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert muzyki filmowej:&nbsp;<em>Korngold w&nbsp;Hollywood</em>        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>10.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          sobota / <span class="time">18:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar,ts:1746921600,te:1747008000" data-target="#d-prev-20250511"><span>11</span></a><div id="d-prev-20250511" class="day-preview text-left"><a href="/repertuar/muzyczna-ferajna" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg" alt="Muzyczna ferajna" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Muzyczna ferajna        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>11.05</span>
+          <div class="category-dot ml-3" style="background-color: #ed6e9c"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">11:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/muzyczna-ferajna-573392462" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg" alt="Muzyczna ferajna" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Muzyczna ferajna        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>11.05</span>
+          <div class="category-dot ml-3" style="background-color: #ed6e9c"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">14:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/koncert-symfoniczny-376368268" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2025/01/pogorelic-filharmonia-krakowska-2025_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2025/01/pogorelic-filharmonia-krakowska-2025_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>11.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">19:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div></div><div class="week d-flex"><div class="day"><span>12</span></div><div class="day has-events e-t-fn"><a href="/repertuar/scena-muzyki-polskiej-231431503" data-target="#d-prev-20250513"><span>13</span></a><div id="d-prev-20250513" class="day-preview text-left"><a href="/repertuar/scena-muzyki-polskiej-231431503" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/10/fudalarot-duo-2-fot_-archiwum-zespolu-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/10/fudalarot-duo-2-fot_-archiwum-zespolu-kadr-m_auto_900x800.jpg" alt="Scena Muzyki Polskiej" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Scena Muzyki Polskiej        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>13.05</span>
+          <div class="category-dot ml-3" style="background-color: #e2aab6"></div>
+        </div>
+        <div class="day-time navi-sm">
+          wtorek / <span class="time">19:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day"><span>14</span></div><div class="day has-events e-t-away"><a href="/repertuar/chor-filharmonii-narodowej-w-rzeszowie" data-target="#d-prev-20250515"><span>15</span></a><div id="d-prev-20250515" class="day-preview text-left"><a href="/repertuar/chor-filharmonii-narodowej-w-rzeszowie" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej w Rzeszowie" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Chór Filharmonii Narodowej w&nbsp;Rzeszowie        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>15.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          czwartek / <span class="time">19:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar,ts:1747353600,te:1747440000" data-target="#d-prev-20250516"><span>16</span></a><div id="d-prev-20250516" class="day-preview text-left"><a href="/repertuar/-o-czym-gramy-marcin-majchrowski-20250516" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/01/small_2022-09-30_inauguracja_020-sulek_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/01/small_2022-09-30_inauguracja_020-sulek_auto_900x800.jpg" alt="„O czym gramy?” - Andrzej Sułek" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          „O czym gramy?” - Andrzej Sułek        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>16.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">18:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/koncert-symfoniczny-826711789" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/08/marianna-bednarska-venera-red_-photography-kolberg-percussion-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/08/marianna-bednarska-venera-red_-photography-kolberg-percussion-kadr-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>16.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">19:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar/koncert-symfoniczny-189004626" data-target="#d-prev-20250517"><span>17</span></a><div id="d-prev-20250517" class="day-preview text-left"><a href="/repertuar/koncert-symfoniczny-189004626" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/08/marianna-bednarska-venera-red_-photography-kolberg-percussion-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/08/marianna-bednarska-venera-red_-photography-kolberg-percussion-kadr-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>17.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          sobota / <span class="time">18:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar,ts:1747526400,te:1747612800" data-target="#d-prev-20250518"><span>18</span></a><div id="d-prev-20250518" class="day-preview text-left"><a href="/repertuar/od-historii-do-basni" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/ppmm_www_od-historii-do-basni_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/ppmm_www_od-historii-do-basni_auto_900x800.jpg" alt="Od historii do baśni" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Od historii do&nbsp;baśni        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>18.05</span>
+          <div class="category-dot ml-3" style="background-color: #b4ca4f"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">11:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/od-historii-do-basni-415838369" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/ppmm_www_od-historii-do-basni_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/ppmm_www_od-historii-do-basni_auto_900x800.jpg" alt="Od historii do baśni" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Od historii do&nbsp;baśni        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>18.05</span>
+          <div class="category-dot ml-3" style="background-color: #b4ca4f"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">14:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div></div><div class="week d-flex"><div class="day"><span>19</span></div><div class="day has-events e-t-fn"><a href="/repertuar/koncert-kameralny-958225574" data-target="#d-prev-20250520"><span>20</span></a><div id="d-prev-20250520" class="day-preview text-left"><a href="/repertuar/koncert-kameralny-958225574" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/fb_img_fot_-wojciech-grzedzinski_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/fb_img_fot_-wojciech-grzedzinski_auto_900x800.jpg" alt="Koncert kameralny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert kameralny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>20.05</span>
+          <div class="category-dot ml-3" style="background-color: #e2aab6"></div>
+        </div>
+        <div class="day-time navi-sm">
+          wtorek / <span class="time">19:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day"><span>21</span></div><div class="day"><span>22</span></div><div class="day has-events e-t-fn"><a href="/repertuar,ts:1747958400,te:1748044800" data-target="#d-prev-20250523"><span>23</span></a><div id="d-prev-20250523" class="day-preview text-left"><a href="/repertuar/-o-czym-gramy-szymon-paczkowski-20250523" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/02/small_2017-11-17_koncert_05_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/02/small_2017-11-17_koncert_05_auto_900x800.jpg" alt="„O czym gramy?” - Szymon Paczkowski" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          „O czym gramy?” - Szymon Paczkowski        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>23.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">18:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/koncert-symfoniczny-704201877" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/christoph-konig-christian-wind-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/christoph-konig-christian-wind-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>23.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">19:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar/koncert-symfoniczny-206659508" data-target="#d-prev-20250524"><span>24</span></a><div id="d-prev-20250524" class="day-preview text-left"><a href="/repertuar/koncert-symfoniczny-206659508" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/christoph-konig-christian-wind-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/christoph-konig-christian-wind-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>24.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          sobota / <span class="time">18:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar/passeggiata-veneziana" data-target="#d-prev-20250525"><span>25</span></a><div id="d-prev-20250525" class="day-preview text-left"><a href="/repertuar/passeggiata-veneziana" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/orchestrabaroccadivenezia-luca-valenta-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/orchestrabaroccadivenezia-luca-valenta-m_auto_900x800.jpg" alt="Passeggiata Veneziana" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          <em>Passeggiata Veneziana</em>        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>25.05</span>
+          <div class="category-dot ml-3" style="background-color: #ed6e9c"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">18:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div></div><div class="week d-flex"><div class="day"><span>26</span></div><div class="day"><span>27</span></div><div class="day"><span>28</span></div><div class="day"><span>29</span></div><div class="day has-events e-t-fn"><a href="/repertuar,ts:1748563200,te:1748649600" data-target="#d-prev-20250530"><span>30</span></a><div id="d-prev-20250530" class="day-preview text-left"><a href="/repertuar/-o-czym-gramy-iwona-lindstedt-20250530" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/03/small2017-10-13_koncert_006-lindstedt_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/03/small2017-10-13_koncert_006-lindstedt_auto_900x800.jpg" alt="„O czym gramy?” - Iwona Lindstedt" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          „O czym gramy?” - Iwona Lindstedt        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>30.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">18:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/koncert-symfoniczny-649621386" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/anderszewski-piotr_2020_credit_simon-fowler-warner-classics-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/anderszewski-piotr_2020_credit_simon-fowler-warner-classics-kadr-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>30.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          piątek / <span class="time">19:30</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn"><a href="/repertuar/koncert-symfoniczny-298291697" data-target="#d-prev-20250531"><span>31</span></a><div id="d-prev-20250531" class="day-preview text-left"><a href="/repertuar/koncert-symfoniczny-298291697" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/anderszewski-piotr_2020_credit_simon-fowler-warner-classics-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/anderszewski-piotr_2020_credit_simon-fowler-warner-classics-kadr-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          Koncert symfoniczny        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>31.05</span>
+          <div class="category-dot ml-3" style="background-color: #adadad"></div>
+        </div>
+        <div class="day-time navi-sm">
+          sobota / <span class="time">18:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div><div class="day has-events e-t-fn out-of-range"><a href="/repertuar,ts:1748736000,te:1748822400" data-target="#d-prev-20250601"><span>1</span></a><div id="d-prev-20250601" class="day-preview text-left"><a href="/repertuar/w-teatrze-muzycznym-nbsp-pinokio" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/ppmm_www_pinokio_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/ppmm_www_pinokio_auto_900x800.jpg" alt="W teatrze muzycznym:&amp;nbsp;Pinokio" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          W teatrze muzycznym:&nbsp;<em>Pinokio</em>        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>1.06</span>
+          <div class="category-dot ml-3" style="background-color: #b4ca4f"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">11:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a><a href="/repertuar/w-teatrze-muzycznym-nbsp-pinokio-779530316" class="event-list-chocolate event-list d-block border-bottom pb-10 mb-10">
+  <div class="inner d-flex">
+    <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/ppmm_www_pinokio_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/ppmm_www_pinokio_auto_900x800.jpg" alt="W teatrze muzycznym:&amp;nbsp;Pinokio" title="" />
+  </div>
+</div>    <div class="descr-wrapper">
+      <div class="title-attr h4-xs mb-10">
+        <strong>
+          W teatrze muzycznym:&nbsp;<em>Pinokio</em>        </strong>
+      </div>
+      <div class="event-meta-date d-flex">
+        <div class="event-date d-flex align-items-center h3 mr-3 mb-sm-0 mb-15">
+          <span>1.06</span>
+          <div class="category-dot ml-3" style="background-color: #b4ca4f"></div>
+        </div>
+        <div class="day-time navi-sm">
+          niedziela / <span class="time">14:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</a></div></div></div>  </div></div>      <div class="calendar-chocolate-loader loading-sign">
+  <div class="fn-loading-bar"></div>
+</div>  </div>        <div class="calendar-legend navi-xs mt-20 pl-2" data-as-view="basic" data-as-id="cal-leg-7780">
+      <div class="event-type e-t-fn d-flex align-items-center mb-2 pl-1">
+      <div class="c mr-2"></div>
+      <div class="type-name">
+        Organizator FN      </div>
+    </div>
+      <div class="event-type e-t-co d-flex align-items-center mb-2 pl-1">
+      <div class="c mr-2"></div>
+      <div class="type-name">
+        Współorganizacja      </div>
+    </div>
+      <div class="event-type e-t-ext d-flex align-items-center mb-2 pl-1">
+      <div class="c mr-2"></div>
+      <div class="type-name">
+        Organizator zewnętrzny      </div>
+    </div>
+      <div class="event-type e-t-away d-flex align-items-center mb-2 pl-1">
+      <div class="c mr-2"></div>
+      <div class="type-name">
+        Koncert poza siedzibą      </div>
+    </div>
+  </div>      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="calendar-events mb-40" data-as-view="cal_events" data-as-id="cal-events-it-7780_">
+  <div class="list-wrapper">
+    <div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/chor-filharmonii-narodowej-w-stuttgarcie" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej w Stuttgarcie" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Chór Filharmonii Narodowej w&nbsp;Stuttgarcie            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    poza siedzibą, symfoniczny  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Chór FN w koncercie w 80. rocznicę zakończenia II wojny światowej.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          8.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        czwartek / <span class="time">19:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Kolegiata w&nbsp;Stuttgarcie      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.stuttgartkonzert.de/sk/veranstaltungen/gedenkkonzert-8525" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/-o-czym-gramy-mariusz-gradowski-20250509" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/11/mariusz-gradowski-fot_-ksawery-zamoyski-m-kadr_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/11/mariusz-gradowski-fot_-ksawery-zamoyski-m-kadr_auto_900x800.jpg" alt="„O czym gramy?” - Mariusz Gradowski" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              „O czym gramy?” - Mariusz Gradowski            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    o czym gramy? - wprowadzenia do&nbsp;koncertów  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Mariusz Gradowski (muzykolog, Uniwersytet Warszawski).                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          9.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        piątek / <span class="time">18:30</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Kameralna      </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/chor-filharmonii-narodowej-w-stuttgarcie-838617781" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej w Stuttgarcie" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Chór Filharmonii Narodowej w&nbsp;Stuttgarcie            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    poza siedzibą, symfoniczny  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Chór FN w koncercie w 80. rocznicę zakończenia II wojny światowej.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          9.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        piątek / <span class="time">19:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Kolegiata w&nbsp;Stuttgarcie      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.stuttgartkonzert.de/sk/veranstaltungen/gedenkkonzert-9525" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/koncert-muzyki-filmowej-nbsp-korngold-w-hollywood" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg" alt="Koncert muzyki filmowej:&amp;nbsp;Korngold w Hollywood" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Koncert muzyki filmowej:&nbsp;Korngold w&nbsp;Hollywood            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    symfoniczny, muzyka filmowa  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Rumon Gamba,&nbsp;Johan Dalene i&nbsp;Orkiestra Filharmonii Narodowej.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          9.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        piątek / <span class="time">19:30</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Koncertowa      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-koncert-symfoniczny-9-05-2025-r-g-1930-108481?id=613909" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/koncert-muzyki-filmowej-nbsp-korngold-w-hollywood-803238056" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/05/johan-dalene-fot-marco-borggreve-m_auto_900x800.jpg" alt="Koncert muzyki filmowej:&amp;nbsp;Korngold w Hollywood" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Koncert muzyki filmowej:&nbsp;Korngold w&nbsp;Hollywood            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    symfoniczny, muzyka filmowa  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Rumon Gamba,&nbsp;Johan Dalene i&nbsp;Orkiestra Filharmonii Narodowej.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          10.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        sobota / <span class="time">18:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Koncertowa      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-koncert-symfoniczny-10-05-2025-g-1800-108504?id=613944" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/muzyczna-ferajna" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg" alt="Muzyczna ferajna" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Muzyczna ferajna            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    Poranny koncert dla dzieci (dzieci młodsze, 3-6 lat), dla dzieci  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  W kapeluszu FeNka… zwierzęta&nbsp;z różnych stron świata                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          11.05          <div class="underline" style="background-color: #ed6e9c"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        niedziela / <span class="time">11:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Koncertowa      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-poranny-koncert-dla-dzieci-11-05-2025-g-11-108478?id=613923" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/muzyczna-ferajna-573392462" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/06/kdd_www_muzyczna-ferajna_auto_900x800.jpg" alt="Muzyczna ferajna" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Muzyczna ferajna            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    Popołudniowy koncert dla dzieci (dzieci starsze, 7-12 lat), dla dzieci  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  W kapeluszu FeNka… zwierzęta&nbsp;z różnych stron świata                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          11.05          <div class="underline" style="background-color: #ed6e9c"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        niedziela / <span class="time">14:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Koncertowa      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-popoludniowy-koncert-dla-dzieci-11-05-2025-g-14-108499?id=613942" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/koncert-symfoniczny-376368268" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2025/01/pogorelic-filharmonia-krakowska-2025_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2025/01/pogorelic-filharmonia-krakowska-2025_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Koncert symfoniczny            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    symfoniczny  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Zespoły Filharmonii Krakowskiej, Alexander Humala i wyjątkowy solista: Ivo Pogorelich.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          11.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        niedziela / <span class="time">19:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Koncertowa      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-jubileusz-80-lecia-filh-krakowskiej-11-05-2025-g-19-122053?id=704324" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/scena-muzyki-polskiej-231431503" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/10/fudalarot-duo-2-fot_-archiwum-zespolu-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/10/fudalarot-duo-2-fot_-archiwum-zespolu-kadr-m_auto_900x800.jpg" alt="Scena Muzyki Polskiej" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Scena Muzyki Polskiej            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    kameralny, Scena Muzyki Polskiej  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  FudalaRot Duo w repertuarze na wiolonczelę i fortepian.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          13.05          <div class="underline" style="background-color: #e2aab6"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        wtorek / <span class="time">19:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Kameralna      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-koncert-kameralny-13-05-2025-g-19-00-108794?id=616189" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/chor-filharmonii-narodowej-w-rzeszowie" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/06/chor-filharmonii-narodowej-bez-dyrygenta-fot_-grzesiek-mart_auto_900x800.jpg" alt="Chór Filharmonii Narodowej w Rzeszowie" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Chór Filharmonii Narodowej w&nbsp;Rzeszowie            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    poza siedzibą, symfoniczny  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Chór Filharmonii Narodowej wystąpi podczas inauguracji 64. Muzycznego Festiwalu w Łańcucie.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          15.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        czwartek / <span class="time">19:00</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Filharmonia Podkarpacka w&nbsp;Rzeszowie      </div>
+              <div class="tickets-wrapper">
+          <a href="https://bilety.filharmonia.rzeszow.pl/MSI/OrderTickets.aspx?event_id=1688&typetran=0" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/-o-czym-gramy-marcin-majchrowski-20250516" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2023/01/small_2022-09-30_inauguracja_020-sulek_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2023/01/small_2022-09-30_inauguracja_020-sulek_auto_900x800.jpg" alt="„O czym gramy?” - Andrzej Sułek" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              „O czym gramy?” - Andrzej Sułek            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    o czym gramy? - wprowadzenia do&nbsp;koncertów  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Andrzej Sułek (Program 2 Polskiego Radia)&nbsp;oraz gość specjalny: Marianna Bednarska.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          16.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        piątek / <span class="time">18:30</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Kameralna      </div>
+          </div>  </div></div><div class="event-list-row event-list py-30 py-md-20 border-top fn-t event-upc basic-list-item">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-9">
+      <a href="/repertuar/koncert-symfoniczny-826711789" class="event-link">
+        <div class="row">
+          <div class="col-xl-5 col-sm-6">
+            <div class="event-list-row-thumb fn-thumb-wrapper">
+  <div class="thumb fn-thumb" style="background-image: url(/upload/thumb/2024/08/marianna-bednarska-venera-red_-photography-kolberg-percussion-kadr-m_auto_900x800.jpg); background-position: center">
+    <img src="/upload/thumb/2024/08/marianna-bednarska-venera-red_-photography-kolberg-percussion-kadr-m_auto_900x800.jpg" alt="Koncert symfoniczny" title="" />
+  </div>
+</div>          </div>
+          <div class="col-xl-7 col-sm-6">
+            <div class="event-title display-4 col-fn-s mb-md-20">
+              Koncert symfoniczny            </div>
+            <div class="event-meta-categories meta-row ">
+  <div class="event-categories navi-sm">
+    symfoniczny  </div>
+  </div>                          <div class="meta-row">
+                <div class="event-meta-info navi-sm font-weight-bold">
+                  Marianna Bednarska będzie solistką koncertu Orkiestry FN pod batutą&nbsp;Niklasa Willéna.                </div>
+              </div>
+                      </div>
+        </div>      </a>
+    </div>    <div class="col-md-3">
+      <div class="event-date h3 mb-15">
+        <div class="inner d-inline-block">
+          16.05          <div class="underline" style="background-color: #adadad"></div>
+        </div>
+      </div>
+      <div class="day-time navi-sm">
+        piątek / <span class="time">19:30</span>
+      </div>
+      <div class="event-venue navi-sm mb-2">
+        Sala Koncertowa      </div>
+              <div class="tickets-wrapper">
+          <a href="https://www.bilety24.pl/koncert/388-koncert-symfoniczny-16-05-2025-g-19-30-108610?id=615362" class="buy-tickets" target="_blank">
+            Kup bilet          </a>
+        </div>
+          </div>  </div></div>  </div>
+  <nav class="box-pagination border-top border-primary pt-15 mb-10">
+  <ul class="pagination justify-content-end">
+                    <li class="page-item active">
+        <a class="page-link active" href="/repertuar">
+          <span class="sr-only">przejdź do strony numer:</span>
+          1        </a> 
+      </li>
+                <li class="page-item ">
+        <a class="page-link " href="/repertuar?p=2">
+          <span class="sr-only">przejdź do strony numer:</span>
+          2        </a> 
+      </li>
+                <li class="page-item ">
+        <a class="page-link " href="/repertuar?p=3">
+          <span class="sr-only">przejdź do strony numer:</span>
+          3        </a> 
+      </li>
+                      </ul>
+</nav></div>    </div>
+  </div>
+</div>  </div>
+</div>        </main>
+        <footer>
+          <div class="footer-full bg-black pt-30">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-7">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="footer-col-left">
+  <a href="/" class="fn-footer-brand d-block mb-40">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 157 60">
+  <g fill-rule="evenodd">
+    <polygon points="64.4342007 20.4466019 57.7806691 20.4466019 57.7806691 25.8640777 56.263197 25.8640777 56.263197 13.631068 64.7843866 13.631068 64.7843866 15.1456311 57.7806691 15.1456311 57.7806691 19.0485437 64.4342007 19.0485437"/>
+  <path d="M69.103 14.68c0 .582-.467.99-1.05.99-.584 0-.992-.408-.992-.99 0-.583.408-1.049.992-1.049.583.058 1.05.466 1.05 1.049zm-.291 11.184H67.41v-8.272h1.4v8.272z" fill-rule="nonzero"/>
+  <polygon points="73.4223048 25.8640777 72.0215613 25.8640777 72.0215613 13.3398058 73.4223048 13.3398058"/>
+  <path d="M78.033 18.64c.7-.931 1.751-1.223 2.685-1.223 2.043 0 3.443 1.34 3.443 3.32v5.127h-1.459v-4.66c0-1.515-.817-2.447-2.276-2.447-1.342 0-2.451.932-2.451 2.447v4.66h-1.401V13.34h1.4v5.3h.06z"/>
+  <path d="M95.192 25.864h-1.459v-1.107c-.642.758-1.634 1.282-2.918 1.282-2.335 0-4.144-1.806-4.144-4.31 0-2.506 1.81-4.312 4.144-4.312 1.284 0 2.276.525 2.918 1.282v-1.107h1.46v8.272zm-7.004-4.136c0 1.631 1.168 2.971 2.86 2.971 1.693 0 2.86-1.282 2.86-2.97 0-1.69-1.167-2.972-2.86-2.972-1.75 0-2.86 1.34-2.86 2.971z" fill-rule="nonzero"/>
+  <path d="M103.772 17.709l-.35 1.398c-.409-.233-.934-.35-1.401-.35-1.284 0-2.16.99-2.16 2.505v4.602h-1.4v-8.272h1.4V18.7c.584-.816 1.46-1.282 2.452-1.282.525 0 .992.059 1.459.292z"/>
+  <path d="M119.647 20.738v5.126h-1.46v-4.66c0-1.515-.816-2.447-2.275-2.447-1.343 0-2.452.932-2.452 2.447v4.66h-1.4v-4.66c0-1.515-.818-2.447-2.277-2.447-1.342 0-2.451.932-2.451 2.447v4.66h-1.4v-8.272h1.4V18.7c.7-.932 1.75-1.282 2.743-1.282 1.4 0 2.51.641 3.093 1.69.7-1.282 1.985-1.69 3.094-1.69 1.984 0 3.385 1.34 3.385 3.32z"/>
+  <path d="M130.911 21.728c0 2.447-1.868 4.31-4.377 4.31-2.51 0-4.377-1.863-4.377-4.31 0-2.446 1.867-4.31 4.377-4.31s4.377 1.864 4.377 4.31zm-7.295 0c0 1.748 1.284 2.971 2.918 2.971 1.634 0 2.918-1.223 2.918-2.97 0-1.748-1.284-2.972-2.918-2.972-1.634 0-2.918 1.224-2.918 2.971z" fill-rule="nonzero"/>
+  <path d="M141.125 20.738v5.126h-1.46v-4.66c0-1.515-.816-2.447-2.275-2.447-1.343 0-2.452.932-2.452 2.447v4.66h-1.4v-8.272h1.4V18.7c.7-.932 1.751-1.282 2.743-1.282 1.985 0 3.444 1.34 3.444 3.32z"/>
+  <path d="M145.91 14.68c0 .582-.466.99-1.05.99-.583 0-.992-.408-.992-.99 0-.583.409-1.049.992-1.049.642.058 1.05.466 1.05 1.049zm-.291 11.184h-1.4v-8.272h1.4v8.272z" fill-rule="nonzero"/>
+  <path d="M156.708 25.864h-1.459v-1.107c-.642.758-1.634 1.282-2.918 1.282-2.335 0-4.144-1.806-4.144-4.31 0-2.506 1.81-4.312 4.144-4.312 1.284 0 2.276.525 2.918 1.282v-1.107h1.46v8.272zm-7.062-4.136c0 1.631 1.167 2.971 2.86 2.971 1.693 0 2.86-1.282 2.86-2.97 0-1.69-1.167-2.972-2.86-2.972-1.693 0-2.86 1.34-2.86 2.971z" fill-rule="nonzero"/>
+  <polygon points="66.5936803 45.2621359 65.1929368 45.2621359 57.7806691 35.7087379 57.7806691 45.2621359 56.263197 45.2621359 56.263197 33.0291262 57.6639405 33.0291262 65.0762082 42.6407767 65.0762082 33.0873786 66.5936803 33.0873786 66.5936803 45.2621359"/>
+  <path d="M77.916 45.262h-1.459v-1.107c-.642.758-1.634 1.282-2.918 1.282-2.335 0-4.144-1.806-4.144-4.31 0-2.506 1.81-4.311 4.144-4.311 1.284 0 2.276.524 2.918 1.281V36.99h1.46v8.272zm-7.062-4.136c0 1.631 1.168 2.971 2.86 2.971 1.693 0 2.86-1.281 2.86-2.97 0-1.69-1.167-2.972-2.86-2.972-1.75 0-2.86 1.34-2.86 2.971z" fill-rule="nonzero"/>
+  <path d="M86.438 37.107l-.35 1.398c-.41-.233-.934-.35-1.401-.35-1.284 0-2.16.99-2.16 2.505v4.602h-1.4V36.99h1.4v1.107c.584-.815 1.46-1.281 2.451-1.281.526 0 1.051.058 1.46.29z"/>
+  <path d="M96.418 41.126c0 2.447-1.868 4.31-4.377 4.31-2.51 0-4.378-1.863-4.378-4.31 0-2.446 1.868-4.31 4.378-4.31s4.377 1.864 4.377 4.31zm-7.354 0c0 1.748 1.284 2.971 2.918 2.971 1.634 0 2.918-1.223 2.918-2.97 0-1.748-1.284-2.972-2.918-2.972-1.634 0-2.918 1.224-2.918 2.971z" fill-rule="nonzero"/>
+  <path d="M105.406 38.097v-5.36h1.46V45.32h-1.46v-1.106c-.642.757-1.634 1.281-2.918 1.281-2.335 0-4.144-1.806-4.144-4.31 0-2.505 1.81-4.311 4.144-4.311 1.284-.058 2.276.466 2.918 1.223zm-5.603 3.03c0 1.63 1.167 2.97 2.86 2.97 1.692 0 2.86-1.281 2.86-2.97 0-1.69-1.168-2.972-2.86-2.972-1.751 0-2.86 1.34-2.86 2.971z" fill-rule="nonzero"/>
+  <path d="M118.188 41.126c0 2.447-1.868 4.31-4.378 4.31s-4.377-1.863-4.377-4.31c0-2.446 1.868-4.31 4.377-4.31 2.51 0 4.378 1.864 4.378 4.31zm-7.296 0c0 1.748 1.284 2.971 2.918 2.971 1.635 0 2.919-1.223 2.919-2.97 0-1.748-1.284-2.972-2.919-2.972-1.692 0-2.918 1.224-2.918 2.971z" fill-rule="nonzero"/>
+  <polygon points="129.80223 43.8058252 132.136803 36.9902913 133.654275 36.9902913 130.677695 45.2621359 128.98513 45.2621359 126.592193 38.5048544 124.199257 45.2621359 122.565056 45.2621359 119.588476 36.9902913 121.105948 36.9902913 123.44052 43.7475728 125.833457 36.9902913 127.467658 36.9902913"/>
+  <path d="M143.576 45.262h-1.459v-1.107c-.642.758-1.634 1.282-2.918 1.282-2.335 0-4.144-1.806-4.144-4.31 0-2.506 1.81-4.311 4.144-4.311 1.284 0 2.276.524 2.918 1.281V36.99h1.46v8.272zm-7.004-4.136c0 1.631 1.168 2.971 2.86 2.971 1.693 0 2.86-1.281 2.86-2.97 0-1.69-1.167-2.972-2.86-2.972-1.75 0-2.86 1.34-2.86 2.971z" fill-rule="nonzero"/>
+  <path d="M20.544.35C9.222.35 0 13.69 0 30.117s9.222 29.766 20.544 29.766c11.323 0 20.544-13.34 20.544-29.766C41.088 13.689 31.867.35 20.544.35zm0 58.951c-11.03 0-18.793-13.107-18.793-29.184C1.75 14.039 9.513.932 20.544.932c11.031 0 18.794 13.049 18.794 29.185 0 16.135-7.821 29.184-18.794 29.184z"/>
+  <path d="M30.933 27.495c-.467-.699-1.226-1.281-2.16-1.165-1.225.35-2.392.874-3.56 1.398-.817.466-.992-.699-1.634-.699-1.634.408-2.976 1.456-4.727 1.398-.292-.116-.467-.35-.467-.64.175-2.214.7-4.544.233-6.816-.175-1.573-1.459-2.738-1.81-4.31-.29-1.574.293-3.088 1.635-3.904.234-.058.525 0 .7.175.526 1.223-.817 2.155-.408 3.437.117.35.467.582.875.699.818.116 1.576-.058 2.16-.583.875-1.106 1.75-2.62.992-4.019-1.634-2.097-4.67-.874-6.362.408-1.809 1.456-2.042 3.67-1.692 5.883.642 2.272-.642 4.136-1.05 6.117.116.582.758.291 1.225.408.175.116.292.233.292.466-.059 1.281-.175 2.446-.409 3.67-.525.99-1.75.99-2.743 1.048-.233-.058-.292-.291-.233-.466.467-.64 1.167-1.223 1.05-2.097-.117-.466-.642-.874-1.05-1.049-.876-.116-1.751.175-2.393.7-1.05.99-1.518 2.504-.934 3.844.233.524.817.816 1.4.816 1.343-.233 2.627-.758 3.853-1.282h.467c.291.117.408.408.35.757-.759 4.311-1.11 8.796-1.81 13.165 0 .408-.116.758.117 1.049.175.116.409.233.642.116l3.21-.932c.234-.116.409-.35.35-.64-.7-1.165-.467-2.913-.35-4.253l1.11-9.029.233-1.223c.583-.758 1.517-.758 2.334-1.107.292 0 .584-.117.817.116.234.233.234.641.234.99L20.252 40.02c-.291 1.981-.466 4.02-1.167 5.884l.058.233c.117.233.409.408.643.291l2.976-.99c.35-.117.525-.524.584-.816-.059-1.34-.175-2.738 0-4.077l.642-6.583c.292-1.864.408-3.786 1.634-5.243.408-.35.992-.466 1.517-.29 1.168.64.818 2.096.876 3.32l-.934 8.446-.7 4.486.058.582c.117.291.467.35.759.291l2.51-1.048c.291-.117.641-.408.641-.757-.408-1.224-.233-2.622-.233-3.903l.642-6.758.409-3.087c.058-.816.233-1.806-.234-2.505z"/>
+  </g>
+</svg>  </a>
+      <div class="map-link-wrapper">
+      <a href="https://goo.gl/maps/S3ufd9Mxxvowj69k7" class="btn-icon btn btn-sm btn-outline-light mb-30" target="_blank">
+        <div class="inner">
+          <span>Mapa dojazdu</span>
+          <svg class="mr-0 ml-3" style="" viewBox="0 0 12 15" xmlns="http://www.w3.org/2000/svg"><path d="M10.8768797,2.60803711 C9.74937005,0.950712891 7.96243736,0 5.97462005,0 C3.98680274,0 2.19987005,0.950712891 1.07236043,2.60803711 C-0.0496107209,4.25698242 -0.308678029,6.34458984 0.377975818,8.18897461 C0.561639279,8.69264648 0.853591202,9.18199219 1.24364889,9.64054687 L5.58147582,14.8153711 C5.67958159,14.9325 5.82332197,15 5.97462005,15 C6.12591813,15 6.26965851,14.9325293 6.36776428,14.8153711 L10.7043797,9.64195312 C11.0961681,9.18076172 11.387745,8.69194336 11.5698797,8.19231445 C12.2579181,6.34458984 11.9988508,4.25698242 10.8768797,2.60803711 Z M10.6028412,7.82499023 C10.4623893,8.21047852 10.2330912,8.59160156 9.92169697,8.95819336 C9.92083159,8.95907227 9.9199662,8.95995117 9.91927389,8.96100586 L5.97462005,13.6666113 L2.02754313,8.95804687 C1.71632197,8.59177734 1.48702389,8.21068359 1.34518736,7.82150391 C0.777321971,6.29616211 0.992831587,4.57010742 1.92185082,3.20455078 C2.85378351,1.83462891 4.33105274,1.04894531 5.97462005,1.04894531 C7.61815851,1.04894531 9.09525466,1.83459961 10.0272162,3.20455078 C10.9564085,4.57010742 11.1720912,6.29616211 10.6028412,7.82499023 Z"/><path d="M5.89188462,3 C4.29738462,3 3,4.31748047 3,5.93707031 C3,7.55666016 4.29721154,8.87414062 5.89188462,8.87414062 C7.48655769,8.87414062 8.78376923,7.55666016 8.78376923,5.93707031 C8.78376923,4.31765625 7.48638462,3 5.89188462,3 Z M5.89188462,7.82516602 C4.86680769,7.82516602 4.03280769,6.97813477 4.03280769,5.93704102 C4.03280769,4.89594727 4.86680769,4.04891602 5.89188462,4.04891602 C6.91696154,4.04891602 7.75096154,4.89594727 7.75096154,5.93704102 C7.75096154,6.97813477 6.91696154,7.82516602 5.89188462,7.82516602 Z"/></svg>        </div>
+      </a>
+    </div>
+  </div>          </div>
+          <div class="col-sm-6">
+            <div class="footer-col-address navi-sm pt-10">
+      <div class="row contact-row-1 mb-20">
+      <div class="col-lg-3">
+                  <strong class="d-inline-block mb-1">Adres:</strong>
+              </div>
+      <div class="col-lg-9">
+        <div class="txt-1">
+          <p>ul. Jasna 5<br /> 00-950 Warszawa</p> <p>+48 22 55 17 111<br /> <a href="mailto:filharmonia@filharmonia.pl">filharmonia@filharmonia.pl</a></p>         </div>
+      </div>
+    </div>
+        <div class="row contact-row-2 mb-20">
+      <div class="col-lg-3">
+                  <strong class="d-inline-block mb-1">Bilety:</strong>
+              </div>
+      <div class="col-lg-9">
+        <div class="txt-2">
+          <p>+48 22 55 17 127</p> <p><a href="mailto:bilety@filharmonia.pl">bilety@filharmonia.pl</a></p>         </div>
+      </div>
+    </div>
+  </div>          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="footer-col-menu">
+      <ul class="footer-menu list-unstyled mb-15">
+      <li class="menu-item menu-level1 menu-item-7864 "><a href="/sponsorzy-i-partnerzy/klub-przyjaciol-fn" data-id="7864">Klub Przyjaciół Filharmonii Narodowej</a></li><li class="menu-item menu-level1 menu-item-671173980 "><a href="/wynajem-sal" data-id="671173980">Wynajem sal</a></li><li class="menu-item menu-level1 menu-item-483039058 "><a href="/polityka-prywatnosci" data-id="483039058">Polityka prywatności</a></li><li class="menu-item menu-level1 menu-item-551798510 "><a href="/informacje/deklaracja-dostepnosci" data-id="551798510">Deklaracja dostępności</a></li><li class="menu-item menu-level1 menu-item-659776752 "><a href="/informacje/standardy-ochrony-maloletnich-w-filharmonii-narodowej" data-id="659776752">Standardy ochrony małoletnich</a></li><li class="menu-item menu-level1 menu-item-516232762 "><a href="/kontakt" data-id="516232762">Kontakt</a></li>    </ul>
+        <a href="http://www.filharmonia.4bip.pl/" class="bip-link d-block mb-40 mb-sm-10" target="_blank">
+      <svg class="" style="" viewBox="0 0 50 21" xmlns="http://www.w3.org/2000/svg"><defs/><g fill-rule="evenodd"><path d="M22.1474617 13.8363185C20.4062817 13.8227492 18.9548658 12.3648646 18.9582669 10.6326877 18.9615177 8.85883385 20.440028 7.41871846 22.2342611 7.44181846 23.9833909 7.46427231 25.4229631 8.92619538 25.4020339 10.6586954 25.3807802 12.42108 23.9170339 13.8502108 22.1474617 13.8363185M22.3228451 4.37775692C21.1431844 4.36047231 20.0615177 4.68193385 18.9568127 5.27574923L18.9568127 4.80470308C18.9566504 3.74210308 18.9618422 2.67950308 18.9548658 1.61690308 18.9488628.677072308 18.331208.0165415385 17.4594823.000387692315 16.5710457-.0162507692 15.9006622.646541538 15.8979041 1.59493385 15.8889808 4.64817231 15.8553968 7.70221846 15.9076386 10.7548108 15.9670192 14.2267569 18.8078746 16.9304262 22.2691431 16.8977954 25.4941873 16.8674262 28.1620929 14.3637415 28.4424469 11.1042185 28.7466504 7.56975692 25.8822699 4.42977231 22.3228451 4.37775692M11.3802301 15.9037523L11.3802301 4.40269846-.0000648967548 4.40269846C3.80937463 8.25264462 7.56576106 12.0487985 11.3802301 15.9037523M42.7700767 13.8310396C41.0092655 13.8336208 39.544059 12.3776746 39.5435722 10.6253054 39.5432478 8.88101308 40.9735723 7.45026692 42.7343835 7.43395154 44.5172596 7.41715154 45.9641327 8.83594385 45.9727698 10.6091515 45.9813304 12.3746054 44.5362419 13.8284515 42.7700767 13.8310396M48.9918909 9.76462846C48.4720678 6.42837462 45.6263451 4.16150538 42.2453864 4.39024385 39.0941622 4.60331308 36.5059174 7.32329769 36.4746047 10.5098054 36.4458879 13.4305823 36.464059 16.3516823 36.469413 19.2727823 36.4711976 20.2174592 37.1313599 20.8915592 38.0204454 20.8861002 38.913587 20.8807362 39.5388673 20.2121285 39.5421121 19.2509746 39.5455192 18.1880515 39.5427611 17.1249669 39.5427611 16.0554208 39.6078201 16.0454054 39.6233953 16.0378131 39.6329676 16.0424977 39.7058142 16.0775515 39.7773628 16.11519 39.8493982 16.1516977 41.2498702 16.8605285 42.7134543 17.0807054 44.2516696 16.7093285 47.3710944 15.9563977 49.4760206 12.8716592 48.9918909 9.76462846M33.2897316 12.6417092C33.200174 11.3426169 33.1607493 10.0399708 33.1005575 8.73894 33.1190531 8.73797077 33.1372242 8.73716308 33.1555575 8.73635538 33.1555575 7.80831692 33.1545841 6.88027846 33.1560442 5.95224 33.1566932 5.43402462 32.9649233 5.00514 32.5435811 4.69789385 32.0571799 4.34315538 31.526649 4.27902462 30.9776224 4.54087846 30.3820324 4.82502462 30.0984336 5.31594 30.0972979 5.96500154 30.0940531 7.79426308 30.0716637 9.62417077 30.1106018 11.4524631 30.126826 12.2129862 30.2194661 12.9836862 30.3826814 13.7267631 30.6687139 15.0302169 31.3613245 16.0797323 32.5894956 16.7066631 33.3395398 17.0895092 34.2180796 16.8289477 34.6339056 16.1236708 35.0320472 15.4482785 34.8685074 14.5399477 34.1840088 14.1272169 33.5945841 13.7718323 33.3325634 13.2641169 33.2897316 12.6417092zM31.6573835 3.35084077C32.5876785 3.33921 33.3130619 2.60146385 33.3090228 1.67084077 33.3052743.742963847 32.5721032.010548462 31.6418083.00502397988 30.6920442-.000597691859 29.9471917.739571539 29.9501035 1.68634846 29.9528702 2.63118692 30.7034012 3.36279462 31.6573835 3.35084077"/></g></svg>      <span class="sr-only">Biuletyn Informacji Publicznej</span>
+    </a>
+  </div>          </div>
+          <div class="col-sm-6">
+            <div class="footer-col-box pt-10">
+              <a href="/zapisz-sie-na-newsletter" class="item-box-plus">
+  <div class="inner">
+    <div class="title-attr">
+      Zapisz się na&nbsp;newsletter    </div>
+    <svg class="" style="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path transform="translate(-1208 -123)" fill-rule="evenodd" d="M1220.88356 145L1217.06621 145 1217.06621 135.893957 1208 135.893957 1208 132.1813 1217.06621 132.1813 1217.06621 123 1220.88356 123 1220.88356 132.1813 1230 132.1813 1230 135.893957 1220.88356 135.893957z"/></svg>  </div>
+</a>            </div>
+          </div>
+        </div>
+      </div>
+    </div>  </div>  <div class="footer-bottom py-15">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-md-7">
+        <div class="copy-notice navi-xs">
+          <span class="owner-copy d-block d-sm-inline-block mb-2 mb-sm-0 text-center">Prawa autorskie © 2025</span> 
+          <a href="/" class="owner-link d-block d-sm-inline-block mb-2 mb-sm-0 text-center mr-sm-4">Filharmonia Narodowa</a>
+          <span class="webiste-author d-block d-sm-inline-block mb-2 mb-sm-0 text-center">
+            Realizacja: 
+          </span>
+          <a href="http://rytm.digital" class="website-author-link d-block d-sm-inline-block mb-2 mb-sm-0 text-center" target="_blank">Rytm.Digital</a>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="menu-wrapper d-flex align-items-center justify-content-between justify-content-sm-end mt-30 mt-sm-10 mt-md-0">
+                      <ul class="bottom-menu list-unstyled list-inline mr-sm-5">
+              <li class="menu-item menu-level1 menu-item-7788 "><a href="/logowanie/dla-pracownikow" data-id="7788">Logowanie</a></li>            </ul>
+                    <ul class="sociallinks-full">
+        <li class="sociallink sociallink-facebook">
+      <a href="https://www.facebook.com/FilharmoniaNarodowaWarszawa" target="_blank">
+        <svg class="" style="" enable-background="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg"><path d="m15.997 3.985h2.191v-3.816c-.378-.052-1.678-.169-3.192-.169-3.159 0-5.323 1.987-5.323 5.639v3.361h-3.486v4.266h3.486v10.734h4.274v-10.733h3.345l.531-4.266h-3.877v-2.939c.001-1.233.333-2.077 2.051-2.077z"/></svg>        <span class="sr-only"><span lang="en">facebook</span></span>
+      </a>
+    </li>
+      <li class="sociallink sociallink-instagram">
+      <a href="https://www.instagram.com/warsawphil/" target="_blank">
+        <svg class="" style="" viewBox="0 0 511 511.9" xmlns="http://www.w3.org/2000/svg"><path d="M510.95 150.5c-1.2-27.2-5.598-45.898-11.9-62.102-6.5-17.199-16.5-32.597-29.6-45.398-12.802-13-28.302-23.102-45.302-29.5-16.296-6.3-34.898-10.7-62.097-11.898C334.648.3 325.949 0 256.449 0s-78.199.3-105.5 1.5c-27.199 1.2-45.898 5.602-62.097 11.898-17.204 6.5-32.602 16.5-45.403 29.602-13 12.8-23.097 28.3-29.5 45.3-6.3 16.302-10.699 34.9-11.898 62.098C.75 177.801.449 186.5.449 256s.301 78.2 1.5 105.5c1.2 27.2 5.602 45.898 11.903 62.102 6.5 17.199 16.597 32.597 29.597 45.398 12.801 13 28.301 23.102 45.301 29.5 16.3 6.3 34.898 10.7 62.102 11.898 27.296 1.204 36 1.5 105.5 1.5s78.199-.296 105.5-1.5c27.199-1.199 45.898-5.597 62.097-11.898a130.934 130.934 0 0074.903-74.898c6.296-16.301 10.699-34.903 11.898-62.102 1.2-27.3 1.5-36 1.5-105.5s-.102-78.2-1.3-105.5zm-46.098 209c-1.102 25-5.301 38.5-8.801 47.5-8.602 22.3-26.301 40-48.602 48.602-9 3.5-22.597 7.699-47.5 8.796-27 1.204-35.097 1.5-103.398 1.5s-76.5-.296-103.403-1.5c-25-1.097-38.5-5.296-47.5-8.796C94.551 451.5 84.45 445 76.25 436.5c-8.5-8.3-15-18.3-19.102-29.398-3.5-9-7.699-22.602-8.796-47.5-1.204-27-1.5-35.102-1.5-103.403s.296-76.5 1.5-103.398c1.097-25 5.296-38.5 8.796-47.5C61.25 94.199 67.75 84.1 76.352 75.898c8.296-8.5 18.296-15 29.398-19.097 9-3.5 22.602-7.7 47.5-8.801 27-1.2 35.102-1.5 103.398-1.5 68.403 0 76.5.3 103.403 1.5 25 1.102 38.5 5.3 47.5 8.8 11.097 4.098 21.199 10.598 29.398 19.098 8.5 8.301 15 18.301 19.102 29.403 3.5 9 7.699 22.597 8.8 47.5 1.2 27 1.5 35.097 1.5 103.398s-.3 76.301-1.5 103.301zm0 0"/><path d="M256.45 124.5c-72.598 0-131.5 58.898-131.5 131.5s58.902 131.5 131.5 131.5c72.6 0 131.5-58.898 131.5-131.5s-58.9-131.5-131.5-131.5zm0 216.8c-47.098 0-85.302-38.198-85.302-85.3s38.204-85.3 85.301-85.3c47.102 0 85.301 38.198 85.301 85.3s-38.2 85.3-85.3 85.3zm0 0"/><path d="M423.852 119.3c0 16.954-13.747 30.7-30.704 30.7-16.953 0-30.699-13.746-30.699-30.7 0-16.956 13.746-30.698 30.7-30.698 16.956 0 30.703 13.742 30.703 30.699zm0 0"/></svg>        <span class="sr-only"><span lang="en">instagram</span></span>
+      </a>
+    </li>
+      <li class="sociallink sociallink-youtube">
+      <a href="https://www.youtube.com/user/FilharmoniaNarodowa" target="_blank">
+        <svg class="" style="" viewBox="-21 -117 682.667 682" xmlns="http://www.w3.org/2000/svg"><path d="M626.813 64.035c-7.375-27.418-28.993-49.031-56.407-56.414C520.324-6.082 319.992-6.082 319.992-6.082s-200.324 0-250.406 13.184c-26.887 7.375-49.031 29.52-56.406 56.933C0 114.113 0 217.97 0 217.97s0 104.379 13.18 153.933c7.382 27.414 28.992 49.028 56.41 56.41C120.195 442.02 320 442.02 320 442.02s200.324 0 250.406-13.184c27.418-7.379 49.032-28.992 56.414-56.406 13.176-50.082 13.176-153.934 13.176-153.934s.527-104.383-13.183-154.46zM256.21 313.915V122.022l166.586 95.946zm0 0"/></svg>        <span class="sr-only"><span lang="en">youtube</span></span>
+      </a>
+    </li>
+  </ul>        </div>
+      </div>
+    </div>  </div></div></div>
+        </footer>
+        <div class="dismiss-all stage-backdrop bg-black"></div>
+                        <div id="blueimp-gallery-modal" class="blueimp-gallery" data-use-bootstrap-modal="false">
+  <div class="slides"></div>
+  <header class="title navi-sm"></header>
+  <div class="controls">
+    <button type="button" class="pull-left prev">
+      <span class="finterp" aria-hidden="true">
+        <svg class="i-xl" style="" viewBox="0 0 17 13" xmlns="http://www.w3.org/2000/svg"><path d="M17.9336965 10.4226824L16.2335101 12.1282123 19.3477938 15.2673759 8.77067289 15.2673759 8.77067289 17.6814834 19.3396198 17.6814834 16.2335101 20.8206471 17.9255225 22.5261769 23.9333926 16.47031z" transform="rotate(-180 12.412 11.32)" fill-rule="evenodd"/></svg>      </span>
+      <span class="sr-only">Poprzednie</span>
+    </button>
+    <button type="button" class="next no-as">
+      <span class="finterp" aria-hidden="true">
+        <svg class="i-xl" style="" viewBox="0 0 16 13" xmlns="http://www.w3.org/2000/svg"><path d="M17.9336965 10.4226824L16.2335101 12.1282123 19.3477938 15.2673759 8.77067289 15.2673759 8.77067289 17.6814834 19.3396198 17.6814834 16.2335101 20.8206471 17.9255225 22.5261769 23.9333926 16.47031z" transform="translate(-7.982 -10.181)" fill-rule="evenodd"/></svg>      </span>
+      <span class="sr-only">Następne</span>
+    </button>
+    <button type="button" class="close hover-icon-style no-as">&times;</button>
+  </div>
+</div>
+      </div>
+    </div>
+    <div class="hidden" style="display: none">
+	<script src='/local/dist/bundle.js?v=1.4.4'></script>
+</div>
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFvo3KVXuq0saKufF8L_NR8dmrxCAbd-E" type="text/javascript"></script>
+  </body>
+</html>
