@@ -24,6 +24,7 @@ class Concert(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
     external_url = db.Column(db.String(512), nullable=True)  # Link to the original concert page
+    city = db.Column(db.String(100), nullable=True)  # City where the concert takes place
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

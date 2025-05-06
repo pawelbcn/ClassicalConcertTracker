@@ -87,7 +87,12 @@
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span class="badge bg-primary">{{ concert.date.strftime('%a, %d %b %Y') }}</span>
-                            <small>{{ concert.venue.name }}</small>
+                            <div>
+                                <small>{{ concert.venue.name }}</small>
+                                {% if concert.city %}
+                                <small class="ms-2"><i class="fas fa-map-marker-alt"></i> {{ concert.city }}</small>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="card-body">
                             <h5 class="card-title">{{ concert.title }}</h5>

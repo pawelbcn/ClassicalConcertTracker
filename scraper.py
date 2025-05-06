@@ -47,6 +47,10 @@ class BaseScraper:
     
     def _save_concert(self, title, date, external_url, performers, pieces):
         """Save concert and related data to database"""
+        return self._save_concert_with_city(title, date, external_url, performers, pieces, None)
+        
+    def _save_concert_with_city(self, title, date, external_url, performers, pieces, city=None):
+        """Save concert and related data to database with city information"""
         try:
             # Check if concert already exists by external_url
             existing_concert = Concert.query.filter_by(
@@ -61,6 +65,10 @@ class BaseScraper:
                 existing_concert.date = date
                 existing_concert.updated_at = datetime.utcnow()
                 
+                # Update city if provided
+                if city:
+                    existing_concert.city = city
+                
                 # Clear existing relationships to rebuild them
                 existing_concert.performers = []
                 existing_concert.pieces = []
@@ -74,6 +82,11 @@ class BaseScraper:
                     venue_id=self.venue.id,
                     external_url=external_url
                 )
+                
+                # Set city if provided
+                if city:
+                    concert.city = city
+                    
                 db.session.add(concert)
             
             # Add performers
@@ -111,7 +124,7 @@ class BaseScraper:
                 concert.pieces.append(piece)
             
             db.session.commit()
-            logger.info(f"Saved concert: {title}")
+            logger.info(f"Saved concert: {title} in {city if city else 'unknown city'}")
             return True
             
         except Exception as e:
@@ -541,6 +554,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
     def __init__(self, venue):
         super().__init__(venue)
         self.is_symphonic = False  # Flag to indicate if we're scraping the symphonic concerts page
+        self.city = 'Warsaw'  # All Filharmonia Narodowa concerts are in Warsaw
     
     def get_concert_details(self, url):
         """Get detailed concert information from the concert's dedicated page"""
@@ -1237,8 +1251,12 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 # Construct a good URL
                 external_url = concert_link if concert_link else self.base_url
                 
-                # Finally, save the concert
-                self._save_concert(title, concert_date, external_url, performers, pieces)
+                # Finally, save the concert with city information for Filharmonia Narodowa
+                if 'filharmonia.pl' in self.base_url.lower():
+                    city = 'Warsaw'
+                    self._save_concert_with_city(title, concert_date, external_url, performers, pieces, city)
+                else:
+                    self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city)
                 concert_count += 1
                 
             except Exception as e:
