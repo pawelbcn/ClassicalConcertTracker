@@ -1,0 +1,96 @@
+/* Custom CSS for Classical Concert Monitor */
+
+/* Main Layout Adjustments */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Card Enhancements */
+.card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Music-themed Icons */
+.fa-user-music:before {
+    content: "\f8eb"; /* Using Font Awesome's user-music icon */
+}
+
+.fa-baton:before {
+    content: "\f8c5"; /* Using Font Awesome's baton icon */
+}
+
+/* Form Styling */
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+}
+
+/* Custom Tab Styling */
+.nav-tabs .nav-link {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.nav-tabs .nav-link.active {
+    border-color: var(--bs-info);
+    border-bottom-color: transparent;
+}
+
+/* Loading Spinner Customization */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Table Styling */
+.table thead th {
+    background-color: rgba(13, 202, 240, 0.1);
+}
+
+/* Button Hover Effects */
+.btn {
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Helper Classes */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar for Webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-info);
+}

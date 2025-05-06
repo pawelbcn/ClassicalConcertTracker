@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Tabs for Concerts and Venues -->
+<ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if not show_venues_tab %}active{% endif %}" 
+                id="concerts-tab" data-bs-toggle="tab" 
+                data-bs-target="#concerts-content" type="button" role="tab" 
+                aria-controls="concerts-content" aria-selected="{{ 'true' if not show_venues_tab else 'false' }}">
+            <i class="fas fa-calendar-alt me-1"></i> Concerts
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if show_venues_tab %}active{% endif %}" 
+                id="venues-tab" data-bs-toggle="tab" 
+                data-bs-target="#venues-content" type="button" role="tab" 
+                aria-controls="venues-content" aria-selected="{{ 'true' if show_venues_tab else 'false' }}">
+            <i class="fas fa-theater-masks me-1"></i> Venues
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="mainTabsContent">
+    <!-- Concerts Tab -->
+    <div class="tab-pane fade {% if not show_venues_tab %}show active{% endif %}" 
+         id="concerts-content" role="tabpanel" aria-labelledby="concerts-tab">
+        
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Concerts</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('index') }}" method="get" id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="date_from" class="form-label">From Date</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" 
+                                   value="{{ filters.date_from }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_to" class="form-label">To Date</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" 
+                                   value="{{ filters.date_to }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="venue_id" class="form-label">Venue</label>
+                            <select class="form-select" id="venue_id" name="venue_id">
+                                <option value="">All Venues</option>
+                                {% for venue in venues %}
+                                <option value="{{ venue.id }}" 
+                                        {% if filters.venue_id|string == venue.id|string %}selected{% endif %}>
+                                    {{ venue.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="performer" class="form-label">Performer/Role</label>
+                            <input type="text" class="form-control" id="performer" name="performer" 
+                                   placeholder="Conductor, soloist..." value="{{ filters.performer }}">
+                        </div>
+                        <div class="col-md-9">
+                            <label for="repertoire" class="form-label">Repertoire</label>
+                            <input type="text" class="form-control" id="repertoire" name="repertoire" 
+                                   placeholder="Composer or piece title..." value="{{ filters.repertoire }}">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i> Apply Filters
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Concert Listings -->
+        <div class="row" id="concertListings">
+            {% if concerts %}
+                {% for concert in concerts %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">{{ concert.date.strftime('%a, %d %b %Y') }}</span>
+                            <small>{{ concert.venue.name }}</small>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ concert.title }}</h5>
+                            
+                            {% if concert.performers %}
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-2">Performers:</h6>
+                                <ul class="list-unstyled">
+                                    {% for performer in concert.performers %}
+                                    <li>
+                                        <i class="fas {% if performer.role == 'conductor' %}fa-baton{% else %}fa-user-music{% endif %} me-2"></i>
+                                        <strong>{{ performer.name }}</strong>
+                                        {% if performer.role %}
+                                        <span class="text-muted">({{ performer.role }})</span>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                            
+                            {% if concert.pieces %}
+                            <div>
+                                <h6 class="text-muted mb-2">Program:</h6>
+                                <ul class="list-unstyled">
+                                    {% for piece in concert.pieces %}
+                                    <li>
+                                        <i class="fas fa-music me-2"></i>
+                                        <strong>{{ piece.composer }}</strong>: {{ piece.title }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            {% if concert.external_url %}
+                            <a href="{{ concert.external_url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-external-link-alt me-1"></i> Visit Website
+                            </a>
+                            {% endif %}
+                            <small class="text-muted float-end">
+                                Last updated: {{ concert.updated_at.strftime('%d %b %Y') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No concerts found matching your criteria. Try adjusting your filters or adding more venues.
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Venues Tab -->
+    <div class="tab-pane fade {% if show_venues_tab %}show active{% endif %}" 
+         id="venues-content" role="tabpanel" aria-labelledby="venues-tab">
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Monitored Venues</h3>
+            <a href="{{ url_for('add_venue') }}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i> Add New Venue
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>URL</th>
+                        <th>Scraper Type</th>
+                        <th>Last Scraped</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if venues %}
+                        {% for venue in venues %}
+                        <tr>
+                            <td>{{ venue.name }}</td>
+                            <td>
+                                <a href="{{ venue.url }}" target="_blank" class="text-info">
+                                    {{ venue.url|truncate(40) }}
+                                    <i class="fas fa-external-link-alt ms-1 small"></i>
+                                </a>
+                            </td>
+                            <td>{{ venue.scraper_type }}</td>
+                            <td>
+                                {% if venue.last_scraped %}
+                                    {{ venue.last_scraped.strftime('%d %b %Y, %H:%M') }}
+                                {% else %}
+                                    <span class="text-muted">Never</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary scrape-venue-btn" data-venue-id="{{ venue.id }}">
+                                    <i class="fas fa-sync-alt me-1"></i> Scrape
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-venue-btn" data-venue-id="{{ venue.id }}" 
+                                        data-venue-name="{{ venue.name }}">
+                                    <i class="fas fa-trash-alt me-1"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No venues have been added yet. Add a venue to start monitoring concerts.
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Venue Confirmation Modal -->
+<div class="modal fade" id="deleteVenueModal" tabindex="-1" aria-labelledby="deleteVenueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteVenueModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete "<span id="venueNameToDelete"></span>"? 
+                This will also delete all concerts associated with this venue.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteVenue">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 id="loadingMessage">Scraping concert data...</h5>
+                <p class="text-muted">This may take a few moments</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Stay on the current tab after page refresh
+        const hash = window.location.hash;
+        if (hash === '#venues') {
+            document.getElementById('venues-tab').click();
+        }
+        
+        // Update URL hash when tabs change
+        const mainTabs = document.getElementById('mainTabs');
+        mainTabs.addEventListener('shown.bs.tab', (event) => {
+            if (event.target.id === 'venues-tab') {
+                window.location.hash = 'venues';
+            } else {
+                history.replaceState(null, null, ' ');
+            }
+        });
+    });
+</script>
+{% endblock %}
