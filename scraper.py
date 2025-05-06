@@ -555,6 +555,11 @@ class FilharmoniaNarodowaScraper(BaseScraper):
         super().__init__(venue)
         self.is_symphonic = False  # Flag to indicate if we're scraping the symphonic concerts page
         self.city = 'Warsaw'  # All Filharmonia Narodowa concerts are in Warsaw
+        
+        # Auto-detect if it's a symphonic concerts page based on URL
+        if 'koncert-symfoniczny' in venue.url.lower():
+            self.is_symphonic = True
+            logger.info(f"Detected symphonic concerts page: {venue.url}")
     
     def get_concert_details(self, url):
         """Get detailed concert information from the concert's dedicated page"""
