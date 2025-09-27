@@ -1,7 +1,11 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "repl-nix-workspace"
+name = "classical-concert-monitor"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Flask application for monitoring classical concert events"
 requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.13.4",
@@ -15,3 +19,7 @@ dependencies = [
     "trafilatura>=2.0.0",
     "werkzeug>=3.1.3",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app", "models", "routes", "scraper"]
