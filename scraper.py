@@ -154,6 +154,9 @@ class GenericScraper(BaseScraper):
             class_=lambda c: c and any(term in str(c).lower() for term in [
                 'concert', 'event', 'performance', 'program', 'repertoire', 
                 'season', 'schedule', 'calendar', 'listing', 'music'
+            ]) and not any(exclude in str(c).lower() for exclude in [
+                'nav', 'menu', 'header', 'footer', 'sidebar', 'breadcrumb',
+                'search', 'filter', 'pagination', 'social', 'share'
             ])
         )
         
@@ -227,6 +230,19 @@ class GenericScraper(BaseScraper):
         for element in concert_elements[:15]:  # Limit to first 15 to prevent overloading
             # Skip if we've already processed an identical or very similar element
             element_content = element.get_text().strip()
+            
+            # Skip elements that are too short or look like navigation
+            if len(element_content) < 20:
+                continue
+                
+            # Skip elements that contain navigation-like text
+            navigation_keywords = ['home', 'about', 'contact', 'login', 'register', 'search', 
+                                 'menu', 'navigation', 'breadcrumb', 'social media', 'follow us',
+                                 'subscribe', 'newsletter', 'privacy', 'terms', 'cookie']
+            if any(keyword in element_content.lower() for keyword in navigation_keywords):
+                continue
+                
+            # Skip if we've already processed an identical or very similar element
             skip = False
             for processed in processed_elements:
                 if processed in element_content or element_content in processed:
@@ -239,7 +255,7 @@ class GenericScraper(BaseScraper):
             
             try:
                 # Extract concert title - look more broadly for title elements
-                title = "Classical Concert"
+                title = None
                 title_elem = element.find(['h1', 'h2', 'h3', 'h4', 'h5', 'b', 'strong', 'span', 'div'], 
                                         class_=lambda c: c and any(term in str(c).lower() for term in [
                                             'title', 'event', 'name', 'concert', 'heading'
@@ -252,14 +268,12 @@ class GenericScraper(BaseScraper):
                     title_elem = element.find(['h1', 'h2', 'h3', 'h4', 'h5', 'b', 'strong'])
                     if title_elem:
                         title = title_elem.text.strip()
-                    else:
-                        # Get first significant text from element if no clear title
-                        title_text = element.get_text().strip()
-                        if title_text:
-                            # Extract up to first 60 chars
-                            title = title_text[:60].strip()
-                            if len(title_text) > 60:
-                                title += '...'
+                
+                # If no good title found, skip this element as it's likely not a concert
+                if not title or len(title) < 10 or any(generic in title.lower() for generic in 
+                    ['digital concert hall', 'calendar', 'subscriptions', 'vouchers', 'ticket information', 
+                     'season highlights', 'tours', 'cinema', 'radio', 'tv', 'home', 'about', 'contact']):
+                    continue
                 
                 # Look for date patterns - expanded regex for more date formats
                 date_text = None
