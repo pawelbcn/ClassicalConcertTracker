@@ -680,9 +680,13 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     # Finally, save the concert with city information for Filharmonia Narodowa
                     if 'filharmonia.pl' in self.base_url.lower():
                         city = 'Warsaw'
-                        self._save_concert_with_city(title, concert_date, external_url, performers, pieces, city)
+                        print(f"DEBUG: Saving concert with {len(performers)} performers and {len(pieces)} pieces")
+                        result = self._save_concert_with_city(title, concert_date, external_url, performers, pieces, city)
+                        print(f"DEBUG: Save result: {result}")
                     else:
-                        self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city)
+                        print(f"DEBUG: Saving concert with {len(performers)} performers and {len(pieces)} pieces")
+                        result = self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city)
+                        print(f"DEBUG: Save result: {result}")
                     concert_count += 1
                     
                 except Exception as e:
