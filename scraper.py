@@ -1642,6 +1642,255 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             logger.error(f"Error extracting concert details from {url}: {str(e)}")
             return None
 
+class NFMWroclawScraper(BaseScraper):
+    """Scraper for National Forum of Music (NFM) in Wrocław"""
+    
+    def __init__(self, venue):
+        super().__init__(venue)
+        self.base_url = venue.url
+        self.city = 'Wrocław'
+    
+    def scrape(self):
+        """Scrape concerts from NFM Wrocław website"""
+        try:
+            print("=== NFM WROCŁAW SCRAPER CALLED ===")
+            logger.info(f"Starting NFM Wrocław scraper for: {self.base_url}")
+            
+            # Test database connection
+            try:
+                from models import Concert
+                total_concerts = Concert.query.filter_by(venue_id=self.venue.id).count()
+                print(f"DEBUG: Database connection test successful. Total concerts: {total_concerts}")
+                logger.info(f"Total concerts in database for this venue: {total_concerts}")
+            except Exception as e:
+                print(f"DEBUG: Error checking database: {e}")
+                logger.error(f"Error checking database: {e}")
+            
+            # Get the main repertoire page
+            html = self._get_html(self.base_url)
+            if not html:
+                logger.error("Failed to fetch NFM Wrocław repertoire page")
+                return False
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            # Find all concert items
+            concert_items = soup.find_all('div', class_='nfmELItem')
+            print(f"DEBUG: Found {len(concert_items)} concert items")
+            
+            concert_count = 0
+            
+            for i, concert_item in enumerate(concert_items):
+                try:
+                    # Process all items - the d-none class is just for JavaScript filtering
+                    # but the content is still available in the HTML
+                    
+                    print(f"DEBUG: Processing concert {i+1}")
+                    
+                    # Extract date information
+                    date_elem = concert_item.find('div', class_='nfmEDDate')
+                    time_elem = concert_item.find('div', class_='nfmEDTime')
+                    
+                    if not date_elem:
+                        print("DEBUG: No date found, skipping")
+                        continue
+                    
+                    date_text = date_elem.get_text().strip()
+                    time_text = time_elem.get_text().strip() if time_elem else "19:00"  # Default time
+                    
+                    print(f"DEBUG: Found date: {date_text}, time: {time_text}")
+                    
+                    # Parse date
+                    concert_date = self._parse_nfm_date(date_text, time_text)
+                    if not concert_date:
+                        print(f"DEBUG: Could not parse date '{date_text}' for concert")
+                        continue
+                    
+                    print(f"DEBUG: Parsed date: {concert_date}")
+                    
+                    # Extract title
+                    title_elem = concert_item.find('a', class_='nfmEDTitle')
+                    if not title_elem:
+                        print("DEBUG: No title found, skipping")
+                        continue
+                    
+                    title = title_elem.get_text().strip()
+                    concert_url = urljoin(self.base_url, title_elem.get('href', ''))
+                    
+                    print(f"DEBUG: Found concert: {title}")
+                    
+                    # Extract venue
+                    venue_elem = concert_item.find('div', class_='nfmEDLoc')
+                    venue_name = venue_elem.get_text().strip() if venue_elem else 'NFM Wrocław'
+                    
+                    # Extract detailed information from individual concert page
+                    performers = []
+                    pieces = []
+                    
+                    if concert_url and 'event' in concert_url:
+                        print(f"DEBUG: Visiting concert page: {concert_url}")
+                        concert_details = self._get_concert_details(concert_url)
+                        if concert_details:
+                            performers = concert_details.get('performers', [])
+                            pieces = concert_details.get('pieces', [])
+                            print(f"DEBUG: Found {len(performers)} performers and {len(pieces)} pieces")
+                        else:
+                            print("DEBUG: Could not extract details from concert page")
+                    else:
+                        print("DEBUG: No concert link available for detailed extraction")
+                    
+                    # Save the concert
+                    print(f"DEBUG: Saving concert with {len(performers)} performers and {len(pieces)} pieces")
+                    result = self._save_concert_with_city(title, concert_date, concert_url, performers, pieces, self.city)
+                    print(f"DEBUG: Save result: {result}")
+                    concert_count += 1
+                    
+                except Exception as e:
+                    logger.error(f"Error processing concert item: {str(e)}")
+                    import traceback
+                    logger.error(traceback.format_exc())
+            
+            logger.info(f"NFM Wrocław scraper completed. Found {concert_count} concerts")
+            return concert_count > 0
+            
+        except Exception as e:
+            logger.error(f"Error in NFM Wrocław scraper: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return False
+    
+    def _parse_nfm_date(self, date_text, time_text):
+        """Parse NFM date format (DD.MM) with time"""
+        try:
+            # NFM uses DD.MM format
+            day, month = date_text.split('.')
+            day = int(day)
+            month = int(month)
+            
+            # Assume current year or next year if date has passed
+            current_date = datetime.now()
+            year = current_date.year
+            
+            # If the date has passed this year, assume next year
+            if month < current_date.month or (month == current_date.month and day < current_date.day):
+                year += 1
+            
+            # Parse time
+            time_parts = time_text.replace('PM', '').replace('AM', '').strip()
+            if ':' in time_parts:
+                hour, minute = map(int, time_parts.split(':'))
+                # Convert to 24-hour format if PM
+                if 'PM' in time_text and hour != 12:
+                    hour += 12
+                elif 'AM' in time_text and hour == 12:
+                    hour = 0
+            else:
+                hour, minute = 19, 0  # Default to 7 PM
+            
+            return datetime(year, month, day, hour, minute)
+            
+        except Exception as e:
+            logger.error(f"Error parsing NFM date '{date_text}': {str(e)}")
+            return None
+    
+    def _get_concert_details(self, url):
+        """Get detailed concert information from individual concert page"""
+        try:
+            print(f"DEBUG: Fetching NFM details from: {url}")
+            html = self._get_html(url)
+            if not html:
+                print("DEBUG: Failed to fetch HTML from NFM concert page")
+                return None
+                
+            soup = BeautifulSoup(html, 'html.parser')
+            details = {'performers': [], 'pieces': []}
+            
+            # Extract performers - NFM structure may be different
+            # Look for performer information in various possible locations
+            performer_selectors = [
+                'div.performer',
+                'div[class*="performer"]',
+                'div[class*="artist"]',
+                'div[class*="conductor"]',
+                'div[class*="soloist"]',
+                'div[class*="musician"]'
+            ]
+            
+            for selector in performer_selectors:
+                performer_elems = soup.select(selector)
+                for elem in performer_elems:
+                    performer_text = elem.get_text().strip()
+                    if performer_text and len(performer_text) > 2:
+                        # Try to determine role
+                        role = 'performer'
+                        if 'conductor' in performer_text.lower():
+                            role = 'conductor'
+                        elif 'soloist' in performer_text.lower():
+                            role = 'soloist'
+                        elif 'orchestra' in performer_text.lower():
+                            role = 'orchestra'
+                        elif 'choir' in performer_text.lower():
+                            role = 'choir'
+                        
+                        details['performers'].append({
+                            'name': performer_text,
+                            'role': role
+                        })
+                        print(f"DEBUG: Found NFM performer: {performer_text} ({role})")
+            
+            # Extract program information - look for program/repertoire sections
+            program_selectors = [
+                'div.program',
+                'div[class*="program"]',
+                'div[class*="repertoire"]',
+                'div[class*="pieces"]',
+                'div[class*="works"]',
+                'ul.program',
+                'ol.program'
+            ]
+            
+            for selector in program_selectors:
+                program_elem = soup.select_one(selector)
+                if program_elem:
+                    print("DEBUG: Found NFM program section")
+                    # Look for individual pieces
+                    piece_items = program_elem.find_all(['li', 'div', 'p'])
+                    for item in piece_items:
+                        piece_text = item.get_text().strip()
+                        if piece_text and len(piece_text) > 10:
+                            # Try to extract composer and piece title
+                            # Common patterns: "Composer: Piece Title" or "Piece Title by Composer"
+                            composer_match = re.search(r'^([^:]+):\s*(.+)$', piece_text)
+                            if composer_match:
+                                composer = composer_match.group(1).strip()
+                                title = composer_match.group(2).strip()
+                            else:
+                                # Try "Piece Title by Composer" pattern
+                                by_match = re.search(r'^(.+?)\s+by\s+(.+)$', piece_text)
+                                if by_match:
+                                    title = by_match.group(1).strip()
+                                    composer = by_match.group(2).strip()
+                                else:
+                                    # Fallback: use the whole text as title
+                                    title = piece_text
+                                    composer = 'Unknown'
+                            
+                            details['pieces'].append({
+                                'title': title,
+                                'composer': composer
+                            })
+                            print(f"DEBUG: Found NFM piece: {title} by {composer}")
+                    break
+            
+            print(f"DEBUG: Extracted {len(details['performers'])} performers and {len(details['pieces'])} pieces from NFM")
+            return details
+            
+        except Exception as e:
+            print(f"DEBUG: Error extracting NFM concert details: {e}")
+            logger.error(f"Error extracting NFM concert details from {url}: {str(e)}")
+            return None
+
+
 # Factory to get the appropriate scraper
 def get_scraper(venue):
     """Factory function to return the appropriate scraper for the venue"""
@@ -1649,6 +1898,7 @@ def get_scraper(venue):
         'generic': GenericScraper,
         'classical': ClassicalMusicScraper,
         'filharmonia_narodowa': FilharmoniaNarodowaScraper,
+        'nfm_wroclaw': NFMWroclawScraper,
         # Add more specialized scrapers here as needed
     }
     
@@ -1661,6 +1911,8 @@ def get_scraper(venue):
             scraper.is_symphonic = True
             return scraper
         return FilharmoniaNarodowaScraper(venue)
+    elif 'nfm.wroclaw.pl' in venue.url.lower():
+        return NFMWroclawScraper(venue)
     
     scraper_class = scraper_map.get(venue.scraper_type, GenericScraper)
     return scraper_class(venue)
