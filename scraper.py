@@ -66,9 +66,10 @@ class BaseScraper:
     def _save_concert_with_city(self, title, date, external_url, performers, pieces, city=None):
         """Save concert and related data to database with city information"""
         try:
-            # Check if concert already exists by external_url
+            # Check if concert already exists by title, date, and venue
             existing_concert = Concert.query.filter_by(
-                external_url=external_url, 
+                title=title,
+                date=date,
                 venue_id=self.venue.id
             ).first()
             
@@ -1687,23 +1688,38 @@ class NOSPRKatowiceScraper(BaseScraper):
                 print(f"DEBUG: Error checking database: {e}")
                 logger.error(f"Error checking database: {e}")
             
-            # Get the main calendar page
-            html = self._get_html(self.base_url)
-            if not html:
-                logger.error("Failed to fetch NOSPR Katowice calendar page")
-                return False
+            # Get concerts from multiple months
+            months_to_check = [
+                self.base_url,  # Current month
+                f"{self.base_url}?miesiac=2025-09",  # September 2025
+                f"{self.base_url}?miesiac=2025-11",  # November 2025
+                f"{self.base_url}?miesiac=2025-12",  # December 2025
+            ]
             
-            soup = BeautifulSoup(html, 'html.parser')
+            all_concert_rows = []
             
-            # Find all concert rows that contain concert tiles
-            all_rows = soup.find_all('div', class_='calendar__row')
-            concert_rows = [row for row in all_rows if row.find('div', class_='tile tile--calendar')]
-            print(f"DEBUG: Found {len(concert_rows)} concert rows with tiles")
+            for month_url in months_to_check:
+                print(f"DEBUG: Checking month: {month_url}")
+                html = self._get_html(month_url)
+                if not html:
+                    print(f"DEBUG: Failed to fetch {month_url}")
+                    continue
+                
+                soup = BeautifulSoup(html, 'html.parser')
+                
+                # Find all concert rows that contain concert tiles
+                all_rows = soup.find_all('div', class_='calendar__row')
+                concert_rows = [row for row in all_rows if row.find('div', class_='tile tile--calendar')]
+                print(f"DEBUG: Found {len(concert_rows)} concert rows in {month_url}")
+                
+                all_concert_rows.extend(concert_rows)
+            
+            print(f"DEBUG: Total concert rows found across all months: {len(all_concert_rows)}")
             
             concert_count = 0
             max_concerts = 5  # Limit for testing purposes
             
-            for i, row in enumerate(concert_rows[:max_concerts]):
+            for i, row in enumerate(all_concert_rows[:max_concerts]):
                 try:
                     # Update progress
                     self._update_progress(i, max_concerts, f"Processing concert {i+1}/{max_concerts}")
@@ -1810,6 +1826,13 @@ class NOSPRKatowiceScraper(BaseScraper):
                     logger.error(traceback.format_exc())
             
             logger.info(f"NOSPR Katowice scraper completed. Found {concert_count} concerts")
+            
+            # Update venue last_scraped timestamp
+            if concert_count > 0:
+                from datetime import datetime
+                self.venue.last_scraped = datetime.utcnow()
+                db.session.commit()
+            
             return concert_count > 0
             
         except Exception as e:
@@ -1953,6 +1976,13 @@ class NFMWroclawScraper(BaseScraper):
                     logger.error(traceback.format_exc())
             
             logger.info(f"NFM Wrocław scraper completed. Found {concert_count} concerts")
+            
+            # Update venue last_scraped timestamp
+            if concert_count > 0:
+                from datetime import datetime
+                self.venue.last_scraped = datetime.utcnow()
+                db.session.commit()
+            
             return concert_count > 0
             
         except Exception as e:
