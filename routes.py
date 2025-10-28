@@ -138,68 +138,73 @@ def api_scrape_venue(venue_id):
         # Start scraping in a separate thread
         def scrape_with_progress():
             try:
-                scraping_progress[venue_id]['status'] = 'running'
-                scraping_progress[venue_id]['message'] = 'Fetching concert data...'
-                
-                # Get venue info
-                venue = Venue.query.get(venue_id)
-                if not venue:
-                    scraping_progress[venue_id]['status'] = 'error'
-                    scraping_progress[venue_id]['error'] = 'Venue not found'
-                    return
-                
-                # Import scraper here to avoid circular imports
-                from scraper import get_scraper
-                scraper = get_scraper(venue)
-                
-                # Override the scraper's progress tracking
-                original_scrape = scraper.scrape
-                
-                def progress_wrapper():
-                    try:
-                        # Get the main repertoire page first to count items
-                        html = scraper._get_html(scraper.base_url)
-                        if not html:
-                            scraping_progress[venue_id]['status'] = 'error'
-                            scraping_progress[venue_id]['error'] = 'Failed to fetch venue page'
-                            return False
-                        
-                        from bs4 import BeautifulSoup
-                        soup = BeautifulSoup(html, 'html.parser')
-                        
-                        # Count items based on venue type
-                        if 'filharmonia.pl' in venue.url.lower():
-                            items = soup.find_all('a', class_='event-list-chocolate')
-                        elif 'nfm.wroclaw.pl' in venue.url.lower():
-                            items = soup.find_all('div', class_='nfmELItem')
-                        else:
-                            items = soup.find_all(['div', 'article'], class_=lambda x: x and 'concert' in x.lower())
-                        
-                        total_items = len(items)
-                        scraping_progress[venue_id]['total'] = total_items
-                        scraping_progress[venue_id]['message'] = f'Found {total_items} concerts to process'
-                        
-                        # Now run the actual scraper
-                        result = original_scrape()
-                        
-                        if result:
-                            scraping_progress[venue_id]['status'] = 'completed'
-                            scraping_progress[venue_id]['message'] = f'Successfully scraped {total_items} concerts'
-                            scraping_progress[venue_id]['current'] = total_items
-                        else:
-                            scraping_progress[venue_id]['status'] = 'error'
-                            scraping_progress[venue_id]['error'] = 'Scraping failed'
-                        
-                        return result
-                        
-                    except Exception as e:
+                # Set up Flask application context for the thread
+                with app.app_context():
+                    scraping_progress[venue_id]['status'] = 'running'
+                    scraping_progress[venue_id]['message'] = 'Fetching concert data...'
+                    
+                    # Get venue info
+                    venue = Venue.query.get(venue_id)
+                    if not venue:
                         scraping_progress[venue_id]['status'] = 'error'
-                        scraping_progress[venue_id]['error'] = str(e)
-                        logger.error(f"Error in progress wrapper: {str(e)}")
-                        return False
-                
-                # Run the scraper with progress tracking
-                progress_wrapper()
+                        scraping_progress[venue_id]['error'] = 'Venue not found'
+                        return
+                    
+                    # Import scraper here to avoid circular imports
+                    from scraper import get_scraper
+                    scraper = get_scraper(venue)
+                    
+                    # Override the scraper's progress tracking
+                    original_scrape = scraper.scrape
+                    
+                    def progress_wrapper():
+                        try:
+                            # Get the main repertoire page first to count items
+                            html = scraper._get_html(scraper.base_url)
+                            if not html:
+                                scraping_progress[venue_id]['status'] = 'error'
+                                scraping_progress[venue_id]['error'] = 'Failed to fetch venue page'
+                                return False
+                            
+                            from bs4 import BeautifulSoup
+                            soup = BeautifulSoup(html, 'html.parser')
+                            
+                            # Count items based on venue type
+                            if 'filharmonia.pl' in venue.url.lower():
+                                items = soup.find_all('a', class_='event-list-chocolate')
+                            elif 'nfm.wroclaw.pl' in venue.url.lower():
+                                items = soup.find_all('div', class_='nfmELItem')
+                            elif 'nospr.org.pl' in venue.url.lower():
+                                all_rows = soup.find_all('div', class_='calendar__row')
+                                items = [row for row in all_rows if row.find('div', class_='tile tile--calendar')]
+                            else:
+                                items = soup.find_all(['div', 'article'], class_=lambda x: x and 'concert' in x.lower())
+                            
+                            total_items = len(items)
+                            scraping_progress[venue_id]['total'] = total_items
+                            scraping_progress[venue_id]['message'] = f'Found {total_items} concerts to process'
+                            
+                            # Now run the actual scraper
+                            result = original_scrape()
+                            
+                            if result:
+                                scraping_progress[venue_id]['status'] = 'completed'
+                                scraping_progress[venue_id]['message'] = f'Successfully scraped {total_items} concerts'
+                                scraping_progress[venue_id]['current'] = total_items
+                            else:
+                                scraping_progress[venue_id]['status'] = 'error'
+                                scraping_progress[venue_id]['error'] = 'Scraping failed'
+                            
+                            return result
+                            
+                        except Exception as e:
+                            scraping_progress[venue_id]['status'] = 'error'
+                            scraping_progress[venue_id]['error'] = str(e)
+                            logger.error(f"Error in progress wrapper: {str(e)}")
+                            return False
+                    
+                    # Run the scraper with progress tracking
+                    progress_wrapper()
                 
             except Exception as e:
                 scraping_progress[venue_id]['status'] = 'error'
