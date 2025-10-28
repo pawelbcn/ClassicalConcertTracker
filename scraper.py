@@ -1515,38 +1515,62 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                         })
                         print(f"DEBUG: Found performer: {name} ({role})")
             
-            # Extract program information from event-meta-program section
-            program_section = soup.find('div', class_='event-meta-program')
-            if program_section:
-                print("DEBUG: Found program section")
-                # Look for program items
-                program_items = program_section.find_all(['div', 'li', 'p'], class_=lambda x: x and ('program' in x or 'piece' in x or 'item' in x))
+            # Extract program information from content-attr body section
+            content_section = soup.find('div', class_='content-attr body')
+            if not content_section:
+                # Try alternative selectors
+                content_section = soup.find('div', class_='body')
+                if not content_section:
+                    content_section = soup.find('div', class_='content-attr')
+            if content_section:
+                print("DEBUG: Found content section with program info")
+                content_text = content_section.get_text()
                 
-                for item in program_items:
-                    piece_text = item.get_text().strip()
-                    if piece_text and len(piece_text) > 10:
-                        # Try to extract composer and piece title
-                        # Common patterns: "Composer: Piece Title" or "Piece Title by Composer"
-                        composer_match = re.search(r'^([^:]+):\s*(.+)$', piece_text)
-                        if composer_match:
-                            composer = composer_match.group(1).strip()
-                            title = composer_match.group(2).strip()
-                        else:
-                            # Try "Piece Title by Composer" pattern
-                            by_match = re.search(r'^(.+?)\s+by\s+(.+)$', piece_text)
-                            if by_match:
-                                title = by_match.group(1).strip()
-                                composer = by_match.group(2).strip()
-                            else:
-                                # Fallback: use the whole text as title
-                                title = piece_text
-                                composer = 'Unknown'
-                        
-                        details['pieces'].append({
-                            'title': title,
-                            'composer': composer
-                        })
-                        print(f"DEBUG: Found piece: {title} by {composer}")
+                # Look for composer names and their works in the content
+                classical_composers = [
+                    'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Tchaikovsky', 'Brahms', 
+                    'Debussy', 'Ravel', 'Rachmaninoff', 'Stravinsky', 'Schubert', 
+                    'Handel', 'Haydn', 'Liszt', 'Mahler', 'Mendelssohn', 'Prokofiev',
+                    'Shostakovich', 'Sibelius', 'Schumann', 'Verdi', 'Wagner', 'Vivaldi',
+                    'Dvořák', 'Grieg', 'Berlioz', 'Britten', 'Bartók', 'Bruckner',
+                    'Elgar', 'Fauré', 'Gershwin', 'Glass', 'Holst', 'Ligeti',
+                    'Monteverdi', 'Mussorgsky', 'Pärt', 'Purcell', 'Reich',
+                    'Rimsky-Korsakov', 'Saint-Saëns', 'Satie', 'Schoenberg', 'Tallis',
+                    'Vaughan Williams', 'Szymanowski', 'Moniuszko', 'Wieniawski',
+                    'Lutosławski', 'Penderecki', 'Górecki', 'Kilar', 'Górecki'
+                ]
+                
+                for composer in classical_composers:
+                    # Look for composer name followed by work title
+                    patterns = [
+                        rf'{re.escape(composer)}\'s\s+([A-Z][^.]*?)(?:\.|$|,)',
+                        rf'{re.escape(composer)}\s+([A-Z][^.]*?)(?:\.|$|,)',
+                        rf'{re.escape(composer)}[:\s]+([A-Z][^.]*?)(?:\.|$|,)'
+                    ]
+                    
+                    for pattern in patterns:
+                        matches = re.findall(pattern, content_text, re.IGNORECASE | re.DOTALL)
+                        for match in matches:
+                            title = match.strip()
+                            if len(title) > 10 and len(title) < 100:  # Reasonable length
+                                # Clean up the title
+                                title = re.sub(r'\s+', ' ', title)  # Remove extra spaces
+                                title = title.strip('.,;:')  # Remove trailing punctuation
+                                
+                                # Filter out common false positives
+                                excluded_phrases = ['photo', 'image', 'caption', 'himself', 'herself', 'themselves', 'work', 'composer', 'music', 'piece']
+                                if title and not any(excluded in title.lower() for excluded in excluded_phrases):
+                                    # Check if this is a real musical work title
+                                    work_indicators = ['symphony', 'concerto', 'sonata', 'quartet', 'trio', 'suite', 'nocturne', 'etude', 'prelude', 'fugue', 'mass', 'requiem', 'opera', 'ballet', 'overture', 'intermezzo', 'rhapsody', 'fantasia', 'variations', 'minuet', 'waltz', 'mazurka', 'polonaise', 'nocturne', 'etude', 'prelude', 'fugue', 'mass', 'requiem', 'opera', 'ballet', 'overture', 'intermezzo', 'rhapsody', 'fantasia', 'variations', 'minuet', 'waltz', 'mazurka', 'polonaise']
+                                    if any(indicator in title.lower() for indicator in work_indicators):
+                                        details['pieces'].append({
+                                            'title': title,
+                                            'composer': composer
+                                        })
+                                        print(f"DEBUG: Found piece: {title} by {composer}")
+                                        break  # Found one piece for this composer, move to next
+                        if any(composer in piece['composer'] for piece in details['pieces']):
+                            break  # Already found a piece for this composer
             
             # If no program section found, try to extract from meta description
             if not details['pieces']:

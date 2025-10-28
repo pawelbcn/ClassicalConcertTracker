@@ -66,9 +66,13 @@ def index():
     # Get all venues for the filter dropdown
     venues = Venue.query.order_by(Venue.name).all()
     
+    # Get all performers for the filter dropdown
+    performers = Performer.query.order_by(Performer.name).all()
+    
     return render_template('index.html', 
                            concerts=concerts, 
                            venues=venues,
+                           performers=performers,
                            filters={
                                'date_from': date_from,
                                'date_to': date_to,

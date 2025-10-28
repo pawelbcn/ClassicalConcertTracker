@@ -58,8 +58,15 @@
                         </div>
                         <div class="col-md-3">
                             <label for="performer" class="form-label">Performer/Role</label>
-                            <input type="text" class="form-control" id="performer" name="performer" 
-                                   placeholder="Conductor, soloist..." value="{{ filters.performer }}">
+                            <select class="form-select" id="performer" name="performer">
+                                <option value="">All Performers</option>
+                                {% for performer in performers %}
+                                <option value="{{ performer.name }}" 
+                                        {% if filters.performer == performer.name %}selected{% endif %}>
+                                    {{ performer.name }} ({{ performer.role }})
+                                </option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="col-md-9">
                             <label for="repertoire" class="form-label">Repertoire</label>
