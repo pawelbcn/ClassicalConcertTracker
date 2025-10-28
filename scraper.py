@@ -646,32 +646,27 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     
                     print(f"DEBUG: Parsed date: {concert_date}")
                     
-                    # Extract performers and pieces (simplified for now)
-                    performers = []
-                    pieces = []
-                    
-                    # Look for performer information in the concert element
-                    performer_text = concert_element.get_text()
-                    if 'conductor' in performer_text.lower():
-                        # Extract conductor name (simplified)
-                        conductor_match = re.search(r'conductor[:\s]+([^,\n]+)', performer_text, re.IGNORECASE)
-                        if conductor_match:
-                            performers.append({
-                                'name': conductor_match.group(1).strip(),
-                                'role': 'conductor'
-                            })
-                    
-                    # Look for piece information
-                    if 'symphony' in performer_text.lower():
-                        pieces.append({
-                            'title': 'Symphony',
-                            'composer': 'Various'
-                        })
-                    
-                    # Get the concert URL
+                    # Get the concert URL first
                     concert_link = None
                     if 'href' in concert_element.attrs:
                         concert_link = urljoin(self.base_url, concert_element['href'])
+                    
+                    # Extract detailed information from the individual concert page
+                    performers = []
+                    pieces = []
+                    
+                    # Visit the individual concert page to get detailed information
+                    if concert_link:
+                        print(f"DEBUG: Visiting concert page: {concert_link}")
+                        concert_details = self._get_concert_details(concert_link)
+                        if concert_details:
+                            performers = concert_details.get('performers', [])
+                            pieces = concert_details.get('pieces', [])
+                            print(f"DEBUG: Found {len(performers)} performers and {len(pieces)} pieces")
+                        else:
+                            print("DEBUG: Could not extract details from concert page")
+                    else:
+                        print("DEBUG: No concert link available for detailed extraction")
                     
                     # Construct a unique URL for each concert
                     if concert_link:
@@ -1472,6 +1467,121 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             logger.error(f"Error checking database: {e}")
         
         return concert_count > 0
+    
+    def _get_concert_details(self, url):
+        """Get detailed concert information from individual concert page"""
+        try:
+            print(f"DEBUG: Fetching details from: {url}")
+            html = self._get_html(url)
+            if not html:
+                print("DEBUG: Failed to fetch HTML from concert page")
+                return None
+                
+            soup = BeautifulSoup(html, 'html.parser')
+            details = {'performers': [], 'pieces': []}
+            
+            # Extract performers from the event-meta-performers section
+            performers_section = soup.find('div', class_='event-meta-performers')
+            if performers_section:
+                print("DEBUG: Found performers section")
+                # Find all artist-list elements (both <a> and <div> tags)
+                artist_lists = performers_section.find_all(['a', 'div'], class_='artist-list')
+                
+                for artist in artist_lists:
+                    # Get artist name
+                    name_elem = artist.find('div', class_='artist-name')
+                    if name_elem:
+                        name = name_elem.get_text().strip()
+                        
+                        # Get artist role
+                        role_elem = artist.find('div', class_='artist-role')
+                        if role_elem:
+                            role = role_elem.get_text().strip()
+                        else:
+                            # Default role if not specified
+                            role = 'performer'
+                        
+                        details['performers'].append({
+                            'name': name,
+                            'role': role
+                        })
+                        print(f"DEBUG: Found performer: {name} ({role})")
+            
+            # Extract program information from event-meta-program section
+            program_section = soup.find('div', class_='event-meta-program')
+            if program_section:
+                print("DEBUG: Found program section")
+                # Look for program items
+                program_items = program_section.find_all(['div', 'li', 'p'], class_=lambda x: x and ('program' in x or 'piece' in x or 'item' in x))
+                
+                for item in program_items:
+                    piece_text = item.get_text().strip()
+                    if piece_text and len(piece_text) > 10:
+                        # Try to extract composer and piece title
+                        # Common patterns: "Composer: Piece Title" or "Piece Title by Composer"
+                        composer_match = re.search(r'^([^:]+):\s*(.+)$', piece_text)
+                        if composer_match:
+                            composer = composer_match.group(1).strip()
+                            title = composer_match.group(2).strip()
+                        else:
+                            # Try "Piece Title by Composer" pattern
+                            by_match = re.search(r'^(.+?)\s+by\s+(.+)$', piece_text)
+                            if by_match:
+                                title = by_match.group(1).strip()
+                                composer = by_match.group(2).strip()
+                            else:
+                                # Fallback: use the whole text as title
+                                title = piece_text
+                                composer = 'Unknown'
+                        
+                        details['pieces'].append({
+                            'title': title,
+                            'composer': composer
+                        })
+                        print(f"DEBUG: Found piece: {title} by {composer}")
+            
+            # If no program section found, try to extract from meta description
+            if not details['pieces']:
+                meta_desc = soup.find('meta', attrs={'name': 'description'})
+                if meta_desc and meta_desc.get('content'):
+                    desc_text = meta_desc.get('content')
+                    print(f"DEBUG: Trying to extract from meta description: {desc_text}")
+                    
+                    # Look for composer names in the description
+                    classical_composers = [
+                        'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Tchaikovsky', 'Brahms', 
+                        'Debussy', 'Ravel', 'Rachmaninoff', 'Stravinsky', 'Schubert', 
+                        'Handel', 'Haydn', 'Liszt', 'Mahler', 'Mendelssohn', 'Prokofiev',
+                        'Shostakovich', 'Sibelius', 'Schumann', 'Verdi', 'Wagner', 'Vivaldi',
+                        'Dvořák', 'Grieg', 'Berlioz', 'Britten', 'Bartók', 'Bruckner',
+                        'Elgar', 'Fauré', 'Gershwin', 'Glass', 'Holst', 'Ligeti',
+                        'Monteverdi', 'Mussorgsky', 'Pärt', 'Purcell', 'Reich',
+                        'Rimsky-Korsakov', 'Saint-Saëns', 'Satie', 'Schoenberg', 'Tallis',
+                        'Vaughan Williams', 'Szymanowski', 'Moniuszko', 'Wieniawski',
+                        'Lutosławski', 'Penderecki', 'Górecki', 'Kilar'
+                    ]
+                    
+                    for composer in classical_composers:
+                        if composer.lower() in desc_text.lower():
+                            # Try to extract the piece title after the composer name
+                            pattern = rf'{re.escape(composer)}[:\s]*([^,.\n]+)'
+                            match = re.search(pattern, desc_text, re.IGNORECASE)
+                            if match:
+                                title = match.group(1).strip()
+                                if len(title) > 3:  # Filter out very short titles
+                                    details['pieces'].append({
+                                        'title': title,
+                                        'composer': composer
+                                    })
+                                    print(f"DEBUG: Found piece from description: {title} by {composer}")
+            
+            print(f"DEBUG: Extracted {len(details['performers'])} performers and {len(details['pieces'])} pieces")
+            return details
+            
+        except Exception as e:
+            print(f"DEBUG: Error extracting concert details: {e}")
+            logger.error(f"Error extracting concert details from {url}: {str(e)}")
+            return None
 
 # Factory to get the appropriate scraper
 def get_scraper(venue):
