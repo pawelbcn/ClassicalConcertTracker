@@ -604,92 +604,91 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             concert_count = 0
             
             print("=== ABOUT TO SEARCH FOR SYMPHONIC CONCERTS ===")
-            # Simple approach: Look for all text containing "Symphonic Concert" and try to find nearby dates
-            symphonic_elements = soup.find_all(string=lambda text: text and 'Symphonic Concert' in text)
-            print(f"DEBUG: Found {len(symphonic_elements)} Symphonic Concert elements")
-            logger.info(f"Found {len(symphonic_elements)} Symphonic Concert elements")
+            # Look for concert elements with the specific structure
+            concert_elements = soup.find_all('a', class_='event-list-chocolate')
+            print(f"DEBUG: Found {len(concert_elements)} concert elements")
+            logger.info(f"Found {len(concert_elements)} concert elements")
             
-            for i, symphonic_text in enumerate(symphonic_elements):
+            for i, concert_element in enumerate(concert_elements):
                 try:
-                    title = symphonic_text.strip()
+                    # Extract title
+                    title_elem = concert_element.find('strong')
+                    if not title_elem:
+                        continue
+                    title = title_elem.get_text().strip()
+                    
+                    if 'Symphonic Concert' not in title:
+                        continue
+                    
                     print(f"DEBUG: Processing concert {i+1}: {title}")
                     logger.info(f"Processing concert {i+1}: {title}")
                     
-                    # Find the parent element
-                    parent = symphonic_text.parent
-                    while parent and parent.name not in ['div', 'article', 'section', 'td', 'li']:
-                        parent = parent.parent
-                    
-                    if not parent:
-                        logger.warning(f"No suitable parent found for: {title}")
+                    # Look for date in the event-meta-date section
+                    date_elem = concert_element.find('div', class_='event-date')
+                    if not date_elem:
+                        logger.warning(f"No date found for: {title}")
                         continue
                     
-                    # Look for date in the same parent or nearby elements
-                    date_text = None
-                    time_text = None
+                    date_text = date_elem.get_text().strip()
+                    print(f"DEBUG: Found date text: {date_text}")
                     
-                    # Search in the parent element and its siblings
-                    search_elements = [parent] + list(parent.find_next_siblings()) + list(parent.find_previous_siblings())
-                    
-                    for elem in search_elements:
-                        if not elem:
-                            continue
-                            
-                        # Look for date pattern (DD.MM)
-                        date_match = re.search(r'(\d{1,2})\.(\d{1,2})', elem.get_text())
-                        if date_match and not date_text:
-                            date_text = date_match.group(0)
-                            logger.info(f"Found date: {date_text}")
-                        
-                        # Look for time pattern (HH:MM)
-                        time_match = re.search(r'(\d{1,2}):(\d{2})', elem.get_text())
-                        if time_match and not time_text:
-                            time_text = time_match.group(0)
-                            logger.info(f"Found time: {time_text}")
-                    
-                    # If no date found in nearby elements, try a broader search
-                    if not date_text:
-                        all_text = parent.get_text()
-                        date_match = re.search(r'(\d{1,2})\.(\d{1,2})', all_text)
-                        if date_match:
-                            date_text = date_match.group(0)
-                            logger.info(f"Found date in parent text: {date_text}")
-                    
-                    if not date_text:
-                        logger.warning(f"No date found for concert: {title}")
-                        continue
+                    # Look for time
+                    time_elem = concert_element.find('div', class_='event-time')
+                    time_text = time_elem.get_text().strip() if time_elem else None
+                    if time_text:
+                        print(f"DEBUG: Found time text: {time_text}")
                     
                     # Parse the date
                     concert_date = self._parse_filharmonia_date(date_text, time_text)
                     if not concert_date:
-                        logger.warning(f"Could not parse date for concert: {title}")
+                        logger.warning(f"Could not parse date '{date_text}' for concert: {title}")
                         continue
                     
-                    logger.info(f"Parsed date: {concert_date}")
+                    print(f"DEBUG: Parsed date: {concert_date}")
                     
-                    # Create external URL
-                    external_url = self.base_url
-                    
-                    # Simple performer and piece extraction
+                    # Extract performers and pieces (simplified for now)
                     performers = []
                     pieces = []
                     
-                    # Look for composer names in the surrounding text
-                    all_text = parent.get_text()
-                    composers = ['Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
-                               'Penderecki', 'Górecki', 'Kilar', 'Tchaikovsky', 'Brahms', 'Mahler', 'Schumann', 'Schubert', 
-                               'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff']
+                    # Look for performer information in the concert element
+                    performer_text = concert_element.get_text()
+                    if 'conductor' in performer_text.lower():
+                        # Extract conductor name (simplified)
+                        conductor_match = re.search(r'conductor[:\s]+([^,\n]+)', performer_text, re.IGNORECASE)
+                        if conductor_match:
+                            performers.append({
+                                'name': conductor_match.group(1).strip(),
+                                'role': 'conductor'
+                            })
                     
-                    for composer in composers:
-                        if composer.lower() in all_text.lower():
-                            pieces.append(f"Works by {composer}")
+                    # Look for piece information
+                    if 'symphony' in performer_text.lower():
+                        pieces.append({
+                            'title': 'Symphony',
+                            'composer': 'Various'
+                        })
                     
-                    # Save the concert
-                    if self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city):
-                        concert_count += 1
-                        logger.info(f"Saved concert: {title} on {concert_date.strftime('%Y-%m-%d')}")
+                    # Get the concert URL
+                    concert_link = None
+                    if 'href' in concert_element.attrs:
+                        concert_link = urljoin(self.base_url, concert_element['href'])
+                    
+                    # Construct a unique URL for each concert
+                    if concert_link:
+                        external_url = concert_link
                     else:
-                        logger.warning(f"Failed to save concert: {title}")
+                        # Create a unique URL based on title and date to avoid duplicates
+                        import hashlib
+                        unique_id = hashlib.md5(f"{title}_{concert_date}".encode()).hexdigest()[:8]
+                        external_url = f"{self.base_url}#concert_{unique_id}"
+                    
+                    # Finally, save the concert with city information for Filharmonia Narodowa
+                    if 'filharmonia.pl' in self.base_url.lower():
+                        city = 'Warsaw'
+                        self._save_concert_with_city(title, concert_date, external_url, performers, pieces, city)
+                    else:
+                        self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city)
+                    concert_count += 1
                     
                 except Exception as e:
                     logger.error(f"Error processing concert element: {str(e)}")
