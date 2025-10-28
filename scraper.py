@@ -591,61 +591,58 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             soup = BeautifulSoup(html, 'html.parser')
             concert_count = 0
             
-            # Look for specific concert titles in the text
-            concert_titles = soup.find_all(string=lambda text: text and any(
-                keyword in text.lower() for keyword in ['symphonic concert', 'chamber concert', 'recital', 'concert']
-            ))
+            # Simple approach: Look for all text containing "Symphonic Concert" and try to find nearby dates
+            symphonic_elements = soup.find_all(string=lambda text: text and 'Symphonic Concert' in text)
+            logger.info(f"Found {len(symphonic_elements)} Symphonic Concert elements")
             
-            # Also look for concert titles in specific elements
-            concert_elements = soup.find_all(['strong', 'div'], string=lambda text: text and any(
-                keyword in text.lower() for keyword in ['symphonic concert', 'chamber concert', 'recital', 'concert']
-            ))
-            
-            # Combine both approaches
-            all_concert_texts = list(concert_titles) + [elem.get_text() for elem in concert_elements if elem.get_text()]
-            
-            logger.info(f"Found {len(all_concert_texts)} concert title texts")
-            
-            # Process each concert title
-            for i, title_text in enumerate(all_concert_texts):
+            for i, symphonic_text in enumerate(symphonic_elements):
                 try:
-                    title = title_text.strip()
+                    title = symphonic_text.strip()
                     logger.info(f"Processing concert {i+1}: {title}")
                     
-                    if not title or len(title) < 5:  # Skip very short titles
-                        logger.info(f"Skipping short title: {title}")
+                    # Find the parent element
+                    parent = symphonic_text.parent
+                    while parent and parent.name not in ['div', 'article', 'section', 'td', 'li']:
+                        parent = parent.parent
+                    
+                    if not parent:
+                        logger.warning(f"No suitable parent found for: {title}")
                         continue
                     
-                    # For text strings, we need to find the parent element differently
-                    # Look for the element that contains this text
-                    concert_container = None
-                    for elem in soup.find_all(['strong', 'div', 'span', 'p']):
-                        if elem.get_text(strip=True) == title:
-                            concert_container = elem
-                            break
-                    
-                    if not concert_container:
-                        logger.warning(f"No container found for: {title}")
-                        continue
-                    
-                    # Look for date information in the same container
+                    # Look for date in the same parent or nearby elements
                     date_text = None
-                    date_elem = concert_container.find(['span', 'div', 'p'], string=lambda text: text and any(
-                        char.isdigit() for char in text
-                    ) and any(month in text.lower() for month in ['oct', 'nov', 'dec', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep']))
-                    
-                    if date_elem:
-                        date_text = date_elem.get_text(strip=True)
-                        logger.info(f"Found date text: {date_text}")
-                    
-                    # Look for time information
                     time_text = None
-                    time_elem = concert_container.find(string=lambda text: text and ':' in text and any(
-                        char.isdigit() for char in text
-                    ))
-                    if time_elem:
-                        time_text = time_elem.strip()
-                        logger.info(f"Found time text: {time_text}")
+                    
+                    # Search in the parent element and its siblings
+                    search_elements = [parent] + list(parent.find_next_siblings()) + list(parent.find_previous_siblings())
+                    
+                    for elem in search_elements:
+                        if not elem:
+                            continue
+                            
+                        # Look for date pattern (DD.MM)
+                        date_match = re.search(r'(\d{1,2})\.(\d{1,2})', elem.get_text())
+                        if date_match and not date_text:
+                            date_text = date_match.group(0)
+                            logger.info(f"Found date: {date_text}")
+                        
+                        # Look for time pattern (HH:MM)
+                        time_match = re.search(r'(\d{1,2}):(\d{2})', elem.get_text())
+                        if time_match and not time_text:
+                            time_text = time_match.group(0)
+                            logger.info(f"Found time: {time_text}")
+                    
+                    # If no date found in nearby elements, try a broader search
+                    if not date_text:
+                        all_text = parent.get_text()
+                        date_match = re.search(r'(\d{1,2})\.(\d{1,2})', all_text)
+                        if date_match:
+                            date_text = date_match.group(0)
+                            logger.info(f"Found date in parent text: {date_text}")
+                    
+                    if not date_text:
+                        logger.warning(f"No date found for concert: {title}")
+                        continue
                     
                     # Parse the date
                     concert_date = self._parse_filharmonia_date(date_text, time_text)
@@ -655,30 +652,21 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     
                     logger.info(f"Parsed date: {concert_date}")
                     
-                    # Create external URL (construct from base URL)
+                    # Create external URL
                     external_url = self.base_url
                     
-                    # Extract performers and repertoire from the title and surrounding text
+                    # Simple performer and piece extraction
                     performers = []
                     pieces = []
                     
-                    # Look for performer names in the text
-                    performer_text = concert_container.get_text()
-                    if 'and' in performer_text or 'with' in performer_text:
-                        # Try to extract performer names
-                        performer_parts = performer_text.split('and') + performer_text.split('with')
-                        for part in performer_parts:
-                            part = part.strip()
-                            if len(part) > 3 and len(part) < 100:  # Reasonable name length
-                                performers.append(part)
-                    
-                    # Look for composer names in the text
+                    # Look for composer names in the surrounding text
+                    all_text = parent.get_text()
                     composers = ['Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
                                'Penderecki', 'Górecki', 'Kilar', 'Tchaikovsky', 'Brahms', 'Mahler', 'Schumann', 'Schubert', 
                                'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff']
                     
                     for composer in composers:
-                        if composer.lower() in performer_text.lower():
+                        if composer.lower() in all_text.lower():
                             pieces.append(f"Works by {composer}")
                     
                     # Save the concert
