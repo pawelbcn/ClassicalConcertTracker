@@ -119,7 +119,9 @@ def api_scrape_venue(venue_id):
             return jsonify({'status': 'error', 'message': 'Failed to scrape venue'}), 400
     except Exception as e:
         logger.error(f"Error scraping venue {venue_id}: {str(e)}")
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return jsonify({'status': 'error', 'message': f"Error: {str(e)}"}), 500
 
 @app.route('/api/venues/scrape-all', methods=['POST'])
 def api_scrape_all_venues():
