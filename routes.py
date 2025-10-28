@@ -1,12 +1,17 @@
 import logging
 from datetime import datetime
-from flask import render_template, request, jsonify, flash, redirect, url_for
+from flask import render_template, request, jsonify, flash, redirect, url_for, send_from_directory
 from sqlalchemy import or_
 from app import app, db
 from models import Concert, Performer, Piece, Venue
 from scraper import scrape_venue, scrape_all_venues
 
 logger = logging.getLogger(__name__)
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    """Serve static files"""
+    return send_from_directory('static', filename)
 
 @app.route('/')
 def index():
