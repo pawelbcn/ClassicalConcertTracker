@@ -21,6 +21,10 @@ coverage.xml
 .pytest_cache
 .hypothesis
 
+# Package manager files
+uv.lock
+pyproject.toml
+
 # Database files
 *.db
 *.sqlite
