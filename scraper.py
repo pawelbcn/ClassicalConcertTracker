@@ -119,24 +119,32 @@ class BaseScraper:
                     )
                     db.session.add(performer)
                 
-                concert.performers.append(performer)
+                # Check if this performer is already associated with this concert
+                if performer not in concert.performers:
+                    concert.performers.append(performer)
             
             # Add pieces
             for piece_data in pieces:
+                # Truncate long strings to fit database constraints
+                title = piece_data['title'][:255] if len(piece_data['title']) > 255 else piece_data['title']
+                composer = piece_data['composer'][:255] if len(piece_data['composer']) > 255 else piece_data['composer']
+                
                 # Check if piece already exists
                 piece = Piece.query.filter_by(
-                    title=piece_data['title'],
-                    composer=piece_data['composer']
+                    title=title,
+                    composer=composer
                 ).first()
                 
                 if not piece:
                     piece = Piece(
-                        title=piece_data['title'],
-                        composer=piece_data['composer']
+                        title=title,
+                        composer=composer
                     )
                     db.session.add(piece)
                 
-                concert.pieces.append(piece)
+                # Check if this piece is already associated with this concert
+                if piece not in concert.pieces:
+                    concert.pieces.append(piece)
             
             db.session.commit()
             logger.info(f"Saved concert: {title} in {city if city else 'unknown city'}")
@@ -2220,6 +2228,373 @@ class NFMWroclawScraper(BaseScraper):
             return None
 
 
+class CracowPhilharmonicScraper(BaseScraper):
+    """Scraper for Cracow Philharmonic (https://filharmoniakrakow.pl/public/program)"""
+    
+    def scrape(self):
+        """Scrape concerts from Cracow Philharmonic"""
+        try:
+            print(f"DEBUG: Starting Cracow Philharmonic scraping from {self.base_url}")
+            self._update_progress(0, 5, "Starting Cracow Philharmonic scraping...")
+            
+            # Get the main program page
+            html = self._get_html(self.base_url)
+            if not html:
+                print("DEBUG: Failed to get HTML from Cracow Philharmonic")
+                return False
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            # Find concert links - they appear to be in the format /public/program/concert-name
+            concert_links = []
+            for link in soup.find_all('a', href=True):
+                href = link.get('href')
+                text = link.get_text().strip()
+                # Look for individual concert links, not category pages
+                if (href and '/public/program/' in href and href != '/public/program' and 
+                    not any(cat in href.lower() for cat in ['cykle-koncertowe', 'koncerty-uniwersyteckie', 'kameralna-scena']) and
+                    len(text) > 5 and not text.startswith('Koncerty') and not text.startswith('Kameralna')):
+                    full_url = urljoin(self.base_url, href)
+                    concert_links.append(full_url)
+            
+            # Remove duplicates while preserving order
+            concert_links = list(dict.fromkeys(concert_links))
+            print(f"DEBUG: Found {len(concert_links)} concert links")
+            
+            # Limit to 5 concerts for testing
+            concert_links = concert_links[:5]
+            concerts_saved = 0
+            
+            for i, concert_url in enumerate(concert_links):
+                try:
+                    print(f"DEBUG: Processing concert {i+1}/{len(concert_links)}: {concert_url}")
+                    self._update_progress(i, len(concert_links), f"Processing concert {i+1}/{len(concert_links)}...")
+                    
+                    # Get concert details
+                    details = self._get_concert_details(concert_url)
+                    if details:
+                        # Save concert
+                        success = self._save_concert_with_city(
+                            title=details['title'],
+                            date=details['date'],
+                            external_url=concert_url,
+                            performers=details['performers'],
+                            pieces=details['pieces'],
+                            city='Kraków'
+                        )
+                        if success:
+                            concerts_saved += 1
+                            print(f"DEBUG: Saved concert: {details['title']}")
+                    else:
+                        print(f"DEBUG: Failed to extract details from {concert_url}")
+                        
+                except Exception as e:
+                    print(f"DEBUG: Error processing concert {concert_url}: {e}")
+                    logger.error(f"Error processing Cracow concert {concert_url}: {str(e)}")
+                    continue
+            
+            # Update venue timestamp
+            self.venue.last_scraped = datetime.utcnow()
+            db.session.commit()
+            
+            print(f"DEBUG: Cracow Philharmonic scraping completed. Saved {concerts_saved} concerts")
+            self._update_progress(len(concert_links), len(concert_links), f"Completed! Saved {concerts_saved} concerts")
+            return concerts_saved > 0
+            
+        except Exception as e:
+            print(f"DEBUG: Error in Cracow Philharmonic scraping: {e}")
+            logger.error(f"Error scraping Cracow Philharmonic: {str(e)}")
+            return False
+    
+    def _get_concert_details(self, url):
+        """Extract detailed information from individual concert page"""
+        try:
+            html = self._get_html(url)
+            if not html:
+                return None
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            details = {
+                'title': '',
+                'date': None,
+                'performers': [],
+                'pieces': []
+            }
+            
+            # Extract title - look for concert title in content for Cracow Philharmonic
+            text = soup.get_text()
+            # Look for concert type patterns in the content
+            concert_types = ['RECITAL MISTRZOWSKI', 'KONCERT SPECJALNY', 'RECITAL WIOLONCZELOWY', 'KONCERT SYMFONICZNY']
+            title_found = False
+            for concert_type in concert_types:
+                if concert_type in text:
+                    details['title'] = concert_type
+                    title_found = True
+                    break
+            
+            if not title_found:
+                # Fallback to page title
+                title_elem = soup.find('title')
+                if title_elem:
+                    title_text = title_elem.get_text().strip()
+                    # Clean up the title (remove site name if present)
+                    if ' - ' in title_text:
+                        title_text = title_text.split(' - ')[0]
+                    details['title'] = title_text
+                else:
+                    # Fallback to h1 or h2
+                    title_elem = soup.find('h1') or soup.find('h2')
+                    if title_elem:
+                        details['title'] = title_elem.get_text().strip()
+            
+            # Extract date and time - look for date patterns
+            date_text = soup.get_text()
+            date_patterns = [
+                r'(\d{1,2})\s+(\d{1,2})-(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})-(\d{1,2})-(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})\s+(\d{1,2})\s+(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})\s+(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{2})'
+            ]
+            
+            for pattern in date_patterns:
+                match = re.search(pattern, date_text)
+                if match:
+                    try:
+                        if len(match.groups()) == 5:  # day, month, year, hour, minute
+                            day, month, year, hour, minute = match.groups()
+                            details['date'] = datetime(int(year), int(month), int(day), int(hour), int(minute))
+                            break
+                    except ValueError:
+                        continue
+            
+            # Extract performers - look for performer names in the text
+            performer_patterns = [
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(fortepian|wiolonczela|skrzypce)',
+            ]
+            
+            for pattern in performer_patterns:
+                matches = re.findall(pattern, date_text)
+                for name, role in matches:
+                    details['performers'].append({
+                        'name': name.strip(),
+                        'role': role.strip()
+                    })
+            
+            # Extract program/pieces - look for composer and piece patterns
+            piece_patterns = [
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*([^–\n]+)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*([^–\n]+)',
+            ]
+            
+            for pattern in piece_patterns:
+                matches = re.findall(pattern, date_text)
+                for composer, title in matches:
+                    if len(composer) > 3 and len(title.strip()) > 3:  # Basic validation
+                        details['pieces'].append({
+                            'composer': composer.strip(),
+                            'title': title.strip()
+                        })
+            
+            print(f"DEBUG: Cracow concert details - Title: {details['title']}, Date: {details['date']}, Performers: {len(details['performers'])}, Pieces: {len(details['pieces'])}")
+            return details
+            
+        except Exception as e:
+            print(f"DEBUG: Error extracting Cracow concert details: {e}")
+            logger.error(f"Error extracting Cracow concert details from {url}: {str(e)}")
+            return None
+
+
+class FilharmoniaBaltyckaScraper(BaseScraper):
+    """Scraper for Filharmonia Bałtycka Gdańsk (https://www.filharmonia.gda.pl/repertuar)"""
+    
+    def scrape(self):
+        """Scrape concerts from Filharmonia Bałtycka"""
+        try:
+            print(f"DEBUG: Starting Filharmonia Bałtycka scraping from {self.base_url}")
+            self._update_progress(0, 5, "Starting Filharmonia Bałtycka scraping...")
+            
+            # Get the main program page
+            html = self._get_html(self.base_url)
+            if not html:
+                print("DEBUG: Failed to get HTML from Filharmonia Bałtycka")
+                return False
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            # Find concert links - they appear to be in the format /repertuar/concert-id-name
+            concert_links = []
+            for link in soup.find_all('a', href=True):
+                href = link.get('href')
+                text = link.get_text().strip()
+                # Look for individual concert links, not category or pagination pages
+                if (href and '/repertuar/' in href and href != '/repertuar/' and 
+                    href.count('/') >= 2 and not any(cat in href.lower() for cat in ['view-map', 'layout=timeline']) and
+                    len(text) > 5 and not text.startswith('...') and not text.isdigit() and
+                    not text.startswith('Sala nad Motławą')):
+                    full_url = urljoin(self.base_url, href)
+                    concert_links.append(full_url)
+            
+            # Remove duplicates while preserving order
+            concert_links = list(dict.fromkeys(concert_links))
+            print(f"DEBUG: Found {len(concert_links)} concert links")
+            
+            # Limit to 5 concerts for testing
+            concert_links = concert_links[:5]
+            concerts_saved = 0
+            
+            for i, concert_url in enumerate(concert_links):
+                try:
+                    print(f"DEBUG: Processing concert {i+1}/{len(concert_links)}: {concert_url}")
+                    self._update_progress(i, len(concert_links), f"Processing concert {i+1}/{len(concert_links)}...")
+                    
+                    # Get concert details
+                    details = self._get_concert_details(concert_url)
+                    if details:
+                        # Save concert
+                        success = self._save_concert_with_city(
+                            title=details['title'],
+                            date=details['date'],
+                            external_url=concert_url,
+                            performers=details['performers'],
+                            pieces=details['pieces'],
+                            city='Gdańsk'
+                        )
+                        if success:
+                            concerts_saved += 1
+                            print(f"DEBUG: Saved concert: {details['title']}")
+                    else:
+                        print(f"DEBUG: Failed to extract details from {concert_url}")
+                        
+                except Exception as e:
+                    print(f"DEBUG: Error processing concert {concert_url}: {e}")
+                    logger.error(f"Error processing Filharmonia Bałtycka concert {concert_url}: {str(e)}")
+                    continue
+            
+            # Update venue timestamp
+            self.venue.last_scraped = datetime.utcnow()
+            db.session.commit()
+            
+            print(f"DEBUG: Filharmonia Bałtycka scraping completed. Saved {concerts_saved} concerts")
+            self._update_progress(len(concert_links), len(concert_links), f"Completed! Saved {concerts_saved} concerts")
+            return concerts_saved > 0
+            
+        except Exception as e:
+            print(f"DEBUG: Error in Filharmonia Bałtycka scraping: {e}")
+            logger.error(f"Error scraping Filharmonia Bałtycka: {str(e)}")
+            return False
+    
+    def _get_concert_details(self, url):
+        """Extract detailed information from individual concert page"""
+        try:
+            html = self._get_html(url)
+            if not html:
+                return None
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            details = {
+                'title': '',
+                'date': None,
+                'performers': [],
+                'pieces': []
+            }
+            
+            # Extract title - use h1 for Gdańsk Philharmonic
+            title_elem = soup.find('h1')
+            if title_elem:
+                details['title'] = title_elem.get_text().strip()
+            else:
+                # Fallback to page title
+                title_elem = soup.find('title')
+                if title_elem:
+                    title_text = title_elem.get_text().strip()
+                    # Clean up the title (remove site name if present)
+                    if ' - ' in title_text:
+                        title_text = title_text.split(' - ')[0]
+                    details['title'] = title_text
+            
+            # Extract date and time - look for date patterns in the text
+            date_text = soup.get_text()
+            date_patterns = [
+                r'(\w+),\s+(\d{1,2})/(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # czwartek, 30/10/2025, 19:00
+                r'(\d{1,2})/(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # 30/10/2025, 19:00
+                r'(\d{1,2})\s+(\w+)\s+(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})/(\d{1,2})/(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})-(\d{1,2})-(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})\s+(\d{1,2})-(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
+                r'(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{2})'
+            ]
+            
+            # Month name mapping
+            month_map = {
+                'stycznia': 1, 'lutego': 2, 'marca': 3, 'kwietnia': 4, 'maja': 5, 'czerwca': 6,
+                'lipca': 7, 'sierpnia': 8, 'września': 9, 'października': 10, 'listopada': 11, 'grudnia': 12
+            }
+            
+            for pattern in date_patterns:
+                match = re.search(pattern, date_text)
+                if match:
+                    try:
+                        groups = match.groups()
+                        if len(groups) == 6:  # weekday, day, month, year, hour, minute
+                            weekday, day, month, year, hour, minute = groups
+                            details['date'] = datetime(int(year), int(month), int(day), int(hour), int(minute))
+                            break
+                        elif len(groups) == 5:
+                            if pattern == date_patterns[2]:  # Day Month Year format
+                                day, month_name, year, hour, minute = groups
+                                month = month_map.get(month_name.lower())
+                                if month:
+                                    details['date'] = datetime(int(year), month, int(day), int(hour), int(minute))
+                                    break
+                            else:  # Day/Month/Year format
+                                day, month, year, hour, minute = groups
+                                details['date'] = datetime(int(year), int(month), int(day), int(hour), int(minute))
+                                break
+                    except ValueError:
+                        continue
+            
+            # Extract performers - look for performer names in the text
+            performer_patterns = [
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(fortepian|wiolonczela|skrzypce)',
+            ]
+            
+            for pattern in performer_patterns:
+                matches = re.findall(pattern, date_text)
+                for name, role in matches:
+                    details['performers'].append({
+                        'name': name.strip(),
+                        'role': role.strip()
+                    })
+            
+            # Extract program/pieces - look for composer and piece patterns
+            piece_patterns = [
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*([^–\n]+)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*([^–\n]+)',
+            ]
+            
+            for pattern in piece_patterns:
+                matches = re.findall(pattern, date_text)
+                for composer, title in matches:
+                    if len(composer) > 3 and len(title.strip()) > 3:  # Basic validation
+                        details['pieces'].append({
+                            'composer': composer.strip(),
+                            'title': title.strip()
+                        })
+            
+            print(f"DEBUG: Filharmonia Bałtycka concert details - Title: {details['title']}, Date: {details['date']}, Performers: {len(details['performers'])}, Pieces: {len(details['pieces'])}")
+            return details
+            
+        except Exception as e:
+            print(f"DEBUG: Error extracting Filharmonia Bałtycka concert details: {e}")
+            logger.error(f"Error extracting Filharmonia Bałtycka concert details from {url}: {str(e)}")
+            return None
+
+
 # Factory to get the appropriate scraper
 def get_scraper(venue):
     """Factory function to return the appropriate scraper for the venue"""
@@ -2229,6 +2604,8 @@ def get_scraper(venue):
         'filharmonia_narodowa': FilharmoniaNarodowaScraper,
         'nfm_wroclaw': NFMWroclawScraper,
         'nospr_katowice': NOSPRKatowiceScraper,
+        'cracow_philharmonic': CracowPhilharmonicScraper,
+        'filharmonia_baltycka': FilharmoniaBaltyckaScraper,
         # Add more specialized scrapers here as needed
     }
     
@@ -2245,6 +2622,10 @@ def get_scraper(venue):
         return NFMWroclawScraper(venue)
     elif 'nospr.org.pl' in venue.url.lower():
         return NOSPRKatowiceScraper(venue)
+    elif 'filharmoniakrakow.pl' in venue.url.lower():
+        return CracowPhilharmonicScraper(venue)
+    elif 'filharmonia.gda.pl' in venue.url.lower():
+        return FilharmoniaBaltyckaScraper(venue)
     
     scraper_class = scraper_map.get(venue.scraper_type, GenericScraper)
     return scraper_class(venue)
