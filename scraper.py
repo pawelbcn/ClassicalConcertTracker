@@ -582,9 +582,20 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             logger.info(f"Scraping Filharmonia Narodowa website: {self.base_url}")
             if self.is_symphonic:
                 logger.info("Detected symphonic concerts specific page")
+            
+            # Test database connection first
+            try:
+                from app import Concert
+                test_count = Concert.query.count()
+                print(f"DEBUG: Database connection test successful. Total concerts: {test_count}")
+                logger.info(f"Database connection test successful. Total concerts: {test_count}")
+            except Exception as e:
+                print(f"DEBUG: Database connection test failed: {e}")
+                logger.error(f"Database connection test failed: {e}")
+                return False
                 
-            # Get HTML content with proper error handling
-            html = self._get_html(self.base_url)
+            # Get HTML content with proper error handling and shorter timeout for Vercel
+            html = self._get_html(self.base_url, timeout=10)  # Reduced timeout for Vercel
             if not html:
                 logger.error(f"Failed to get HTML content from {self.base_url}")
                 return False
