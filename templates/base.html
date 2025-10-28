@@ -9,7 +9,104 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <style>
+        /* Custom CSS for Classical Concert Monitor */
+
+        /* Main Layout Adjustments */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* Card Enhancements */
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Music-themed Icons */
+        .fa-user-music:before {
+            content: "\f8eb"; /* Using Font Awesome's user-music icon */
+        }
+
+        .fa-baton:before {
+            content: "\f8c5"; /* Using Font Awesome's baton icon */
+        }
+
+        /* Form Styling */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--bs-info);
+            box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+        }
+
+        /* Custom Tab Styling */
+        .nav-tabs .nav-link {
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            border-color: var(--bs-info);
+            border-bottom-color: transparent;
+        }
+
+        /* Loading Spinner Customization */
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* Table Styling */
+        .table thead th {
+            background-color: rgba(13, 202, 240, 0.1);
+        }
+
+        /* Button Hover Effects */
+        .btn {
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Helper Classes */
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar for Webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bs-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bs-secondary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bs-info);
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -79,7 +176,187 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Loading modal instance
+            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            
+            // Delete venue modal instance
+            const deleteVenueModal = new bootstrap.Modal(document.getElementById('deleteVenueModal'));
+            
+            // Handle scrape venue button clicks
+            const scrapeButtons = document.querySelectorAll('.scrape-venue-btn');
+            scrapeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const venueId = this.getAttribute('data-venue-id');
+                    scrapeVenue(venueId);
+                });
+            });
+            
+            // Handle scrape all button click
+            const scrapeAllBtn = document.getElementById('scrapeAllBtn');
+            if (scrapeAllBtn) {
+                scrapeAllBtn.addEventListener('click', function() {
+                    scrapeAllVenues();
+                });
+            }
+            
+            // Handle delete venue button clicks
+            const deleteButtons = document.querySelectorAll('.delete-venue-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const venueId = this.getAttribute('data-venue-id');
+                    const venueName = this.getAttribute('data-venue-name');
+                    
+                    // Set the venue name in the modal
+                    document.getElementById('venueNameToDelete').textContent = venueName;
+                    
+                    // Set up the confirm delete button
+                    const confirmBtn = document.getElementById('confirmDeleteVenue');
+                    confirmBtn.onclick = function() {
+                        deleteVenue(venueId);
+                    };
+                    
+                    // Show the modal
+                    deleteVenueModal.show();
+                });
+            });
+            
+            /**
+             * Function to scrape a single venue
+             */
+            function scrapeVenue(venueId) {
+                // Show loading modal
+                document.getElementById('loadingMessage').textContent = 'Scraping venue data...';
+                loadingModal.show();
+                
+                // Send API request
+                fetch(`/api/venues/${venueId}/scrape`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingModal.hide();
+                    
+                    if (data.status === 'success') {
+                        // Show success message
+                        showAlert('success', data.message);
+                        // Reload page after a short delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        // Show error message
+                        showAlert('danger', data.message || 'An unknown error occurred');
+                    }
+                })
+                .catch(error => {
+                    loadingModal.hide();
+                    showAlert('danger', `Error: ${error.message}`);
+                });
+            }
+            
+            /**
+             * Function to scrape all venues
+             */
+            function scrapeAllVenues() {
+                // Show loading modal
+                document.getElementById('loadingMessage').textContent = 'Scraping all venues...';
+                loadingModal.show();
+                
+                // Send API request
+                fetch('/api/venues/scrape-all', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingModal.hide();
+                    
+                    if (data.status === 'success') {
+                        // Show success message
+                        showAlert('success', data.message);
+                        // Reload page after a short delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        // Show error or warning message
+                        showAlert(data.status === 'warning' ? 'warning' : 'danger', 
+                                 data.message || 'An unknown error occurred');
+                    }
+                })
+                .catch(error => {
+                    loadingModal.hide();
+                    showAlert('danger', `Error: ${error.message}`);
+                });
+            }
+            
+            /**
+             * Function to delete a venue
+             */
+            function deleteVenue(venueId) {
+                // Hide the confirmation modal
+                deleteVenueModal.hide();
+                
+                // Send API request
+                fetch(`/api/venues/${venueId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Reload page
+                        window.location.reload();
+                    } else {
+                        // Show error message
+                        showAlert('danger', data.message || 'An unknown error occurred');
+                    }
+                })
+                .catch(error => {
+                    showAlert('danger', `Error: ${error.message}`);
+                });
+            }
+            
+            /**
+             * Utility function to show alert messages
+             */
+            function showAlert(type, message) {
+                // Create alert element
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+                alertDiv.role = 'alert';
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                // Add to page
+                const mainContent = document.querySelector('main.container');
+                mainContent.insertBefore(alertDiv, mainContent.firstChild);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alertDiv);
+                    bsAlert.close();
+                }, 5000);
+            }
+        });
+    </script>
 
     <!-- Page-specific scripts -->
     {% block scripts %}{% endblock %}
