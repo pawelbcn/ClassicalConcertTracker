@@ -1445,6 +1445,16 @@ class FilharmoniaNarodowaScraper(BaseScraper):
         self.venue.last_scraped = datetime.utcnow()
         db.session.commit()
         
+        # Additional verification - check what's actually in the database
+        try:
+            from app import Concert
+            total_concerts = Concert.query.filter_by(venue_id=self.venue_id).count()
+            print(f"DEBUG: Total concerts in database for this venue: {total_concerts}")
+            logger.info(f"Total concerts in database for this venue: {total_concerts}")
+        except Exception as e:
+            print(f"DEBUG: Error checking database: {e}")
+            logger.error(f"Error checking database: {e}")
+        
         return concert_count > 0
 
 # Factory to get the appropriate scraper
