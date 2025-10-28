@@ -1437,8 +1437,14 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 if len(title) > 100:
                     title = title[:97] + '...'
                 
-                # Construct a good URL
-                external_url = concert_link if concert_link else self.base_url
+                # Construct a unique URL for each concert
+                if concert_link:
+                    external_url = concert_link
+                else:
+                    # Create a unique URL based on title and date to avoid duplicates
+                    import hashlib
+                    unique_id = hashlib.md5(f"{title}_{concert_date}".encode()).hexdigest()[:8]
+                    external_url = f"{self.base_url}#concert_{unique_id}"
                 
                 # Finally, save the concert with city information for Filharmonia Narodowa
                 if 'filharmonia.pl' in self.base_url.lower():
