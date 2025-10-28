@@ -591,31 +591,41 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             soup = BeautifulSoup(html, 'html.parser')
             concert_count = 0
             
-            # Look for concert elements in the calendar/repertoire section
-            # Based on the website structure, concerts are in calendar cells
-            concert_elements = soup.find_all(['div', 'article'], class_=lambda x: x and any(
-                keyword in x.lower() for keyword in ['event', 'concert', 'program', 'calendar']
+            # Look for specific concert titles in the text
+            concert_titles = soup.find_all(string=lambda text: text and any(
+                keyword in text.lower() for keyword in ['symphonic concert', 'chamber concert', 'recital', 'concert']
             ))
             
-            # Also look for specific concert titles
-            concert_titles = soup.find_all(['h3', 'h4', 'h5'], string=lambda text: text and any(
-                keyword in text.lower() for keyword in ['concert', 'symphonic', 'chamber', 'recital']
+            # Also look for concert titles in specific elements
+            concert_elements = soup.find_all(['strong', 'div'], string=lambda text: text and any(
+                keyword in text.lower() for keyword in ['symphonic concert', 'chamber concert', 'recital', 'concert']
             ))
             
-            # Process concert titles and their parent elements
-            for title_elem in concert_titles:
+            # Combine both approaches
+            all_concert_texts = list(concert_titles) + [elem.get_text() for elem in concert_elements if elem.get_text()]
+            
+            logger.info(f"Found {len(all_concert_texts)} concert title texts")
+            
+            # Process each concert title
+            for i, title_text in enumerate(all_concert_texts):
                 try:
-                    # Get the parent container that likely has the full concert info
-                    concert_container = title_elem.parent
-                    while concert_container and concert_container.name not in ['div', 'article', 'section']:
-                        concert_container = concert_container.parent
+                    title = title_text.strip()
+                    logger.info(f"Processing concert {i+1}: {title}")
                     
-                    if not concert_container:
+                    if not title or len(title) < 5:  # Skip very short titles
+                        logger.info(f"Skipping short title: {title}")
                         continue
                     
-                    # Extract concert title
-                    title = title_elem.get_text(strip=True)
-                    if not title or len(title) < 5:  # Skip very short titles
+                    # For text strings, we need to find the parent element differently
+                    # Look for the element that contains this text
+                    concert_container = None
+                    for elem in soup.find_all(['strong', 'div', 'span', 'p']):
+                        if elem.get_text(strip=True) == title:
+                            concert_container = elem
+                            break
+                    
+                    if not concert_container:
+                        logger.warning(f"No container found for: {title}")
                         continue
                     
                     # Look for date information in the same container
@@ -626,6 +636,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     
                     if date_elem:
                         date_text = date_elem.get_text(strip=True)
+                        logger.info(f"Found date text: {date_text}")
                     
                     # Look for time information
                     time_text = None
@@ -634,12 +645,15 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     ))
                     if time_elem:
                         time_text = time_elem.strip()
+                        logger.info(f"Found time text: {time_text}")
                     
                     # Parse the date
                     concert_date = self._parse_filharmonia_date(date_text, time_text)
                     if not concert_date:
                         logger.warning(f"Could not parse date for concert: {title}")
                         continue
+                    
+                    logger.info(f"Parsed date: {concert_date}")
                     
                     # Create external URL (construct from base URL)
                     external_url = self.base_url
@@ -671,9 +685,13 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                     if self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city):
                         concert_count += 1
                         logger.info(f"Saved concert: {title} on {concert_date.strftime('%Y-%m-%d')}")
+                    else:
+                        logger.warning(f"Failed to save concert: {title}")
                     
                 except Exception as e:
                     logger.error(f"Error processing concert element: {str(e)}")
+                    import traceback
+                    logger.error(traceback.format_exc())
                     continue
             
             # Mark the venue as scraped
