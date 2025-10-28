@@ -593,11 +593,13 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             
             # Simple approach: Look for all text containing "Symphonic Concert" and try to find nearby dates
             symphonic_elements = soup.find_all(string=lambda text: text and 'Symphonic Concert' in text)
+            print(f"DEBUG: Found {len(symphonic_elements)} Symphonic Concert elements")
             logger.info(f"Found {len(symphonic_elements)} Symphonic Concert elements")
             
             for i, symphonic_text in enumerate(symphonic_elements):
                 try:
                     title = symphonic_text.strip()
+                    print(f"DEBUG: Processing concert {i+1}: {title}")
                     logger.info(f"Processing concert {i+1}: {title}")
                     
                     # Find the parent element
