@@ -1,7 +1,7 @@
 import logging
 import threading
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import render_template, request, jsonify, flash, redirect, url_for, send_from_directory
 from sqlalchemy import or_
 from app import app, db
@@ -22,48 +22,50 @@ def static_files(filename):
 def index():
     """Home page with concert listings and filters"""
     # Get filter parameters
-    date_from = request.args.get('date_from', '')
-    date_to = request.args.get('date_to', '')
+    time_period = request.args.get('time_period', '')
     venue_id = request.args.get('venue_id', '')
     performer = request.args.get('performer', '')
-    repertoire = request.args.get('repertoire', '')
     
     # Base query
     query = Concert.query
     
-    # Apply filters
-    if date_from:
-        try:
-            from_date = datetime.strptime(date_from, '%Y-%m-%d')
-            query = query.filter(Concert.date >= from_date)
-        except ValueError:
-            flash('Invalid from date format. Please use YYYY-MM-DD', 'warning')
+    # Apply time period filter
+    now = datetime.now()
+    if time_period == 'today':
+        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+        query = query.filter(Concert.date >= start_of_day, Concert.date <= end_of_day)
+    elif time_period == 'this_week':
+        # Get start of current week (Monday)
+        days_since_monday = now.weekday()
+        start_of_week = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday)
+        end_of_week = start_of_week + timedelta(days=6, hours=23, minutes=59, seconds=59)
+        query = query.filter(Concert.date >= start_of_week, Concert.date <= end_of_week)
+    elif time_period == 'this_month':
+        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if now.month == 12:
+            end_of_month = now.replace(year=now.year + 1, month=1, day=1) - timedelta(microseconds=1)
+        else:
+            end_of_month = now.replace(month=now.month + 1, day=1) - timedelta(microseconds=1)
+        query = query.filter(Concert.date >= start_of_month, Concert.date <= end_of_month)
+    elif time_period == 'next_month':
+        if now.month == 12:
+            start_of_next_month = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+            end_of_next_month = now.replace(year=now.year + 1, month=2, day=1) - timedelta(microseconds=1)
+        else:
+            start_of_next_month = now.replace(month=now.month + 1, day=1, hour=0, minute=0, second=0, microsecond=0)
+            if now.month == 11:
+                end_of_next_month = now.replace(year=now.year + 1, month=1, day=1) - timedelta(microseconds=1)
+            else:
+                end_of_next_month = now.replace(month=now.month + 2, day=1) - timedelta(microseconds=1)
+        query = query.filter(Concert.date >= start_of_next_month, Concert.date <= end_of_next_month)
     
-    if date_to:
-        try:
-            to_date = datetime.strptime(date_to, '%Y-%m-%d')
-            query = query.filter(Concert.date <= to_date)
-        except ValueError:
-            flash('Invalid to date format. Please use YYYY-MM-DD', 'warning')
-    
+    # Apply other filters
     if venue_id:
         query = query.filter(Concert.venue_id == venue_id)
     
     if performer:
-        query = query.join(Concert.performers).filter(
-            or_(
-                Performer.name.ilike(f'%{performer}%'),
-                Performer.role.ilike(f'%{performer}%')
-            )
-        )
-    
-    if repertoire:
-        query = query.join(Concert.pieces).filter(
-            or_(
-                Piece.title.ilike(f'%{repertoire}%'),
-                Piece.composer.ilike(f'%{repertoire}%')
-            )
-        )
+        query = query.join(Concert.performers).filter(Performer.name.ilike(f'%{performer}%'))
     
     # Execute query and get results
     concerts = query.order_by(Concert.date).all()
@@ -79,11 +81,9 @@ def index():
                            venues=venues,
                            performers=performers,
                            filters={
-                               'date_from': date_from,
-                               'date_to': date_to,
+                               'time_period': time_period,
                                'venue_id': venue_id,
-                               'performer': performer,
-                               'repertoire': repertoire
+                               'performer': performer
                            })
 
 @app.route('/venues/add', methods=['GET', 'POST'])

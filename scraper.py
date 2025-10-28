@@ -2037,8 +2037,67 @@ class NFMWroclawScraper(BaseScraper):
             soup = BeautifulSoup(html, 'html.parser')
             details = {'performers': [], 'pieces': []}
             
-            # Extract performers - NFM structure may be different
-            # Look for performer information in various possible locations
+            # Extract performers from text content - NFM uses text-based format
+            text_content = soup.get_text()
+            
+            # Look for "Performers:" pattern
+            import re
+            performers_match = re.search(r'Performers:\s*([^\\n]+)', text_content)
+            if performers_match:
+                performers_text = performers_match.group(1)
+                print(f"DEBUG: Found performers text: {performers_text}")
+                
+                # Parse performers - format: "Group Name:Member1, Member2, Member3 – instruments"
+                if ':' in performers_text:
+                    group_name, members_text = performers_text.split(':', 1)
+                    group_name = group_name.strip()
+                    
+                    # Add the group
+                    details['performers'].append({
+                        'name': group_name,
+                        'role': 'ensemble'
+                    })
+                    print(f"DEBUG: Found NFM ensemble: {group_name}")
+                    
+                    # Parse individual members
+                    if '–' in members_text:
+                        members, instruments = members_text.split('–', 1)
+                        instruments = instruments.strip()
+                    else:
+                        members = members_text
+                        instruments = ''
+                    
+                    # Split by comma and clean up
+                    member_list = [member.strip() for member in members.split(',')]
+                    for member in member_list:
+                        if member and len(member) > 2:
+                            role = 'performer'
+                            if instruments:
+                                if 'conductor' in instruments.lower():
+                                    role = 'conductor'
+                                elif 'soloist' in instruments.lower():
+                                    role = 'soloist'
+                                elif 'cello' in instruments.lower():
+                                    role = 'cellist'
+                                elif 'piano' in instruments.lower():
+                                    role = 'pianist'
+                                elif 'violin' in instruments.lower():
+                                    role = 'violinist'
+                            
+                            details['performers'].append({
+                                'name': member,
+                                'role': role
+                            })
+                            print(f"DEBUG: Found NFM performer: {member} ({role})")
+                else:
+                    # Single performer
+                    details['performers'].append({
+                        'name': performers_text.strip(),
+                        'role': 'performer'
+                    })
+                    print(f"DEBUG: Found NFM performer: {performers_text.strip()}")
+            
+            # Also try to find performers in structured elements as fallback
             performer_selectors = [
                 'div.performer',
                 'div[class*="performer"]',
@@ -2068,9 +2127,47 @@ class NFMWroclawScraper(BaseScraper):
                             'name': performer_text,
                             'role': role
                         })
-                        print(f"DEBUG: Found NFM performer: {performer_text} ({role})")
+                        print(f"DEBUG: Found NFM performer (structured): {performer_text} ({role})")
             
-            # Extract program information - look for program/repertoire sections
+            # Extract program information from text content - NFM uses text-based format
+            program_match = re.search(r'Programme:\s*([^\\n]+)', text_content)
+            if program_match:
+                program_text = program_match.group(1)
+                print(f"DEBUG: Found program text: {program_text}")
+                
+                # Parse program - format: "Composer Work; Composer Work; ..."
+                # Split by semicolon and clean up
+                pieces = [piece.strip() for piece in program_text.split(';')]
+                for piece in pieces:
+                    if piece and len(piece) > 5:
+                        # Try to extract composer and title
+                        # Common patterns: "Composer Work" or "Composer: Work"
+                        if ':' in piece:
+                            composer, title = piece.split(':', 1)
+                            composer = composer.strip()
+                            title = title.strip()
+                        else:
+                            # Try to split by common patterns
+                            # Look for known composer names
+                            known_composers = ['J.S. Bach', 'Bach', 'Mozart', 'Beethoven', 'Chopin', 'A. Zagajewski']
+                            composer = 'Unknown'
+                            title = piece
+                            
+                            for known_comp in known_composers:
+                                if known_comp in piece:
+                                    parts = piece.split(known_comp, 1)
+                                    if len(parts) > 1:
+                                        composer = known_comp
+                                        title = parts[1].strip()
+                                        break
+                        
+                        details['pieces'].append({
+                            'title': title,
+                            'composer': composer
+                        })
+                        print(f"DEBUG: Found NFM piece: {title} by {composer}")
+            
+            # Also try to find program in structured elements as fallback
             program_selectors = [
                 'div.program',
                 'div[class*="program"]',
@@ -2084,7 +2181,7 @@ class NFMWroclawScraper(BaseScraper):
             for selector in program_selectors:
                 program_elem = soup.select_one(selector)
                 if program_elem:
-                    print("DEBUG: Found NFM program section")
+                    print("DEBUG: Found NFM program section (structured)")
                     # Look for individual pieces
                     piece_items = program_elem.find_all(['li', 'div', 'p'])
                     for item in piece_items:
@@ -2111,7 +2208,7 @@ class NFMWroclawScraper(BaseScraper):
                                 'title': title,
                                 'composer': composer
                             })
-                            print(f"DEBUG: Found NFM piece: {title} by {composer}")
+                            print(f"DEBUG: Found NFM piece (structured): {title} by {composer}")
                     break
             
             print(f"DEBUG: Extracted {len(details['performers'])} performers and {len(details['pieces'])} pieces from NFM")
