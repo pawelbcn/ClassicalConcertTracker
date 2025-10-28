@@ -169,7 +169,7 @@ def api_scrape_venue(venue_id):
                             from bs4 import BeautifulSoup
                             soup = BeautifulSoup(html, 'html.parser')
                             
-                            # Count items based on venue type
+                            # Count items based on venue type, but limit to 5 for testing
                             if 'filharmonia.pl' in venue.url.lower():
                                 items = soup.find_all('a', class_='event-list-chocolate')
                             elif 'nfm.wroclaw.pl' in venue.url.lower():
@@ -180,9 +180,10 @@ def api_scrape_venue(venue_id):
                             else:
                                 items = soup.find_all(['div', 'article'], class_=lambda x: x and 'concert' in x.lower())
                             
-                            total_items = len(items)
+                            # Limit to 5 concerts for testing purposes
+                            total_items = min(5, len(items))
                             scraping_progress[venue_id]['total'] = total_items
-                            scraping_progress[venue_id]['message'] = f'Found {total_items} concerts to process'
+                            scraping_progress[venue_id]['message'] = f'Found {len(items)} concerts, processing first {total_items}'
                             
                             # Now run the actual scraper
                             result = original_scrape()

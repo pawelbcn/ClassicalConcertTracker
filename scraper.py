@@ -45,6 +45,20 @@ class BaseScraper:
             logger.error(f"Error processing URL {url} with trafilatura: {str(e)}")
             return None
     
+    def _update_progress(self, current, total, message):
+        """Update scraping progress if available"""
+        try:
+            # Import here to avoid circular imports
+            from routes import scraping_progress
+            if hasattr(self, 'venue') and self.venue.id in scraping_progress:
+                scraping_progress[self.venue.id]['current'] = current
+                scraping_progress[self.venue.id]['total'] = total
+                scraping_progress[self.venue.id]['message'] = message
+                print(f"DEBUG: Progress updated - {current}/{total}: {message}")
+        except Exception as e:
+            print(f"DEBUG: Could not update progress: {e}")
+            pass
+    
     def _save_concert(self, title, date, external_url, performers, pieces):
         """Save concert and related data to database"""
         return self._save_concert_with_city(title, date, external_url, performers, pieces, None)
@@ -612,6 +626,9 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             max_concerts = 5  # Limit for testing purposes
             for i, concert_element in enumerate(concert_elements[:max_concerts]):
                 try:
+                    # Update progress
+                    self._update_progress(i, max_concerts, f"Processing concert {i+1}/{max_concerts}")
+                    
                     # Extract title
                     title_elem = concert_element.find('strong')
                     if not title_elem:
@@ -693,6 +710,9 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                         result = self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city)
                         print(f"DEBUG: Save result: {result}")
                     concert_count += 1
+                    
+                    # Update progress after saving
+                    self._update_progress(i + 1, max_concerts, f"Saved concert {i+1}/{max_concerts}")
                     
                 except Exception as e:
                     logger.error(f"Error processing concert element: {str(e)}")
@@ -1685,6 +1705,9 @@ class NOSPRKatowiceScraper(BaseScraper):
             
             for i, row in enumerate(concert_rows[:max_concerts]):
                 try:
+                    # Update progress
+                    self._update_progress(i, max_concerts, f"Processing concert {i+1}/{max_concerts}")
+                    
                     print(f"DEBUG: Processing concert {i+1}")
                     
                     # Find the concert tile within this row
@@ -1778,6 +1801,9 @@ class NOSPRKatowiceScraper(BaseScraper):
                     print(f"DEBUG: Save result: {result}")
                     concert_count += 1
                     
+                    # Update progress after saving
+                    self._update_progress(i + 1, max_concerts, f"Saved concert {i+1}/{max_concerts}")
+                    
                 except Exception as e:
                     logger.error(f"Error processing concert tile: {str(e)}")
                     import traceback
@@ -1855,6 +1881,9 @@ class NFMWroclawScraper(BaseScraper):
                     # Process all items - the d-none class is just for JavaScript filtering
                     # but the content is still available in the HTML
                     
+                    # Update progress
+                    self._update_progress(i, max_concerts, f"Processing concert {i+1}/{max_concerts}")
+                    
                     print(f"DEBUG: Processing concert {i+1}")
                     
                     # Extract date information
@@ -1914,6 +1943,9 @@ class NFMWroclawScraper(BaseScraper):
                     result = self._save_concert_with_city(title, concert_date, concert_url, performers, pieces, self.city)
                     print(f"DEBUG: Save result: {result}")
                     concert_count += 1
+                    
+                    # Update progress after saving
+                    self._update_progress(i + 1, max_concerts, f"Saved concert {i+1}/{max_concerts}")
                     
                 except Exception as e:
                     logger.error(f"Error processing concert item: {str(e)}")
