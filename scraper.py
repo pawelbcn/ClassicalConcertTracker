@@ -585,7 +585,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             
             # Test database connection first
             try:
-                from app import Concert
+                from models import Concert
                 test_count = Concert.query.count()
                 print(f"DEBUG: Database connection test successful. Total concerts: {test_count}")
                 logger.info(f"Database connection test successful. Total concerts: {test_count}")
@@ -594,8 +594,8 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 logger.error(f"Database connection test failed: {e}")
                 return False
                 
-            # Get HTML content with proper error handling and shorter timeout for Vercel
-            html = self._get_html(self.base_url, timeout=10)  # Reduced timeout for Vercel
+            # Get HTML content with proper error handling
+            html = self._get_html(self.base_url)
             if not html:
                 logger.error(f"Failed to get HTML content from {self.base_url}")
                 return False
@@ -1464,7 +1464,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
         
         # Additional verification - check what's actually in the database
         try:
-            from app import Concert
+            from models import Concert
             total_concerts = Concert.query.filter_by(venue_id=self.venue_id).count()
             print(f"DEBUG: Total concerts in database for this venue: {total_concerts}")
             logger.info(f"Total concerts in database for this venue: {total_concerts}")
