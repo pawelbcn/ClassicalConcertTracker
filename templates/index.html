@@ -246,16 +246,37 @@
     </div>
 </div>
 
-<!-- Loading Modal -->
+<!-- Loading Modal with Progress Bar -->
 <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center py-4">
-                <div class="spinner-border text-primary mb-3" role="status">
+                <div class="spinner-border text-primary mb-3" role="status" id="loadingSpinner">
                     <span class="visually-hidden">Loading...</span>
                 </div>
                 <h5 id="loadingMessage">Scraping concert data...</h5>
-                <p class="text-muted">This may take a few moments</p>
+                <p class="text-muted" id="loadingSubMessage">This may take a few moments</p>
+                
+                <!-- Progress Bar -->
+                <div class="progress mt-3" id="progressContainer" style="display: none;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         id="progressBar" 
+                         style="width: 0%"
+                         aria-valuenow="0" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        <span id="progressText">0%</span>
+                    </div>
+                </div>
+                
+                <!-- Progress Details -->
+                <div class="mt-2" id="progressDetails" style="display: none;">
+                    <small class="text-muted">
+                        <span id="currentItem">Processing...</span> | 
+                        <span id="totalItems">0</span> total items
+                    </small>
+                </div>
             </div>
         </div>
     </div>
@@ -278,6 +299,154 @@
                 window.location.hash = 'venues';
             } else {
                 history.replaceState(null, null, ' ');
+            }
+        });
+        
+        // Progress tracking variables
+        let progressInterval = null;
+        let currentVenueId = null;
+        
+        // Scrape venue button handler
+        document.querySelectorAll('.scrape-venue-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const venueId = this.dataset.venueId;
+                const venueName = this.closest('tr').querySelector('td:first-child').textContent.trim();
+                
+                // Show loading modal
+                showLoadingModal(venueName);
+                
+                // Start scraping
+                startScraping(venueId);
+            });
+        });
+        
+        function showLoadingModal(venueName) {
+            document.getElementById('loadingMessage').textContent = `Scraping ${venueName}...`;
+            document.getElementById('loadingSubMessage').textContent = 'This may take a few moments';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('progressDetails').style.display = 'none';
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            const modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            modal.show();
+        }
+        
+        function updateProgress(progress) {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressDetails = document.getElementById('progressDetails');
+            const currentItem = document.getElementById('currentItem');
+            const totalItems = document.getElementById('totalItems');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const loadingSubMessage = document.getElementById('loadingSubMessage');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            if (progress.status === 'completed' || progress.status === 'error') {
+                // Hide progress bar, show completion
+                progressContainer.style.display = 'none';
+                progressDetails.style.display = 'none';
+                loadingSpinner.style.display = 'none';
+                
+                if (progress.status === 'completed') {
+                    loadingMessage.textContent = 'Scraping completed!';
+                    loadingSubMessage.textContent = progress.message;
+                    loadingSubMessage.className = 'text-success';
+                } else {
+                    loadingMessage.textContent = 'Scraping failed';
+                    loadingSubMessage.textContent = progress.error || 'Unknown error occurred';
+                    loadingSubMessage.className = 'text-danger';
+                }
+                
+                // Auto-close modal after 2 seconds
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    // Reload the page to show updated data
+                    window.location.reload();
+                }, 2000);
+                
+                // Clear progress tracking
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
+                currentVenueId = null;
+                
+            } else if (progress.status === 'running' && progress.total > 0) {
+                // Show progress bar
+                progressContainer.style.display = 'block';
+                progressDetails.style.display = 'block';
+                loadingSpinner.style.display = 'none';
+                
+                const percentage = Math.round((progress.current / progress.total) * 100);
+                progressBar.style.width = percentage + '%';
+                progressBar.setAttribute('aria-valuenow', percentage);
+                progressText.textContent = percentage + '%';
+                
+                currentItem.textContent = progress.message;
+                totalItems.textContent = progress.total;
+                
+                loadingMessage.textContent = `Scraping ${progress.message}...`;
+                loadingSubMessage.textContent = `Processing ${progress.current} of ${progress.total} concerts`;
+            } else {
+                // Show loading spinner with message
+                progressContainer.style.display = 'none';
+                progressDetails.style.display = 'none';
+                loadingSpinner.style.display = 'block';
+                
+                loadingMessage.textContent = progress.message;
+                loadingSubMessage.textContent = 'Please wait...';
+            }
+        }
+        
+        function startScraping(venueId) {
+            currentVenueId = venueId;
+            
+            // Start the scraping
+            fetch(`/api/venues/${venueId}/scrape`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    // Start polling for progress
+                    progressInterval = setInterval(() => {
+                        fetch(`/api/venues/${venueId}/progress`)
+                            .then(response => response.json())
+                            .then(progress => {
+                                updateProgress(progress);
+                            })
+                            .catch(error => {
+                                console.error('Error fetching progress:', error);
+                            });
+                    }, 1000); // Poll every second
+                } else {
+                    console.error('Failed to start scraping:', data.message);
+                    updateProgress({
+                        status: 'error',
+                        error: data.message
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error starting scraping:', error);
+                updateProgress({
+                    status: 'error',
+                    error: 'Failed to start scraping'
+                });
+            });
+        }
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (progressInterval) {
+                clearInterval(progressInterval);
             }
         });
     });

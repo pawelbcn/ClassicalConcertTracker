@@ -1,10 +1,15 @@
 import logging
+import threading
+import time
 from datetime import datetime
 from flask import render_template, request, jsonify, flash, redirect, url_for, send_from_directory
 from sqlalchemy import or_
 from app import app, db
 from models import Concert, Performer, Piece, Venue
 from scraper import scrape_venue, scrape_all_venues
+
+# Global progress tracking
+scraping_progress = {}
 
 logger = logging.getLogger(__name__)
 
@@ -119,18 +124,111 @@ def add_venue():
 
 @app.route('/api/venues/<int:venue_id>/scrape', methods=['POST'])
 def api_scrape_venue(venue_id):
-    """API endpoint to scrape a specific venue"""
+    """API endpoint to scrape a specific venue with progress tracking"""
     try:
-        success = scrape_venue(venue_id)
-        if success:
-            return jsonify({'status': 'success', 'message': 'Venue scraped successfully'})
-        else:
-            return jsonify({'status': 'error', 'message': 'Failed to scrape venue'}), 400
+        # Initialize progress tracking
+        scraping_progress[venue_id] = {
+            'status': 'starting',
+            'current': 0,
+            'total': 0,
+            'message': 'Initializing scraper...',
+            'error': None
+        }
+        
+        # Start scraping in a separate thread
+        def scrape_with_progress():
+            try:
+                scraping_progress[venue_id]['status'] = 'running'
+                scraping_progress[venue_id]['message'] = 'Fetching concert data...'
+                
+                # Get venue info
+                venue = Venue.query.get(venue_id)
+                if not venue:
+                    scraping_progress[venue_id]['status'] = 'error'
+                    scraping_progress[venue_id]['error'] = 'Venue not found'
+                    return
+                
+                # Import scraper here to avoid circular imports
+                from scraper import get_scraper
+                scraper = get_scraper(venue)
+                
+                # Override the scraper's progress tracking
+                original_scrape = scraper.scrape
+                
+                def progress_wrapper():
+                    try:
+                        # Get the main repertoire page first to count items
+                        html = scraper._get_html(scraper.base_url)
+                        if not html:
+                            scraping_progress[venue_id]['status'] = 'error'
+                            scraping_progress[venue_id]['error'] = 'Failed to fetch venue page'
+                            return False
+                        
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(html, 'html.parser')
+                        
+                        # Count items based on venue type
+                        if 'filharmonia.pl' in venue.url.lower():
+                            items = soup.find_all('a', class_='event-list-chocolate')
+                        elif 'nfm.wroclaw.pl' in venue.url.lower():
+                            items = soup.find_all('div', class_='nfmELItem')
+                        else:
+                            items = soup.find_all(['div', 'article'], class_=lambda x: x and 'concert' in x.lower())
+                        
+                        total_items = len(items)
+                        scraping_progress[venue_id]['total'] = total_items
+                        scraping_progress[venue_id]['message'] = f'Found {total_items} concerts to process'
+                        
+                        # Now run the actual scraper
+                        result = original_scrape()
+                        
+                        if result:
+                            scraping_progress[venue_id]['status'] = 'completed'
+                            scraping_progress[venue_id]['message'] = f'Successfully scraped {total_items} concerts'
+                            scraping_progress[venue_id]['current'] = total_items
+                        else:
+                            scraping_progress[venue_id]['status'] = 'error'
+                            scraping_progress[venue_id]['error'] = 'Scraping failed'
+                        
+                        return result
+                        
+                    except Exception as e:
+                        scraping_progress[venue_id]['status'] = 'error'
+                        scraping_progress[venue_id]['error'] = str(e)
+                        logger.error(f"Error in progress wrapper: {str(e)}")
+                        return False
+                
+                # Run the scraper with progress tracking
+                progress_wrapper()
+                
+            except Exception as e:
+                scraping_progress[venue_id]['status'] = 'error'
+                scraping_progress[venue_id]['error'] = str(e)
+                logger.error(f"Error in scraping thread: {str(e)}")
+        
+        # Start the scraping thread
+        thread = threading.Thread(target=scrape_with_progress)
+        thread.daemon = True
+        thread.start()
+        
+        return jsonify({'status': 'started', 'message': 'Scraping started'})
+        
     except Exception as e:
-        logger.error(f"Error scraping venue {venue_id}: {str(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
+        logger.error(f"Error starting scrape for venue {venue_id}: {str(e)}")
         return jsonify({'status': 'error', 'message': f"Error: {str(e)}"}), 500
+
+@app.route('/api/venues/<int:venue_id>/progress', methods=['GET'])
+def api_get_scraping_progress(venue_id):
+    """API endpoint to get scraping progress for a venue"""
+    progress = scraping_progress.get(venue_id, {
+        'status': 'not_found',
+        'current': 0,
+        'total': 0,
+        'message': 'No scraping in progress',
+        'error': None
+    })
+    
+    return jsonify(progress)
 
 @app.route('/api/venues/scrape-all', methods=['POST'])
 def api_scrape_all_venues():
