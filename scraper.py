@@ -578,6 +578,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
     def scrape(self):
         """Scrape concerts from Filharmonia Narodowa website"""
         try:
+            print("=== SCRAPER METHOD CALLED ===")
             logger.info(f"Scraping Filharmonia Narodowa website: {self.base_url}")
             if self.is_symphonic:
                 logger.info("Detected symphonic concerts specific page")
@@ -591,6 +592,7 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             soup = BeautifulSoup(html, 'html.parser')
             concert_count = 0
             
+            print("=== ABOUT TO SEARCH FOR SYMPHONIC CONCERTS ===")
             # Simple approach: Look for all text containing "Symphonic Concert" and try to find nearby dates
             symphonic_elements = soup.find_all(string=lambda text: text and 'Symphonic Concert' in text)
             print(f"DEBUG: Found {len(symphonic_elements)} Symphonic Concert elements")
@@ -1198,36 +1200,6 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 
         return pieces
     
-    def scrape(self):
-        """Scrape concerts from Filharmonia Narodowa website"""
-        try:
-            logger.info(f"Scraping Filharmonia Narodowa website: {self.base_url}")
-            if self.is_symphonic:
-                logger.info("Detected symphonic concerts specific page")
-                
-            # Get HTML content with proper error handling
-            html = self._get_html(self.base_url)
-            if not html:
-                logger.error(f"Failed to get HTML content from {self.base_url}")
-                return False
-            
-            # Log a sample of the HTML to help debug
-            html_sample = html[:500] + '...' if len(html) > 500 else html
-            logger.debug(f"HTML sample: {html_sample}")
-            
-            soup = BeautifulSoup(html, 'html.parser')
-            concert_count = 0
-            
-            # For error reporting
-            self.venue.last_scraped = datetime.now()
-            db.session.commit()
-
-            return True
-        except Exception as e:
-            logger.error(f"Error scraping Filharmonia Narodowa: {str(e)}")
-            import traceback
-            logger.error(traceback.format_exc())
-            return False
         
         # EXACTLY use the specific selector provided
         # Find all concert items with the event-date class that are in the repertuar section
