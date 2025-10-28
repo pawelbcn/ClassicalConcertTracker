@@ -73,8 +73,8 @@ def index():
     # Get all venues for the filter dropdown
     venues = Venue.query.order_by(Venue.name).all()
     
-    # Get all performers for the filter dropdown
-    performers = Performer.query.order_by(Performer.name).all()
+    # Get all performers for the filter dropdown (distinct by name)
+    performers = Performer.query.distinct(Performer.name).order_by(Performer.name).all()
     
     return render_template('index.html', 
                            concerts=concerts, 
