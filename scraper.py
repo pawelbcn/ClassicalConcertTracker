@@ -609,7 +609,8 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             print(f"DEBUG: Found {len(concert_elements)} concert elements")
             logger.info(f"Found {len(concert_elements)} concert elements")
             
-            for i, concert_element in enumerate(concert_elements):
+            max_concerts = 5  # Limit for testing purposes
+            for i, concert_element in enumerate(concert_elements[:max_concerts]):
                 try:
                     # Extract title
                     title_elem = concert_element.find('strong')
@@ -1642,6 +1643,174 @@ class FilharmoniaNarodowaScraper(BaseScraper):
             logger.error(f"Error extracting concert details from {url}: {str(e)}")
             return None
 
+class NOSPRKatowiceScraper(BaseScraper):
+    """Scraper for NOSPR (Polish National Radio Symphony Orchestra) in Katowice"""
+    
+    def __init__(self, venue):
+        super().__init__(venue)
+        self.base_url = venue.url
+        self.city = 'Katowice'
+    
+    def scrape(self):
+        """Scrape concerts from NOSPR Katowice website"""
+        try:
+            print("=== NOSPR KATOWICE SCRAPER CALLED ===")
+            logger.info(f"Starting NOSPR Katowice scraper for: {self.base_url}")
+            
+            # Test database connection
+            try:
+                from models import Concert
+                total_concerts = Concert.query.filter_by(venue_id=self.venue.id).count()
+                print(f"DEBUG: Database connection test successful. Total concerts: {total_concerts}")
+                logger.info(f"Total concerts in database for this venue: {total_concerts}")
+            except Exception as e:
+                print(f"DEBUG: Error checking database: {e}")
+                logger.error(f"Error checking database: {e}")
+            
+            # Get the main calendar page
+            html = self._get_html(self.base_url)
+            if not html:
+                logger.error("Failed to fetch NOSPR Katowice calendar page")
+                return False
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            # Find all concert rows that contain concert tiles
+            all_rows = soup.find_all('div', class_='calendar__row')
+            concert_rows = [row for row in all_rows if row.find('div', class_='tile tile--calendar')]
+            print(f"DEBUG: Found {len(concert_rows)} concert rows with tiles")
+            
+            concert_count = 0
+            max_concerts = 5  # Limit for testing purposes
+            
+            for i, row in enumerate(concert_rows[:max_concerts]):
+                try:
+                    print(f"DEBUG: Processing concert {i+1}")
+                    
+                    # Find the concert tile within this row
+                    tile = row.find('div', class_='tile tile--calendar')
+                    if not tile:
+                        print("DEBUG: No concert tile found in row, skipping")
+                        continue
+                    
+                    # Extract title
+                    title_elem = tile.find('h3', class_='tile__title')
+                    if not title_elem:
+                        print("DEBUG: No title found, skipping")
+                        continue
+                    
+                    title = title_elem.get_text().strip()
+                    print(f"DEBUG: Found concert: {title}")
+                    
+                    # Extract date and time from the row
+                    time_elem = row.find('time')
+                    hour_elem = tile.find('span', class_='hour')
+                    
+                    if not time_elem:
+                        print("DEBUG: No date found, skipping")
+                        continue
+                    
+                    date_text = time_elem.get('datetime', '')
+                    
+                    # Extract time from hour element
+                    if hour_elem:
+                        time_text = hour_elem.get_text().strip()
+                        # Extract time from text like "19:30" or "18:00"
+                        import re
+                        time_match = re.search(r'(\d{1,2}:\d{2})', time_text)
+                        if time_match:
+                            time_text = time_match.group(1)
+                        else:
+                            time_text = "19:30"  # Default time
+                    else:
+                        time_text = "19:30"  # Default time
+                    
+                    print(f"DEBUG: Found date: {date_text}, time: {time_text}")
+                    
+                    # Parse date
+                    concert_date = self._parse_nospr_date(date_text, time_text)
+                    if not concert_date:
+                        print(f"DEBUG: Could not parse date '{date_text}' for concert")
+                        continue
+                    
+                    print(f"DEBUG: Parsed date: {concert_date}")
+                    
+                    # Extract venue/hall
+                    venue_elem = tile.find('p', class_='description')
+                    venue_name = venue_elem.get_text().strip() if venue_elem else 'NOSPR Concert Hall'
+                    
+                    # Extract concert URL
+                    link_elem = tile.find('a', class_='tile__link')
+                    concert_url = urljoin(self.base_url, link_elem.get('href', '')) if link_elem else self.base_url
+                    
+                    # Extract category/type
+                    category_elem = tile.find('div', class_='category')
+                    category = category_elem.get_text().strip() if category_elem else 'Concert'
+                    
+                    # For NOSPR, we'll extract basic info and try to get more details
+                    performers = []
+                    pieces = []
+                    
+                    # Try to extract performers from title (common patterns)
+                    if '/' in title:
+                        # Split by '/' and look for conductor/soloist patterns
+                        parts = title.split('/')
+                        for part in parts:
+                            part = part.strip()
+                            if part and len(part) > 3:
+                                # Determine role based on context
+                                role = 'performer'
+                                if 'conductor' in part.lower() or any(name in part.lower() for name in ['Alsop', 'Foster', 'Wit', 'Liebreich']):
+                                    role = 'conductor'
+                                elif any(instrument in part.lower() for instrument in ['piano', 'violin', 'cello', 'flute', 'trumpet']):
+                                    role = 'soloist'
+                                elif 'orchestra' in part.lower() or 'nospr' in part.lower():
+                                    role = 'orchestra'
+                                
+                                performers.append({
+                                    'name': part,
+                                    'role': role
+                                })
+                    
+                    # Save the concert
+                    print(f"DEBUG: Saving concert with {len(performers)} performers and {len(pieces)} pieces")
+                    result = self._save_concert_with_city(title, concert_date, concert_url, performers, pieces, self.city)
+                    print(f"DEBUG: Save result: {result}")
+                    concert_count += 1
+                    
+                except Exception as e:
+                    logger.error(f"Error processing concert tile: {str(e)}")
+                    import traceback
+                    logger.error(traceback.format_exc())
+            
+            logger.info(f"NOSPR Katowice scraper completed. Found {concert_count} concerts")
+            return concert_count > 0
+            
+        except Exception as e:
+            logger.error(f"Error in NOSPR Katowice scraper: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return False
+    
+    def _parse_nospr_date(self, date_text, time_text):
+        """Parse NOSPR date format (YYYY-MM-DD) with time"""
+        try:
+            # NOSPR uses YYYY-MM-DD format
+            from datetime import datetime
+            date_obj = datetime.strptime(date_text, '%Y-%m-%d')
+            
+            # Parse time
+            if ':' in time_text:
+                hour, minute = map(int, time_text.split(':'))
+            else:
+                hour, minute = 19, 30  # Default to 7:30 PM
+            
+            return datetime(date_obj.year, date_obj.month, date_obj.day, hour, minute)
+            
+        except Exception as e:
+            logger.error(f"Error parsing NOSPR date '{date_text}': {str(e)}")
+            return None
+
 class NFMWroclawScraper(BaseScraper):
     """Scraper for National Forum of Music (NFM) in Wrocław"""
     
@@ -1679,8 +1848,9 @@ class NFMWroclawScraper(BaseScraper):
             print(f"DEBUG: Found {len(concert_items)} concert items")
             
             concert_count = 0
+            max_concerts = 5  # Limit for testing purposes
             
-            for i, concert_item in enumerate(concert_items):
+            for i, concert_item in enumerate(concert_items[:max_concerts]):
                 try:
                     # Process all items - the d-none class is just for JavaScript filtering
                     # but the content is still available in the HTML
@@ -1899,6 +2069,7 @@ def get_scraper(venue):
         'classical': ClassicalMusicScraper,
         'filharmonia_narodowa': FilharmoniaNarodowaScraper,
         'nfm_wroclaw': NFMWroclawScraper,
+        'nospr_katowice': NOSPRKatowiceScraper,
         # Add more specialized scrapers here as needed
     }
     
@@ -1913,6 +2084,8 @@ def get_scraper(venue):
         return FilharmoniaNarodowaScraper(venue)
     elif 'nfm.wroclaw.pl' in venue.url.lower():
         return NFMWroclawScraper(venue)
+    elif 'nospr.org.pl' in venue.url.lower():
+        return NOSPRKatowiceScraper(venue)
     
     scraper_class = scraper_map.get(venue.scraper_type, GenericScraper)
     return scraper_class(venue)
