@@ -588,35 +588,163 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                 logger.error(f"Failed to get HTML content from {self.base_url}")
                 return False
             
-            # Log a sample of the HTML to help debug
-            html_sample = html[:500] + '...' if len(html) > 500 else html
-            logger.debug(f"HTML sample: {html_sample}")
-            
             soup = BeautifulSoup(html, 'html.parser')
-            current_year = datetime.now().year  # Define current_year for date parsing
+            concert_count = 0
             
-            # List of composers for program extraction
-            composers = [
-                'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
-                'Penderecki', 'Górecki', 'Kilar', 'Tchaikovsky', 'Brahms', 'Mahler', 'Schumann', 'Schubert', 
-                'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff'
-            ]
+            # Look for concert elements in the calendar/repertoire section
+            # Based on the website structure, concerts are in calendar cells
+            concert_elements = soup.find_all(['div', 'article'], class_=lambda x: x and any(
+                keyword in x.lower() for keyword in ['event', 'concert', 'program', 'calendar']
+            ))
             
-            # TODO: Implement full scraping logic here
-            # For now, we'll just handle errors and update the last_scraped timestamp
+            # Also look for specific concert titles
+            concert_titles = soup.find_all(['h3', 'h4', 'h5'], string=lambda text: text and any(
+                keyword in text.lower() for keyword in ['concert', 'symphonic', 'chamber', 'recital']
+            ))
+            
+            # Process concert titles and their parent elements
+            for title_elem in concert_titles:
+                try:
+                    # Get the parent container that likely has the full concert info
+                    concert_container = title_elem.parent
+                    while concert_container and concert_container.name not in ['div', 'article', 'section']:
+                        concert_container = concert_container.parent
+                    
+                    if not concert_container:
+                        continue
+                    
+                    # Extract concert title
+                    title = title_elem.get_text(strip=True)
+                    if not title or len(title) < 5:  # Skip very short titles
+                        continue
+                    
+                    # Look for date information in the same container
+                    date_text = None
+                    date_elem = concert_container.find(['span', 'div', 'p'], string=lambda text: text and any(
+                        char.isdigit() for char in text
+                    ) and any(month in text.lower() for month in ['oct', 'nov', 'dec', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep']))
+                    
+                    if date_elem:
+                        date_text = date_elem.get_text(strip=True)
+                    
+                    # Look for time information
+                    time_text = None
+                    time_elem = concert_container.find(string=lambda text: text and ':' in text and any(
+                        char.isdigit() for char in text
+                    ))
+                    if time_elem:
+                        time_text = time_elem.strip()
+                    
+                    # Parse the date
+                    concert_date = self._parse_filharmonia_date(date_text, time_text)
+                    if not concert_date:
+                        logger.warning(f"Could not parse date for concert: {title}")
+                        continue
+                    
+                    # Create external URL (construct from base URL)
+                    external_url = self.base_url
+                    
+                    # Extract performers and repertoire from the title and surrounding text
+                    performers = []
+                    pieces = []
+                    
+                    # Look for performer names in the text
+                    performer_text = concert_container.get_text()
+                    if 'and' in performer_text or 'with' in performer_text:
+                        # Try to extract performer names
+                        performer_parts = performer_text.split('and') + performer_text.split('with')
+                        for part in performer_parts:
+                            part = part.strip()
+                            if len(part) > 3 and len(part) < 100:  # Reasonable name length
+                                performers.append(part)
+                    
+                    # Look for composer names in the text
+                    composers = ['Mozart', 'Beethoven', 'Bach', 'Chopin', 'Szymanowski', 'Moniuszko', 'Wieniawski', 'Lutosławski',
+                               'Penderecki', 'Górecki', 'Kilar', 'Tchaikovsky', 'Brahms', 'Mahler', 'Schumann', 'Schubert', 
+                               'Debussy', 'Ravel', 'Shostakovich', 'Prokofiev', 'Stravinsky', 'Dvořák', 'Bartók', 'Rachmaninoff']
+                    
+                    for composer in composers:
+                        if composer.lower() in performer_text.lower():
+                            pieces.append(f"Works by {composer}")
+                    
+                    # Save the concert
+                    if self._save_concert_with_city(title, concert_date, external_url, performers, pieces, self.city):
+                        concert_count += 1
+                        logger.info(f"Saved concert: {title} on {concert_date.strftime('%Y-%m-%d')}")
+                    
+                except Exception as e:
+                    logger.error(f"Error processing concert element: {str(e)}")
+                    continue
             
             # Mark the venue as scraped
             self.venue.last_scraped = datetime.now()
             db.session.commit()
             
-            # Return success for now
-            return True
+            logger.info(f"Successfully scraped {concert_count} concerts from Filharmonia Narodowa")
+            return concert_count > 0
             
         except Exception as e:
             logger.error(f"Error scraping Filharmonia Narodowa: {str(e)}")
             import traceback
             logger.error(traceback.format_exc())
             return False
+    
+    def _parse_filharmonia_date(self, date_text, time_text):
+        """Parse date and time from Filharmonia Narodowa website"""
+        try:
+            from dateutil import parser
+            import re
+            
+            if not date_text:
+                return None
+            
+            # Clean up the date text
+            date_text = date_text.strip()
+            
+            # Try to extract day and month from the date text
+            # Look for patterns like "30.10", "2.10", etc.
+            date_match = re.search(r'(\d{1,2})\.(\d{1,2})', date_text)
+            if date_match:
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                current_year = datetime.now().year
+                
+                # Create the date
+                concert_date = datetime(current_year, month, day)
+                
+                # If the date is in the past, assume it's next year
+                if concert_date < datetime.now():
+                    concert_date = datetime(current_year + 1, month, day)
+                
+                # Add time if available
+                if time_text:
+                    time_match = re.search(r'(\d{1,2}):(\d{2})', time_text)
+                    if time_match:
+                        hour = int(time_match.group(1))
+                        minute = int(time_match.group(2))
+                        concert_date = concert_date.replace(hour=hour, minute=minute)
+                    else:
+                        # Default to evening concert time
+                        concert_date = concert_date.replace(hour=19, minute=30)
+                else:
+                    # Default to evening concert time
+                    concert_date = concert_date.replace(hour=19, minute=30)
+                
+                return concert_date
+            
+            # Try parsing with dateutil as fallback
+            try:
+                parsed_date = parser.parse(date_text, fuzzy=True)
+                if parsed_date:
+                    return parsed_date
+            except:
+                pass
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error parsing date '{date_text}': {str(e)}")
+            return None
     
     def get_concert_details(self, url):
         """Get detailed concert information from the concert's dedicated page"""
