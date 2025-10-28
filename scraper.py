@@ -617,7 +617,11 @@ class FilharmoniaNarodowaScraper(BaseScraper):
                         continue
                     title = title_elem.get_text().strip()
                     
-                    if 'Symphonic Concert' not in title:
+                    # Include all classical music concerts, not just "Symphonic Concert"
+                    # Filter out non-classical events
+                    excluded_keywords = ['choir', 'competition', 'rescheduled', 'away', 'tour']
+                    if any(keyword in title.lower() for keyword in excluded_keywords):
+                        print(f"DEBUG: Skipping non-classical concert: {title}")
                         continue
                     
                     print(f"DEBUG: Processing concert {i+1}: {title}")
