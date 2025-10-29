@@ -1,163 +1,171 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Tabs for Concerts and Venues -->
-<ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link {% if not show_venues_tab %}active{% endif %}" 
+<!-- Modern Tab Navigation -->
+<div class="modern-tabs mb-4">
+    <div style="display: flex; gap: 8px; background: #E0DED7; padding: 4px; border-radius: 12px; margin-bottom: 24px;">
+        <button class="modern-tab {% if not show_venues_tab %}active{% endif %}" 
                 id="concerts-tab" data-bs-toggle="tab" 
                 data-bs-target="#concerts-content" type="button" role="tab" 
-                aria-controls="concerts-content" aria-selected="{{ 'true' if not show_venues_tab else 'false' }}">
-            <i class="fas fa-calendar-alt me-1"></i> Concerts
+                aria-controls="concerts-content" aria-selected="{{ 'true' if not show_venues_tab else 'false' }}"
+                style="background: {% if not show_venues_tab %}#222222{% else %}transparent{% endif %}; color: {% if not show_venues_tab %}white{% else %}#222222{% endif %}; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; transition: all 0.2s;">
+            <i class="fas fa-calendar-alt me-2"></i> Concerts
         </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link {% if show_venues_tab %}active{% endif %}" 
+        <button class="modern-tab {% if show_venues_tab %}active{% endif %}" 
                 id="venues-tab" data-bs-toggle="tab" 
                 data-bs-target="#venues-content" type="button" role="tab" 
-                aria-controls="venues-content" aria-selected="{{ 'true' if show_venues_tab else 'false' }}">
-            <i class="fas fa-theater-masks me-1"></i> Venues
+                aria-controls="venues-content" aria-selected="{{ 'true' if show_venues_tab else 'false' }}"
+                style="background: {% if show_venues_tab %}#222222{% else %}transparent{% endif %}; color: {% if show_venues_tab %}white{% else %}#222222{% endif %}; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; transition: all 0.2s;">
+            <i class="fas fa-theater-masks me-2"></i> Venues
         </button>
-    </li>
-</ul>
+    </div>
+</div>
 
 <div class="tab-content" id="mainTabsContent">
     <!-- Concerts Tab -->
     <div class="tab-pane fade {% if not show_venues_tab %}show active{% endif %}" 
          id="concerts-content" role="tabpanel" aria-labelledby="concerts-tab">
         
-        <!-- Filters -->
-        <div class="card mb-4">
-            <div class="card-header bg-dark">
-                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Concerts</h5>
-            </div>
-            <div class="card-body">
-                <form action="{{ url_for('index') }}" method="get" id="filterForm">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label for="time_period" class="form-label">Time Period</label>
-                            <select class="form-select" id="time_period" name="time_period" onchange="this.form.submit()">
-                                <option value="">All</option>
-                                <option value="today" {% if filters.time_period == 'today' %}selected{% endif %}>Today</option>
-                                <option value="this_week" {% if filters.time_period == 'this_week' %}selected{% endif %}>This Week</option>
-                                <option value="this_month" {% if filters.time_period == 'this_month' %}selected{% endif %}>This Month</option>
-                                <option value="next_month" {% if filters.time_period == 'next_month' %}selected{% endif %}>Next Month</option>
-                            </select>
-                        </div>
-                        <!-- Hidden venue filter - functionality preserved -->
-                        <input type="hidden" id="venue_id" name="venue_id" value="{{ filters.venue_id or '' }}">
-                        <div class="col-md-3">
-                            <label for="performer" class="form-label">Performer</label>
-                            <select class="form-select" id="performer" name="performer" onchange="this.form.submit()">
-                                <option value="">All Performers</option>
-                                {% for performer in performers %}
-                                <option value="{{ performer.name }}" 
-                                        {% if filters.performer == performer.name %}selected{% endif %}>
-                                    {{ performer.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="city" class="form-label">City</label>
-                            <select class="form-select" id="city" name="city" onchange="this.form.submit()">
-                                <option value="">All Cities</option>
-                                {% for city in cities %}
-                                <option value="{{ city }}" 
-                                        {% if filters.city == city %}selected{% endif %}>
-                                    {{ city }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-1"></i> Clear All
-                            </a>
-                        </div>
+        <!-- Modern Filters -->
+        <div style="background: white; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h5 style="color: #222222; font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center;">
+                <i class="fas fa-filter me-2" style="color: #FF7F3E;"></i>Filter Concerts
+            </h5>
+            <form action="{{ url_for('index') }}" method="get" id="filterForm">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end;">
+                    <div>
+                        <label for="time_period" style="display: block; color: #222222; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Time Period</label>
+                        <select id="time_period" name="time_period" onchange="this.form.submit()" style="width: 100%; padding: 12px 16px; border: 1px solid #E0DED7; border-radius: 12px; font-size: 16px; background: white; color: #222222; outline: none;">
+                            <option value="">All</option>
+                            <option value="today" {% if filters.time_period == 'today' %}selected{% endif %}>Today</option>
+                            <option value="this_week" {% if filters.time_period == 'this_week' %}selected{% endif %}>This Week</option>
+                            <option value="this_month" {% if filters.time_period == 'this_month' %}selected{% endif %}>This Month</option>
+                            <option value="next_month" {% if filters.time_period == 'next_month' %}selected{% endif %}>Next Month</option>
+                        </select>
                     </div>
-                </form>
-            </div>
+                    <!-- Hidden venue filter - functionality preserved -->
+                    <input type="hidden" id="venue_id" name="venue_id" value="{{ filters.venue_id or '' }}">
+                    <div>
+                        <label for="performer" style="display: block; color: #222222; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Performer</label>
+                        <select id="performer" name="performer" onchange="this.form.submit()" style="width: 100%; padding: 12px 16px; border: 1px solid #E0DED7; border-radius: 12px; font-size: 16px; background: white; color: #222222; outline: none;">
+                            <option value="">All Performers</option>
+                            {% for performer in performers %}
+                            <option value="{{ performer.name }}" 
+                                    {% if filters.performer == performer.name %}selected{% endif %}>
+                                {{ performer.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="city" style="display: block; color: #222222; font-weight: 600; margin-bottom: 8px; font-size: 14px;">City</label>
+                        <select id="city" name="city" onchange="this.form.submit()" style="width: 100%; padding: 12px 16px; border: 1px solid #E0DED7; border-radius: 12px; font-size: 16px; background: white; color: #222222; outline: none;">
+                            <option value="">All Cities</option>
+                            {% for city in cities %}
+                            <option value="{{ city }}" 
+                                    {% if filters.city == city %}selected{% endif %}>
+                                {{ city }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('index') }}" style="display: inline-flex; align-items: center; padding: 12px 20px; background: #E0DED7; color: #222222; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; transition: all 0.2s; border: none;">
+                            <i class="fas fa-times me-2"></i> Clear All
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
 
-        <!-- Concert Listings -->
+        <!-- Modern Concert Listings -->
         <div id="concertListings">
             {% if concerts %}
-                <div class="list-group" style="border: none; box-shadow: none;">
+                <div style="display: flex; flex-direction: column; gap: 16px;">
                     {% for concert in concerts %}
-                    <div class="list-group-item list-group-item-action" style="border: none; border-radius: 18px; margin-bottom: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 24px;" onmouseover="this.style.backgroundColor='#ffffff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0, 0, 0, 0.12)'" onmouseout="this.style.backgroundColor='#ffffff'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0, 0, 0, 0.08)'">
-                        <div class="d-flex w-100 justify-content-between align-items-start mb-2">
-                            <div class="flex-grow-1">
-                                <h5 class="mb-3 fw-semibold" style="color: #1d1d1f; font-size: 21px; letter-spacing: -0.025em;">{{ concert.title }}</h5>
-                                <div class="d-flex align-items-center mb-2">
-                                    <!-- Calendar Icon -->
-                                    <div class="calendar-icon me-3">
-                                        <div class="calendar-header">{{ concert.date.strftime('%B').upper() }}</div>
-                                        <div class="calendar-day">{{ concert.date.strftime('%d') }}</div>
-                                        <div class="calendar-time">{{ concert.date.strftime('%H:%M') }}</div>
-                                    </div>
-                                    
-                                    <div class="flex-grow-1">
-                                    <a href="{{ url_for('index', venue_id=concert.venue.id) }}" class="text-decoration-none me-3" style="cursor: pointer; color: #007aff; font-weight: 600; font-size: 17px;">
-                                        {{ concert.venue.name }}
-                                    </a>
-                                        {% if concert.city %}
-                                        <small style="color: #86868b; font-size: 15px; font-weight: 500;">
-                                            <i class="fas fa-map-marker-alt me-1"></i>{{ concert.city }}
-                                        </small>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            {% if concert.external_url %}
-                            <a href="{{ concert.external_url }}" target="_blank" class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-external-link-alt me-1"></i> Website
-                            </a>
-                            {% endif %}
-                        </div>
+                    {% set pastel_colors = ['#E0DED7', '#DDE5EB', '#E0E5E0', '#F0E6F7', '#E8F4FD', '#FFF2E6'] %}
+                    {% set card_color = pastel_colors[loop.index0 % pastel_colors|length] %}
+                    <div class="modern-concert-card" style="background: {{ card_color }}; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease; position: relative; overflow: hidden;" 
+                         onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
                         
-                        <div class="row">
-                            {% if concert.performers %}
-                            <div class="col-md-6">
-                                <h6 style="color: #86868b; font-size: 15px; font-weight: 600; margin-bottom: 12px;">
-                                    <i class="fas fa-users me-1"></i>Performers
-                                </h6>
-                                <div class="mb-2">
-                                    {% for performer in concert.performers %}
-                                    <span class="badge me-2 mb-2" style="background-color: #f5f5f7; color: #1d1d1f; font-weight: 500; font-size: 15px; padding: 8px 12px; border-radius: 8px;">
-                                        {% if performer.role == 'conductor' %}
-                                        <i class="fas fa-baton me-1"></i>
-                                        {% elif performer.role == 'soloist' %}
-                                        <i class="fas fa-star me-1"></i>
-                                        {% else %}
-                                        <i class="fas fa-user-music me-1"></i>
-                                        {% endif %}
-                                        {{ performer.name }}
-                                        {% if performer.role and performer.role != 'performer' %}
-                                        <small>({{ performer.role }})</small>
-                                        {% endif %}
-                                    </span>
-                                    {% endfor %}
+                        <!-- Decorative elements -->
+                        <div style="position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; background: rgba(255,255,255,0.3); border-radius: 50%;"></div>
+                        <div style="position: absolute; bottom: -10px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%;"></div>
+                        
+                        <div style="position: relative; z-index: 2;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                                <div style="flex: 1;">
+                                    <h3 style="color: #222222; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">{{ concert.title }}</h3>
+                                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                                        <!-- Modern Calendar Icon -->
+                                        <div style="width: 56px; height: 64px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; margin-right: 16px; border: 1px solid #E0DED7;">
+                                            <div style="background: #FF7F3E; color: white; font-size: 10px; font-weight: 600; text-align: center; padding: 4px; line-height: 1;">{{ concert.date.strftime('%b').upper() }}</div>
+                                            <div style="flex: 1; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #222222;">{{ concert.date.strftime('%d') }}</div>
+                                            <div style="background: #F5F5F5; color: #86868B; font-size: 9px; text-align: center; padding: 2px 4px; border-top: 1px solid #E0DED7;">{{ concert.date.strftime('%H:%M') }}</div>
+                                        </div>
+                                        
+                                        <div style="flex: 1;">
+                                            <a href="{{ url_for('index', venue_id=concert.venue.id) }}" style="color: #FF7F3E; font-weight: 600; font-size: 16px; text-decoration: none; display: block; margin-bottom: 4px;">
+                                                {{ concert.venue.name }}
+                                            </a>
+                                            {% if concert.city %}
+                                            <div style="color: #86868B; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                                <i class="fas fa-map-marker-alt" style="margin-right: 6px; color: #FF7F3E;"></i>{{ concert.city }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
+                                {% if concert.external_url %}
+                                <a href="{{ concert.external_url }}" target="_blank" style="display: inline-flex; align-items: center; padding: 8px 16px; background: white; color: #222222; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s;">
+                                    <i class="fas fa-external-link-alt" style="margin-right: 6px;"></i> Website
+                                </a>
+                                {% endif %}
                             </div>
-                            {% endif %}
                             
-                            {% if concert.pieces %}
-                            <div class="col-md-6">
-                                <h6 style="color: #86868b; font-size: 15px; font-weight: 600; margin-bottom: 12px;">
-                                    <i class="fas fa-music me-1"></i>Program
-                                </h6>
-                                <div class="mb-2">
-                                    {% for piece in concert.pieces %}
-                                    <div class="mb-2" style="color: #1d1d1f; font-size: 15px; line-height: 1.4;">
-                                        <strong style="font-weight: 600;">{{ piece.composer }}</strong>: {{ piece.title }}
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                {% if concert.performers %}
+                                <div>
+                                    <h6 style="color: #222222; font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center;">
+                                        <i class="fas fa-users" style="margin-right: 8px; color: #FF7F3E;"></i>Performers
+                                    </h6>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        {% for performer in concert.performers %}
+                                        <span style="background: rgba(255,255,255,0.7); color: #222222; font-weight: 500; font-size: 13px; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center;">
+                                            {% if performer.role == 'conductor' %}
+                                            <i class="fas fa-baton" style="margin-right: 4px; color: #FF7F3E;"></i>
+                                            {% elif performer.role == 'soloist' %}
+                                            <i class="fas fa-star" style="margin-right: 4px; color: #FF7F3E;"></i>
+                                            {% else %}
+                                            <i class="fas fa-user-music" style="margin-right: 4px; color: #FF7F3E;"></i>
+                                            {% endif %}
+                                            {{ performer.name }}
+                                            {% if performer.role and performer.role != 'performer' %}
+                                            <span style="margin-left: 4px; opacity: 0.7;">({{ performer.role }})</span>
+                                            {% endif %}
+                                        </span>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
+                                {% endif %}
+                                
+                                {% if concert.pieces %}
+                                <div>
+                                    <h6 style="color: #222222; font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center;">
+                                        <i class="fas fa-music" style="margin-right: 8px; color: #FF7F3E;"></i>Program
+                                    </h6>
+                                    <div>
+                                        {% for piece in concert.pieces %}
+                                        <div style="color: #222222; font-size: 14px; line-height: 1.4; margin-bottom: 8px; padding: 8px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+                                            <strong style="font-weight: 600;">{{ piece.composer }}</strong>: {{ piece.title }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% endif %}
                         </div>
-                        
                     </div>
                     {% endfor %}
                 </div>
@@ -170,70 +178,69 @@
         </div>
     </div>
 
-    <!-- Venues Tab -->
+    <!-- Modern Venues Tab -->
     <div class="tab-pane fade {% if show_venues_tab %}show active{% endif %}" 
          id="venues-content" role="tabpanel" aria-labelledby="venues-tab">
-        <div class="d-flex justify-content-between mb-3">
-            <h3>Monitored Venues</h3>
+        <div style="margin-bottom: 24px;">
+            <h3 style="color: #222222; font-size: 24px; font-weight: 700; margin: 0;">Monitored Venues</h3>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>URL</th>
-                        <th>Scraper Type</th>
-                        <th>Last Scraped</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if venues %}
-                        {% for venue in venues %}
-                        <tr>
-                            <td>{{ venue.name }}</td>
-                            <td>
-                                <a href="{{ venue.url }}" target="_blank" class="text-info">
-                                    {{ venue.url|truncate(40) }}
-                                    <i class="fas fa-external-link-alt ms-1 small"></i>
-                                </a>
-                            </td>
-                            <td>{{ venue.scraper_type }}</td>
-                            <td>
-                                {% if venue.last_scraped %}
-                                    {{ venue.last_scraped.strftime('%d %b %Y, %H:%M') }}
-                                {% else %}
-                                    <span class="text-muted">Never</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-primary scrape-venue-btn" data-venue-id="{{ venue.id }}">
-                                    <i class="fas fa-sync-alt me-1"></i> Scrape
-                                </button>
-                                <button class="btn btn-sm btn-warning clear-venue-btn" data-venue-id="{{ venue.id }}" 
-                                        data-venue-name="{{ venue.name }}">
-                                    <i class="fas fa-eraser me-1"></i> Clear
-                                </button>
-                                <button class="btn btn-sm btn-danger delete-venue-btn" data-venue-id="{{ venue.id }}" 
-                                        data-venue-name="{{ venue.name }}">
-                                    <i class="fas fa-trash-alt me-1"></i> Delete
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center py-4">
-                                <div class="alert alert-info mb-0">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    No venues have been added yet. Add a venue to start monitoring concerts.
+        <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {% if venues %}
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    {% for venue in venues %}
+                    {% set venue_colors = ['#E0DED7', '#DDE5EB', '#E0E5E0', '#F0E6F7'] %}
+                    {% set venue_color = venue_colors[loop.index0 % venue_colors|length] %}
+                    <div style="background: {{ venue_color }}; border-radius: 12px; padding: 20px; position: relative; overflow: hidden;">
+                        <!-- Decorative elements -->
+                        <div style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%;"></div>
+                        
+                        <div style="position: relative; z-index: 2;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                                <div style="flex: 1;">
+                                    <h4 style="color: #222222; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">{{ venue.name }}</h4>
+                                    <a href="{{ venue.url }}" target="_blank" style="color: #FF7F3E; font-size: 14px; text-decoration: none; display: flex; align-items: center; margin-bottom: 8px;">
+                                        {{ venue.url|truncate(50) }}
+                                        <i class="fas fa-external-link-alt" style="margin-left: 6px; font-size: 12px;"></i>
+                                    </a>
+                                    <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                                        <div style="background: rgba(255,255,255,0.7); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #222222;">
+                                            {{ venue.scraper_type }}
+                                        </div>
+                                        <div style="color: #86868B; font-size: 14px; display: flex; align-items: center;">
+                                            <i class="fas fa-clock" style="margin-right: 6px; color: #FF7F3E;"></i>
+                                            {% if venue.last_scraped %}
+                                                {{ venue.last_scraped.strftime('%d %b %Y, %H:%M') }}
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+                            </div>
+                            
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="modern-btn primary" data-venue-id="{{ venue.id }}" style="background: #FF7F3E; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-sync-alt" style="margin-right: 6px;"></i> Scrape
+                                </button>
+                                <button class="modern-btn warning" data-venue-id="{{ venue.id }}" data-venue-name="{{ venue.name }}" style="background: #FFA500; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-eraser" style="margin-right: 6px;"></i> Clear
+                                </button>
+                                <button class="modern-btn danger" data-venue-id="{{ venue.id }}" data-venue-name="{{ venue.name }}" style="background: #FF6B6B; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-trash-alt" style="margin-right: 6px;"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 40px 20px; background: #F5F5F5; border-radius: 12px;">
+                    <i class="fas fa-info-circle" style="font-size: 48px; color: #86868B; margin-bottom: 16px;"></i>
+                    <h4 style="color: #222222; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">No venues added yet</h4>
+                    <p style="color: #86868B; font-size: 14px; margin: 0;">Add a venue to start monitoring concerts.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -319,11 +326,11 @@
         let progressInterval = null;
         let currentVenueId = null;
         
-        // Scrape venue button handler
-        document.querySelectorAll('.scrape-venue-btn').forEach(btn => {
+        // Modern button handlers
+        document.querySelectorAll('.modern-btn.primary').forEach(btn => {
             btn.addEventListener('click', function() {
                 const venueId = this.dataset.venueId;
-                const venueName = this.closest('tr').querySelector('td:first-child').textContent.trim();
+                const venueName = this.closest('div[style*="background:"]').querySelector('h4').textContent.trim();
                 
                 // Show loading modal
                 showLoadingModal(venueName);
@@ -333,8 +340,7 @@
             });
         });
         
-        // Clear venue events button handler
-        document.querySelectorAll('.clear-venue-btn').forEach(btn => {
+        document.querySelectorAll('.modern-btn.warning').forEach(btn => {
             btn.addEventListener('click', function() {
                 const venueId = this.dataset.venueId;
                 const venueName = this.dataset.venueName;
@@ -376,8 +382,7 @@
             });
         });
         
-        // Delete venue button handler
-        document.querySelectorAll('.delete-venue-btn').forEach(btn => {
+        document.querySelectorAll('.modern-btn.danger').forEach(btn => {
             btn.addEventListener('click', function() {
                 const venueId = this.dataset.venueId;
                 const venueName = this.dataset.venueName;

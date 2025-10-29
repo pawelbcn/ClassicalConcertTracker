@@ -12,32 +12,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <style>
-        /* Custom CSS for Classical Concert Monitor */
+        /* Modern Mobile App Design */
 
-        /* Apple-style Typography */
+        /* Typography */
         body {
-            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             font-weight: 400;
-            line-height: 1.47059;
-            color: #1d1d1f;
-            background-color: #ffffff;
+            line-height: 1.5;
+            color: #222222;
+            background-color: #F5F5F5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            letter-spacing: -0.022em;
+            letter-spacing: -0.01em;
         }
 
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             font-weight: 600;
-            color: #1d1d1f;
-            letter-spacing: -0.025em;
-            line-height: 1.14286;
+            color: #222222;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
         main {
             flex: 1;
-            background-color: #ffffff;
+            background-color: #F5F5F5;
+            padding: 0;
         }
 
         /* Apple-style Cards */
@@ -202,116 +203,146 @@
             background: var(--bs-info);
         }
 
-        /* Apple-style Calendar Icon */
-        .calendar-icon {
-            width: 64px;
-            height: 76px;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid #d2d2d7;
+        /* Modern Interactive Elements */
+        .modern-tab:hover {
+            background: rgba(34, 34, 34, 0.1) !important;
+            color: #222222 !important;
         }
 
-        .calendar-header {
-            background: #007aff;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            text-align: center;
-            padding: 6px 4px;
-            line-height: 1;
-            letter-spacing: 0.5px;
-            font-family: 'SF Pro Display', -apple-system, sans-serif;
+        .modern-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        .calendar-day {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            color: #1d1d1f;
-            line-height: 1;
-            font-family: 'SF Pro Display', -apple-system, sans-serif;
-            letter-spacing: -0.025em;
+        .modern-concert-card:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
         }
 
-        .calendar-time {
-            background: #f5f5f7;
-            color: #86868b;
-            font-size: 10px;
-            text-align: center;
-            padding: 4px 6px;
-            line-height: 1;
-            border-top: 1px solid #d2d2d7;
-            font-weight: 600;
-            font-family: 'SF Pro Text', -apple-system, sans-serif;
+        /* Modern Form Focus States */
+        select:focus, input:focus {
+            border-color: #FF7F3E !important;
+            box-shadow: 0 0 0 3px rgba(255, 127, 62, 0.1) !important;
+            outline: none !important;
+        }
+
+        /* Smooth Transitions */
+        * {
+            transition: all 0.2s ease;
+        }
+
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F5F5F5;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #E0DED7;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF7F3E;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white" style="border-bottom: 1px solid #d2d2d7;">
-            <div class="container">
-                <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}" style="color: #1d1d1f; font-size: 21px; letter-spacing: -0.025em;">
-                    <i class="fas fa-music me-2" style="color: #007aff;"></i>
-                    Classical Concert Monitor
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="{{ url_for('index') }}" style="color: #86868b; font-size: 17px;">Concerts</a>
-                        </li>
-                        <li class="nav-item">
-                            <button id="scrapeAllBtn" class="btn btn-primary">
-                                <i class="fas fa-sync-alt me-1"></i> Update All
-                            </button>
-                        </li>
-                    </ul>
+    <header style="background-color: #F5F5F5; padding: 20px 0; border-bottom: none;">
+        <div class="container">
+            <!-- Welcome Message -->
+            <div class="mb-4">
+                <h2 style="color: #86868B; font-size: 16px; font-weight: 400; margin: 0;">Hi Friend</h2>
+                <h1 style="color: #222222; font-size: 32px; font-weight: 700; margin: 8px 0 0 0; line-height: 1.1;">Nothing beats the roar of the crowd.</h1>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-container mb-4">
+                <div style="position: relative; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #E0DED7;">
+                    <i class="fas fa-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #86868B; font-size: 16px;"></i>
+                    <input type="text" placeholder="Search all events" style="width: 100%; padding: 16px 16px 16px 48px; border: none; border-radius: 12px; font-size: 16px; background: transparent; outline: none; color: #222222;">
+                    <div style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: #222222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">H</div>
                 </div>
             </div>
-        </nav>
+            
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs-container mb-4">
+                <div style="display: flex; gap: 8px; background: #E0DED7; padding: 4px; border-radius: 12px; overflow-x: auto;">
+                    <button class="nav-tab active" style="background: #222222; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; transition: all 0.2s;">My Feed</button>
+                    <button class="nav-tab" style="background: transparent; color: #222222; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; transition: all 0.2s;">Sports</button>
+                    <button class="nav-tab" style="background: transparent; color: #222222; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; transition: all 0.2s;">Concerts</button>
+                    <button class="nav-tab" style="background: transparent; color: #222222; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; transition: all 0.2s;">Theater</button>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main class="container py-4">
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    <main style="background-color: #F5F5F5; padding: 0;">
+        <div class="container" style="padding: 0 20px 40px 20px;">
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="margin: 20px 0; border-radius: 12px;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-        <!-- Main content will be inserted here -->
-        {% block content %}{% endblock %}
+            <!-- Hero Cards Section -->
+            <div class="hero-cards mb-4">
+                <!-- Statistics Card -->
+                <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius: 16px; padding: 24px; margin-bottom: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(255, 165, 0, 0.2);">
+                    <div style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; transform: translate(20px, -20px);"></div>
+                    <div style="position: absolute; bottom: 16px; right: 16px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                    <div style="position: relative; z-index: 2;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <div>
+                                <h2 style="color: #222222; font-size: 28px; font-weight: 700; margin: 0; line-height: 1.1;">$66,433,899</h2>
+                                <p style="color: #222222; font-size: 14px; margin: 4px 0 0 0; opacity: 0.8;">in customer savings and counting</p>
+                            </div>
+                            <div style="width: 24px; height: 24px; background: #222222; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check" style="color: white; font-size: 12px;"></i>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; color: #222222; font-size: 14px; font-weight: 600;">
+                            <span>Learn More</span>
+                            <i class="fas fa-arrow-right" style="margin-left: 8px; font-size: 12px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Local Events Card -->
+                <div style="background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%); border-radius: 16px; padding: 24px; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(135, 206, 235, 0.2);">
+                    <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; transform: translate(30px, -30px);"></div>
+                    <div style="position: relative; z-index: 2;">
+                        <h2 style="color: #222222; font-size: 24px; font-weight: 700; margin: 0 0 8px 0;">Local Events</h2>
+                        <p style="color: #222222; font-size: 14px; margin: 0 0 16px 0; opacity: 0.8;">Browse all events by location</p>
+                        <div style="display: flex; align-items: center; color: #222222; font-size: 14px; font-weight: 500;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #FF7F3E;"></i>
+                            <span>Mesa, New Jersey 45463</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content will be inserted here -->
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
-    <footer class="bg-dark text-light py-4 mt-5">
+    <footer style="background-color: #F5F5F5; padding: 40px 0; margin-top: 0; border-top: 1px solid #E0DED7;">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>Classical Concert Monitor</h5>
-                    <p>Stay updated with the latest classical music events from venues around the world.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p>
-                        <i class="fas fa-code me-1"></i> Created with 
-                        <i class="fas fa-heart text-danger mx-1"></i> for classical music
-                    </p>
-                </div>
+            <div style="text-align: center;">
+                <h5 style="color: #222222; font-size: 18px; font-weight: 600; margin-bottom: 8px;">Classical Concert Monitor</h5>
+                <p style="color: #86868B; font-size: 14px; margin: 0;">Stay updated with the latest classical music events from venues around the world.</p>
             </div>
         </div>
     </footer>
