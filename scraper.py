@@ -1798,26 +1798,34 @@ class NOSPRKatowiceScraper(BaseScraper):
                     performers = []
                     pieces = []
                     
-                    # Try to extract performers from title (common patterns)
-                    if '/' in title:
-                        # Split by '/' and look for conductor/soloist patterns
-                        parts = title.split('/')
-                        for part in parts:
-                            part = part.strip()
-                            if part and len(part) > 3:
-                                # Determine role based on context
-                                role = 'performer'
-                                if 'conductor' in part.lower() or any(name in part.lower() for name in ['Alsop', 'Foster', 'Wit', 'Liebreich']):
-                                    role = 'conductor'
-                                elif any(instrument in part.lower() for instrument in ['piano', 'violin', 'cello', 'flute', 'trumpet']):
-                                    role = 'soloist'
-                                elif 'orchestra' in part.lower() or 'nospr' in part.lower():
-                                    role = 'orchestra'
-                                
-                                performers.append({
-                                    'name': part,
-                                    'role': role
-                                })
+                    # Visit individual concert page to get detailed information
+                    print(f"DEBUG: Visiting concert page: {concert_url}")
+                    concert_details = self._get_concert_details(concert_url)
+                    if concert_details:
+                        performers = concert_details.get('performers', [])
+                        pieces = concert_details.get('pieces', [])
+                        print(f"DEBUG: Found {len(performers)} performers and {len(pieces)} pieces from concert page")
+                    else:
+                        # Fallback: try to extract performers from title (common patterns)
+                        if '/' in title:
+                            # Split by '/' and look for conductor/soloist patterns
+                            parts = title.split('/')
+                            for part in parts:
+                                part = part.strip()
+                                if part and len(part) > 3:
+                                    # Determine role based on context
+                                    role = 'performer'
+                                    if 'conductor' in part.lower() or any(name in part.lower() for name in ['Alsop', 'Foster', 'Wit', 'Liebreich']):
+                                        role = 'conductor'
+                                    elif any(instrument in part.lower() for instrument in ['piano', 'violin', 'cello', 'flute', 'trumpet']):
+                                        role = 'soloist'
+                                    elif 'orchestra' in part.lower() or 'nospr' in part.lower():
+                                        role = 'orchestra'
+                                    
+                                    performers.append({
+                                        'name': part,
+                                        'role': role
+                                    })
                     
                     # Save the concert
                     print(f"DEBUG: Saving concert with {len(performers)} performers and {len(pieces)} pieces")
@@ -1866,6 +1874,79 @@ class NOSPRKatowiceScraper(BaseScraper):
             
         except Exception as e:
             logger.error(f"Error parsing NOSPR date '{date_text}': {str(e)}")
+            return None
+    
+    def _get_concert_details(self, url):
+        """Extract detailed information from individual NOSPR concert page"""
+        try:
+            html = self._get_html(url)
+            if not html:
+                return None
+            
+            soup = BeautifulSoup(html, 'html.parser')
+            details = {
+                'title': '',
+                'date': None,
+                'performers': [],
+                'pieces': []
+            }
+            
+            # Extract title - use h1 for NOSPR
+            title_elem = soup.find('h1')
+            if title_elem:
+                details['title'] = title_elem.get_text().strip()
+            
+            # Extract performers - look for performer names in the text
+            text = soup.get_text()
+            performer_patterns = [
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(fortepian|wiolonczela|skrzypce)',
+                # More flexible patterns for NOSPR
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*(conductor|soloist|pianist|violinist|orchestra|choir|ensemble)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*(conductor|soloist|pianist|violinist|orchestra|choir|ensemble)',
+                # Look for ensemble names
+                r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:Quartet|Ensemble|Orchestra|Choir))',
+            ]
+            
+            for pattern in performer_patterns:
+                matches = re.findall(pattern, text)
+                for match in matches:
+                    if len(match) == 2:
+                        name, role = match
+                        details['performers'].append({
+                            'name': name.strip(),
+                            'role': role.strip()
+                        })
+                    elif len(match) == 1:
+                        # Single match - treat as ensemble name
+                        details['performers'].append({
+                            'name': match.strip(),
+                            'role': 'ensemble'
+                        })
+            
+            # Extract program/pieces - look for composer and piece patterns
+            piece_patterns = [
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*([^–\n]+)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*([^–\n]+)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*:\s*([^:\n]+)',
+            ]
+            
+            for pattern in piece_patterns:
+                matches = re.findall(pattern, text)
+                for composer, title in matches:
+                    if len(composer) > 3 and len(title.strip()) > 3:  # Basic validation
+                        details['pieces'].append({
+                            'composer': composer.strip(),
+                            'title': title.strip()
+                        })
+            
+            print(f"DEBUG: NOSPR concert details - Title: {details['title']}, Performers: {len(details['performers'])}, Pieces: {len(details['pieces'])}")
+            return details
+            
+        except Exception as e:
+            print(f"DEBUG: Error extracting NOSPR concert details: {e}")
+            logger.error(f"Error extracting NOSPR concert details from {url}: {str(e)}")
             return None
 
 class NFMWroclawScraper(BaseScraper):
@@ -2235,7 +2316,7 @@ class CracowPhilharmonicScraper(BaseScraper):
         """Scrape concerts from Cracow Philharmonic"""
         try:
             print(f"DEBUG: Starting Cracow Philharmonic scraping from {self.base_url}")
-            self._update_progress(0, 5, "Starting Cracow Philharmonic scraping...")
+            self._update_progress(0, 10, "Starting Cracow Philharmonic scraping...")
             
             # Get the main program page
             html = self._get_html(self.base_url)
@@ -2261,8 +2342,8 @@ class CracowPhilharmonicScraper(BaseScraper):
             concert_links = list(dict.fromkeys(concert_links))
             print(f"DEBUG: Found {len(concert_links)} concert links")
             
-            # Limit to 5 concerts for testing
-            concert_links = concert_links[:5]
+            # Limit to 10 concerts for testing
+            concert_links = concert_links[:10]
             concerts_saved = 0
             
             for i, concert_url in enumerate(concert_links):
@@ -2368,35 +2449,166 @@ class CracowPhilharmonicScraper(BaseScraper):
                     except ValueError:
                         continue
             
-            # Extract performers - look for performer names in the text
-            performer_patterns = [
-                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
-                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
-                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(fortepian|wiolonczela|skrzypce)',
-            ]
+            # Extract performers - look for "Wykonawcy:" section
+            performers_text = ""
             
-            for pattern in performer_patterns:
-                matches = re.findall(pattern, date_text)
-                for name, role in matches:
-                    details['performers'].append({
-                        'name': name.strip(),
-                        'role': role.strip()
-                    })
+            # Method 1: Look for "Wykonawcy:" heading and extract content after it
+            wyk_text = soup.get_text()
+            wyk_match = re.search(r'Wykonawcy:\s*(.*?)(?=Repertuar:|$)', wyk_text, re.DOTALL | re.IGNORECASE)
+            if wyk_match:
+                performers_text = wyk_match.group(1).strip()
+                print(f"DEBUG: Found performers text: {performers_text[:100]}...")
             
-            # Extract program/pieces - look for composer and piece patterns
-            piece_patterns = [
-                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*([^–\n]+)',
-                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*([^–\n]+)',
-            ]
+            # Method 2: Look for specific HTML structure
+            if not performers_text:
+                # Look for headings that contain "Wykonawcy"
+                for heading in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b']):
+                    if heading and 'wykonawcy' in heading.get_text().lower():
+                        # Get the next sibling or parent's next sibling
+                        next_elem = heading.find_next_sibling()
+                        if next_elem:
+                            performers_text = next_elem.get_text().strip()
+                        else:
+                            # Look in the parent's next siblings
+                            parent = heading.parent
+                            if parent:
+                                next_sibling = parent.find_next_sibling()
+                                if next_sibling:
+                                    performers_text = next_sibling.get_text().strip()
+                        break
             
-            for pattern in piece_patterns:
-                matches = re.findall(pattern, date_text)
-                for composer, title in matches:
-                    if len(composer) > 3 and len(title.strip()) > 3:  # Basic validation
-                        details['pieces'].append({
-                            'composer': composer.strip(),
-                            'title': title.strip()
+            # Parse performers from the text
+            if performers_text:
+                # Split by common separators and clean up
+                performer_lines = re.split(r'[,\n]', performers_text)
+                for line in performer_lines:
+                    line = line.strip()
+                    if line and len(line) > 2:
+                        # Look for name - instrument pattern
+                        name_instrument_match = re.match(r'([^–-]+?)\s*[–-]\s*(.+)', line)
+                        if name_instrument_match:
+                            name = name_instrument_match.group(1).strip()
+                            instrument = name_instrument_match.group(2).strip()
+                            
+                            # Clean up the instrument/role - remove award text and truncate if too long
+                            instrument = re.sub(r'\s*\*\*.*$', '', instrument)  # Remove award text
+                            instrument = re.sub(r'\s*Nagroda.*$', '', instrument)  # Remove award text
+                            if len(instrument) > 100:
+                                instrument = instrument[:97] + '...'
+                            
+                            details['performers'].append({
+                                'name': name,
+                                'role': instrument
+                            })
+                        else:
+                            # Just the name, try to determine role from context
+                            details['performers'].append({
+                                'name': line,
+                                'role': 'performer'
+                            })
+            
+            # Fallback: look for performer patterns in the full text
+            if not details['performers']:
+                performer_patterns = [
+                    r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas|fortepian)',
+                    r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas|fortepian)',
+                ]
+                
+                for pattern in performer_patterns:
+                    matches = re.findall(pattern, date_text)
+                    for name, role in matches:
+                        details['performers'].append({
+                            'name': name.strip(),
+                            'role': role.strip()
                         })
+            
+            # Extract program/pieces - look for "Repertuar:" section
+            repertoire_text = ""
+            
+            # Method 1: Look for "Repertuar:" heading and extract content after it, stopping at hr line
+            rep_match = re.search(r'Repertuar:\s*(.*?)(?=Koncert bez przerwy|Uruchomiona została|Bilety|tel:|$)', wyk_text, re.DOTALL | re.IGNORECASE)
+            if rep_match:
+                repertoire_text = rep_match.group(1).strip()
+                print(f"DEBUG: Found repertoire text: {repertoire_text[:200]}...")
+            
+            # Method 2: Look for specific HTML structure
+            if not repertoire_text:
+                # Look for headings that contain "Repertuar"
+                for heading in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b']):
+                    if heading and 'repertuar' in heading.get_text().lower():
+                        # Get the next sibling or parent's next sibling
+                        next_elem = heading.find_next_sibling()
+                        if next_elem:
+                            # Stop at horizontal line or ticket information
+                            repertoire_text = next_elem.get_text().strip()
+                            # Clean up - stop at common non-program content
+                            repertoire_text = re.split(r'(?=Uruchomiona została|Bilety|tel:|Koncert bez przerwy)', repertoire_text)[0]
+                        else:
+                            # Look in the parent's next siblings
+                            parent = heading.parent
+                            if parent:
+                                next_sibling = parent.find_next_sibling()
+                                if next_sibling:
+                                    repertoire_text = next_sibling.get_text().strip()
+                                    # Clean up - stop at common non-program content
+                                    repertoire_text = re.split(r'(?=Uruchomiona została|Bilety|tel:|Koncert bez przerwy)', repertoire_text)[0]
+                        break
+            
+            # Parse pieces from the repertoire text - keep as single text block
+            if repertoire_text:
+                # Clean up the text but keep it as a single block
+                repertoire_text = re.sub(r'\s+', ' ', repertoire_text)  # Normalize whitespace
+                repertoire_text = repertoire_text.strip()
+                
+                # Truncate if too long for database
+                if len(repertoire_text) > 1000:
+                    repertoire_text = repertoire_text[:997] + '...'
+                
+                # Add as a single piece entry
+                details['pieces'].append({
+                    'composer': 'Program',
+                    'title': repertoire_text
+                })
+            
+            # Fallback: look for composer and piece patterns in the full text
+            if not details['pieces']:
+                piece_patterns = [
+                    # Pattern for composer - work format (avoid performer names)
+                    r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*([^–\n]+?)(?:\s*[A-Z]|\s*$|\.)',
+                    r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*([^–\n]+?)(?:\s*[A-Z]|\s*$|\.)',
+                ]
+                
+                # Known classical composers to validate pieces
+                classical_composers = [
+                    'Mozart', 'Beethoven', 'Bach', 'Chopin', 'Tchaikovsky', 'Brahms', 
+                    'Debussy', 'Ravel', 'Rachmaninoff', 'Stravinsky', 'Schubert', 
+                    'Handel', 'Haydn', 'Liszt', 'Mahler', 'Mendelssohn', 'Prokofiev',
+                    'Shostakovich', 'Sibelius', 'Schumann', 'Verdi', 'Wagner', 'Vivaldi',
+                    'Dvořák', 'Grieg', 'Berlioz', 'Britten', 'Bartók', 'Bruckner',
+                    'Elgar', 'Fauré', 'Gershwin', 'Glass', 'Holst', 'Ligeti',
+                    'Monteverdi', 'Mussorgsky', 'Pärt', 'Purcell', 'Reich',
+                    'Rimsky-Korsakov', 'Saint-Saëns', 'Satie', 'Schoenberg', 'Tallis',
+                    'Vaughan Williams', 'Szymanowski', 'Moniuszko', 'Wieniawski',
+                    'Lutosławski', 'Penderecki', 'Górecki', 'Kilar', 'Górecki'
+                ]
+                
+                for pattern in piece_patterns:
+                    matches = re.findall(pattern, date_text)
+                    for composer, title in matches:
+                        composer = composer.strip()
+                        title = title.strip()
+                        
+                        # Validate that this looks like a composer-work pair
+                        if (len(composer) > 3 and len(title) > 3 and 
+                            (composer in classical_composers or 
+                             any(comp in composer for comp in classical_composers) or
+                             any(word in title.lower() for word in ['op.', 'kv', 'bwv', 'sonata', 'symphony', 'concerto', 'requiem', 'mazurek', 'polonez', 'nokturn', 'preludium', 'fantazja', 'berceuse']))):
+                            # Clean up the title
+                            title = re.sub(r'\s*[A-Z][a-z]*\s*$', '', title)
+                            details['pieces'].append({
+                                'composer': composer,
+                                'title': title
+                            })
             
             print(f"DEBUG: Cracow concert details - Title: {details['title']}, Date: {details['date']}, Performers: {len(details['performers'])}, Pieces: {len(details['pieces'])}")
             return details
@@ -2414,7 +2626,7 @@ class FilharmoniaBaltyckaScraper(BaseScraper):
         """Scrape concerts from Filharmonia Bałtycka"""
         try:
             print(f"DEBUG: Starting Filharmonia Bałtycka scraping from {self.base_url}")
-            self._update_progress(0, 5, "Starting Filharmonia Bałtycka scraping...")
+            self._update_progress(0, 10, "Starting Filharmonia Bałtycka scraping...")
             
             # Get the main program page
             html = self._get_html(self.base_url)
@@ -2424,25 +2636,55 @@ class FilharmoniaBaltyckaScraper(BaseScraper):
             
             soup = BeautifulSoup(html, 'html.parser')
             
-            # Find concert links - they appear to be in the format /repertuar/concert-id-name
+            # Find concert links from the symphonic concerts page
             concert_links = []
-            for link in soup.find_all('a', href=True):
-                href = link.get('href')
-                text = link.get_text().strip()
-                # Look for individual concert links, not category or pagination pages
-                if (href and '/repertuar/' in href and href != '/repertuar/' and 
-                    href.count('/') >= 2 and not any(cat in href.lower() for cat in ['view-map', 'layout=timeline']) and
-                    len(text) > 5 and not text.startswith('...') and not text.isdigit() and
-                    not text.startswith('Sala nad Motławą')):
+            
+            # Primary: collect explicit "Więcej" links that lead to individual event pages
+            for a in soup.find_all('a', href=True):
+                label = a.get_text(strip=True).lower()
+                href = a.get('href')
+                if not href:
+                    continue
+                if 'więcej' in label and '/koncerty/' in href and 'koncert-symfoniczny' not in href:
                     full_url = urljoin(self.base_url, href)
                     concert_links.append(full_url)
+            
+            # If no "Więcej" links found, look for other concert category pages to scrape
+            if not concert_links:
+                # Look for links to other concert categories that might have "Więcej" links
+                category_links = []
+                for link in soup.find_all('a', href=True):
+                    href = link.get('href')
+                    text = link.get_text().strip()
+                    if (href and '/koncerty/' in href and 'koncert-symfoniczny' not in href 
+                        and len(text) > 5 and text.lower() not in ['kup bilet', 'więcej']):
+                        full_url = urljoin(self.base_url, href)
+                        category_links.append(full_url)
+                
+                # Visit each category page to find "Więcej" links
+                for category_url in category_links[:3]:  # Limit to 3 categories to avoid too many requests
+                    try:
+                        category_html = self._get_html(category_url)
+                        if category_html:
+                            category_soup = BeautifulSoup(category_html, 'html.parser')
+                            for a in category_soup.find_all('a', href=True):
+                                label = a.get_text(strip=True).lower()
+                                href = a.get('href')
+                                if not href:
+                                    continue
+                                if 'więcej' in label and '/koncerty/' in href:
+                                    full_url = urljoin(self.base_url, href)
+                                    concert_links.append(full_url)
+                    except Exception as e:
+                        print(f"DEBUG: Error scraping category {category_url}: {e}")
+                        continue
             
             # Remove duplicates while preserving order
             concert_links = list(dict.fromkeys(concert_links))
             print(f"DEBUG: Found {len(concert_links)} concert links")
             
-            # Limit to 5 concerts for testing
-            concert_links = concert_links[:5]
+            # Limit to 10 concerts for testing
+            concert_links = concert_links[:10]
             concerts_saved = 0
             
             for i, concert_url in enumerate(concert_links):
@@ -2501,8 +2743,10 @@ class FilharmoniaBaltyckaScraper(BaseScraper):
                 'pieces': []
             }
             
-            # Extract title - use h1 for Gdańsk Philharmonic
-            title_elem = soup.find('h1')
+            # Extract title - look for concert title in content for Filharmonia Bałtycka
+            text = soup.get_text()
+            # Look for concert title patterns
+            title_elem = soup.find('h1') or soup.find('h2')
             if title_elem:
                 details['title'] = title_elem.get_text().strip()
             else:
@@ -2515,76 +2759,92 @@ class FilharmoniaBaltyckaScraper(BaseScraper):
                         title_text = title_text.split(' - ')[0]
                     details['title'] = title_text
             
-            # Extract date and time - look for date patterns in the text
+            # Extract date and time - look for date patterns specific to the new page format
             date_text = soup.get_text()
             date_patterns = [
-                r'(\w+),\s+(\d{1,2})/(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # czwartek, 30/10/2025, 19:00
-                r'(\d{1,2})/(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # 30/10/2025, 19:00
-                r'(\d{1,2})\s+(\w+)\s+(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
-                r'(\d{1,2})/(\d{1,2})/(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
-                r'(\d{1,2})-(\d{1,2})-(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
-                r'(\d{1,2})\s+(\d{1,2})-(\d{4})\s+godz\.\s+(\d{1,2}):(\d{2})',
-                r'(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{2})'
+                r'(\w+),\s+(\d{1,2})/(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # piątek, 7/11/2025, 19:00
+                r'(\d{1,2})/(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # 7/11/2025, 19:00
+                r'(\d{1,2})\s+(\d{1,2})/(\d{4}),\s+(\d{1,2}):(\d{2})',  # 7 11/2025, 19:00
             ]
-            
-            # Month name mapping
-            month_map = {
-                'stycznia': 1, 'lutego': 2, 'marca': 3, 'kwietnia': 4, 'maja': 5, 'czerwca': 6,
-                'lipca': 7, 'sierpnia': 8, 'września': 9, 'października': 10, 'listopada': 11, 'grudnia': 12
-            }
             
             for pattern in date_patterns:
                 match = re.search(pattern, date_text)
                 if match:
                     try:
-                        groups = match.groups()
-                        if len(groups) == 6:  # weekday, day, month, year, hour, minute
-                            weekday, day, month, year, hour, minute = groups
+                        if len(match.groups()) == 6:  # day_name, day, month, year, hour, minute
+                            day_name, day, month, year, hour, minute = match.groups()
                             details['date'] = datetime(int(year), int(month), int(day), int(hour), int(minute))
                             break
-                        elif len(groups) == 5:
-                            if pattern == date_patterns[2]:  # Day Month Year format
-                                day, month_name, year, hour, minute = groups
-                                month = month_map.get(month_name.lower())
-                                if month:
-                                    details['date'] = datetime(int(year), month, int(day), int(hour), int(minute))
-                                    break
-                            else:  # Day/Month/Year format
-                                day, month, year, hour, minute = groups
-                                details['date'] = datetime(int(year), int(month), int(day), int(hour), int(minute))
-                                break
+                        elif len(match.groups()) == 5:  # day, month, year, hour, minute
+                            day, month, year, hour, minute = match.groups()
+                            details['date'] = datetime(int(year), int(month), int(day), int(hour), int(minute))
+                            break
                     except ValueError:
                         continue
             
             # Extract performers - look for performer names in the text
+            # Based on the website structure, performers are listed with their roles
             performer_patterns = [
-                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
-                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas)',
-                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(fortepian|wiolonczela|skrzypce)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas|fortepian|organy|narrator|aktor)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*-\s*(dyrygent|pianist|wiolonczela|skrzypce|alt|sopran|tenor|bas|fortepian|organy|narrator|aktor)',
+                r'([A-Z][a-z]+ [A-Z][a-z]+)\s*–\s*(fortepian|wiolonczela|skrzypce|organy)',
+                # Look for orchestra/ensemble names - be more specific
+                r'(Orkiestra PFB)',
+                r'(Chór [A-Z][^–\n]+)',
+            ]
+            
+            # Exclude common navigation/UI elements
+            excluded_terms = [
+                'Dyskografia CD/DVD', 'Studio nagrań', 'Galeria', 'Sponsorzy', 
+                'Dotacje i fundusze', 'Wynajem', 'Kontakt', 'Media Praca',
+                'Historia Filharmonii', 'Wydarzenia Filharmonii', 'Sala Koncertowa',
+                'Bilety', 'Karnety', 'Plany widowni', 'Dyrekcja', 'Orkiestra',
+                'Aktualności', 'Repertuar', 'Edukacja', 'O nas'
             ]
             
             for pattern in performer_patterns:
                 matches = re.findall(pattern, date_text)
-                for name, role in matches:
-                    details['performers'].append({
-                        'name': name.strip(),
-                        'role': role.strip()
-                    })
+                for match in matches:
+                    if isinstance(match, tuple):
+                        name, role = match
+                        # Filter out navigation elements
+                        if not any(excluded in name for excluded in excluded_terms):
+                            details['performers'].append({
+                                'name': name.strip(),
+                                'role': role.strip()
+                            })
+                    else:
+                        # Single match (orchestra/ensemble) - filter out navigation
+                        if not any(excluded in match for excluded in excluded_terms):
+                            details['performers'].append({
+                                'name': match.strip(),
+                                'role': 'orchestra'
+                            })
             
-            # Extract program/pieces - look for composer and piece patterns
-            piece_patterns = [
-                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*–\s*([^–\n]+)',
-                r'([A-Z][a-z]+ [A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*-\s*([^–\n]+)',
-            ]
+            # Extract program/pieces - look for "W programie:" section
+            program_text = ""
             
-            for pattern in piece_patterns:
-                matches = re.findall(pattern, date_text)
-                for composer, title in matches:
-                    if len(composer) > 3 and len(title.strip()) > 3:  # Basic validation
-                        details['pieces'].append({
-                            'composer': composer.strip(),
-                            'title': title.strip()
-                        })
+            # Look for "W programie:" heading and extract content after it
+            program_match = re.search(r'W programie:\s*(.*?)(?=Prowadzenie:|Kup bilet|Więcej|$)', text, re.DOTALL | re.IGNORECASE)
+            if program_match:
+                program_text = program_match.group(1).strip()
+                print(f"DEBUG: Found program text: {program_text[:100]}...")
+            
+            # Parse pieces from the program text
+            if program_text:
+                # Clean up the text but keep it as a single block
+                program_text = re.sub(r'\s+', ' ', program_text)  # Normalize whitespace
+                program_text = program_text.strip()
+                
+                # Truncate if too long for database
+                if len(program_text) > 1000:
+                    program_text = program_text[:997] + '...'
+                
+                # Add as a single piece entry
+                details['pieces'].append({
+                    'composer': 'Program',
+                    'title': program_text
+                })
             
             print(f"DEBUG: Filharmonia Bałtycka concert details - Title: {details['title']}, Date: {details['date']}, Performers: {len(details['performers'])}, Pieces: {len(details['pieces'])}")
             return details

@@ -25,6 +25,7 @@ def index():
     time_period = request.args.get('time_period', '')
     venue_id = request.args.get('venue_id', '')
     performer = request.args.get('performer', '')
+    city = request.args.get('city', '')
     
     # Base query
     query = Concert.query
@@ -67,11 +68,18 @@ def index():
     if performer:
         query = query.join(Concert.performers).filter(Performer.name.ilike(f'%{performer}%'))
     
+    if city:
+        query = query.filter(Concert.city == city)
+    
     # Execute query and get results
     concerts = query.order_by(Concert.date).all()
     
     # Get all venues for the filter dropdown
     venues = Venue.query.order_by(Venue.name).all()
+    
+    # Get all cities for the filter dropdown (distinct cities from concerts)
+    cities = db.session.query(Concert.city).distinct().filter(Concert.city.isnot(None)).order_by(Concert.city).all()
+    cities = [city[0] for city in cities]  # Extract city names from tuples
     
     # Get all performers for the filter dropdown (distinct by name)
     performers = Performer.query.distinct(Performer.name).order_by(Performer.name).all()
@@ -79,48 +87,15 @@ def index():
     return render_template('index.html', 
                            concerts=concerts, 
                            venues=venues,
+                           cities=cities,
                            performers=performers,
                            filters={
                                'time_period': time_period,
                                'venue_id': venue_id,
-                               'performer': performer
+                               'performer': performer,
+                               'city': city
                            })
 
-@app.route('/venues/add', methods=['GET', 'POST'])
-def add_venue():
-    """Add a new venue to monitor"""
-    if request.method == 'POST':
-        name = request.form.get('name')
-        url = request.form.get('url')
-        scraper_type = request.form.get('scraper_type', 'generic')
-        
-        # Basic validation
-        if not name or not url:
-            flash('Both name and URL are required!', 'danger')
-            return redirect(url_for('add_venue'))
-        
-        # Normalize URL if needed
-        if not url.startswith('http'):
-            url = f"https://{url}"
-        
-        # Check if this is Filharmonia Narodowa's symphonic concerts page
-        if 'filharmonia.pl' in url.lower() and 'koncert-symfoniczny' in url.lower():
-            # Set a specific name to indicate it's the symphonic concerts page
-            if 'symphonic' not in name.lower():
-                name = f"{name} - Symphonic Concerts"
-        
-        try:
-            venue = Venue(name=name, url=url, scraper_type=scraper_type)
-            db.session.add(venue)
-            db.session.commit()
-            flash(f'Venue "{name}" added successfully. Use the scrape button to collect concert information.', 'success')
-            return redirect(url_for('index'))
-        except Exception as e:
-            db.session.rollback()
-            logger.error(f"Error adding venue: {str(e)}")
-            flash(f'Error adding venue: {str(e)}', 'danger')
-    
-    return render_template('add_venue.html')
 
 @app.route('/api/venues/<int:venue_id>/scrape', methods=['POST'])
 def api_scrape_venue(venue_id):
@@ -159,39 +134,17 @@ def api_scrape_venue(venue_id):
                     
                     def progress_wrapper():
                         try:
-                            # Get the main repertoire page first to count items
-                            html = scraper._get_html(scraper.base_url)
-                            if not html:
-                                scraping_progress[venue_id]['status'] = 'error'
-                                scraping_progress[venue_id]['error'] = 'Failed to fetch venue page'
-                                return False
+                            # Let the scraper handle its own progress tracking
+                            # Just set initial status and let the scraper update progress
+                            scraping_progress[venue_id]['status'] = 'running'
+                            scraping_progress[venue_id]['message'] = 'Starting scraping...'
                             
-                            from bs4 import BeautifulSoup
-                            soup = BeautifulSoup(html, 'html.parser')
-                            
-                            # Count items based on venue type, but limit to 5 for testing
-                            if 'filharmonia.pl' in venue.url.lower():
-                                items = soup.find_all('a', class_='event-list-chocolate')
-                            elif 'nfm.wroclaw.pl' in venue.url.lower():
-                                items = soup.find_all('div', class_='nfmELItem')
-                            elif 'nospr.org.pl' in venue.url.lower():
-                                all_rows = soup.find_all('div', class_='calendar__row')
-                                items = [row for row in all_rows if row.find('div', class_='tile tile--calendar')]
-                            else:
-                                items = soup.find_all(['div', 'article'], class_=lambda x: x and 'concert' in x.lower())
-                            
-                            # Limit to 5 concerts for testing purposes
-                            total_items = min(5, len(items))
-                            scraping_progress[venue_id]['total'] = total_items
-                            scraping_progress[venue_id]['message'] = f'Found {len(items)} concerts, processing first {total_items}'
-                            
-                            # Now run the actual scraper
+                            # Run the actual scraper
                             result = original_scrape()
                             
                             if result:
                                 scraping_progress[venue_id]['status'] = 'completed'
-                                scraping_progress[venue_id]['message'] = f'Successfully scraped {total_items} concerts'
-                                scraping_progress[venue_id]['current'] = total_items
+                                scraping_progress[venue_id]['message'] = 'Scraping completed successfully'
                             else:
                                 scraping_progress[venue_id]['status'] = 'error'
                                 scraping_progress[venue_id]['error'] = 'Scraping failed'
@@ -258,6 +211,7 @@ def api_scrape_all_venues():
         logger.error(f"Error scraping all venues: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+
 @app.route('/venues')
 def list_venues():
     """List all venues with their last scraped time"""
@@ -278,3 +232,69 @@ def delete_venue(venue_id):
         db.session.rollback()
         logger.error(f"Error deleting venue {venue_id}: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/venues/<int:venue_id>/clear', methods=['POST'])
+def api_clear_venue_events(venue_id):
+    """API endpoint to clear all events for a specific venue"""
+    try:
+        from sqlalchemy import text
+        
+        # Get the venue to check if it exists
+        venue = Venue.query.get(venue_id)
+        if not venue:
+            return jsonify({
+                'success': False,
+                'message': 'Venue not found'
+            }), 404
+        
+        # Get all concerts for this venue
+        concerts = Concert.query.filter_by(venue_id=venue_id).all()
+        concert_ids = [concert.id for concert in concerts]
+        
+        if not concert_ids:
+            return jsonify({
+                'success': True,
+                'message': f'No events found for {venue.name}'
+            })
+        
+        # Clear all data for this venue in the correct order to respect foreign key constraints
+        # First, clear the many-to-many association tables for concerts from this venue
+        db.session.execute(text('DELETE FROM concert_performer WHERE concert_id = ANY(:concert_ids)'), 
+                          {'concert_ids': concert_ids})
+        db.session.execute(text('DELETE FROM concert_piece WHERE concert_id = ANY(:concert_ids)'), 
+                          {'concert_ids': concert_ids})
+        
+        # Then delete the concerts themselves
+        db.session.execute(text('DELETE FROM concert WHERE venue_id = :venue_id'), 
+                          {'venue_id': venue_id})
+        
+        # Delete performers and pieces that are no longer associated with any concerts
+        # (This is optional - you might want to keep them for other venues)
+        db.session.execute(text('''
+            DELETE FROM performer WHERE id NOT IN (
+                SELECT DISTINCT performer_id FROM concert_performer
+            )
+        '''))
+        db.session.execute(text('''
+            DELETE FROM piece WHERE id NOT IN (
+                SELECT DISTINCT piece_id FROM concert_piece
+            )
+        '''))
+        
+        # Commit the changes
+        db.session.commit()
+        
+        logger.info(f"Cleared all events for venue: {venue.name}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'All events cleared for {venue.name}'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error clearing events for venue {venue_id}: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error clearing events: {str(e)}'
+        }), 500

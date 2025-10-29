@@ -34,7 +34,7 @@
             <div class="card-body">
                 <form action="{{ url_for('index') }}" method="get" id="filterForm">
                     <div class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label for="time_period" class="form-label">Time Period</label>
                             <select class="form-select" id="time_period" name="time_period" onchange="this.form.submit()">
                                 <option value="">All</option>
@@ -44,18 +44,8 @@
                                 <option value="next_month" {% if filters.time_period == 'next_month' %}selected{% endif %}>Next Month</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label for="venue_id" class="form-label">Venue</label>
-                            <select class="form-select" id="venue_id" name="venue_id" onchange="this.form.submit()">
-                                <option value="">All Venues</option>
-                                {% for venue in venues %}
-                                <option value="{{ venue.id }}" 
-                                        {% if filters.venue_id|string == venue.id|string %}selected{% endif %}>
-                                    {{ venue.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        <!-- Hidden venue filter - functionality preserved -->
+                        <input type="hidden" id="venue_id" name="venue_id" value="{{ filters.venue_id or '' }}">
                         <div class="col-md-3">
                             <label for="performer" class="form-label">Performer</label>
                             <select class="form-select" id="performer" name="performer" onchange="this.form.submit()">
@@ -68,7 +58,19 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
+                        <div class="col-md-3">
+                            <label for="city" class="form-label">City</label>
+                            <select class="form-select" id="city" name="city" onchange="this.form.submit()">
+                                <option value="">All Cities</option>
+                                {% for city in cities %}
+                                <option value="{{ city }}" 
+                                        {% if filters.city == city %}selected{% endif %}>
+                                    {{ city }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
                             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-1"></i> Clear All
                             </a>
@@ -83,20 +85,28 @@
             {% if concerts %}
                 <div class="list-group" style="border: none; box-shadow: none;">
                     {% for concert in concerts %}
-                    <div class="list-group-item list-group-item-action" style="border: none; border-bottom: 1px solid #e9ecef; border-radius: 0; {% if loop.last %}border-bottom: none !important;{% endif %}" onmouseover="this.style.backgroundColor='transparent'" onmouseout="this.style.backgroundColor='transparent'">
+                    <div class="list-group-item list-group-item-action" style="border: none; border-radius: 18px; margin-bottom: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 24px;" onmouseover="this.style.backgroundColor='#ffffff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0, 0, 0, 0.12)'" onmouseout="this.style.backgroundColor='#ffffff'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0, 0, 0, 0.08)'">
                         <div class="d-flex w-100 justify-content-between align-items-start mb-2">
                             <div class="flex-grow-1">
-                                <h5 class="mb-1">{{ concert.title }}</h5>
+                                <h5 class="mb-3 fw-semibold" style="color: #1d1d1f; font-size: 21px; letter-spacing: -0.025em;">{{ concert.title }}</h5>
                                 <div class="d-flex align-items-center mb-2">
-                                    <span class="badge bg-primary me-2">{{ concert.date.strftime('%a, %d %b %Y at %H:%M') }}</span>
-                                    <a href="{{ url_for('index', venue_id=concert.venue.id) }}" class="text-decoration-none text-muted me-3" style="cursor: pointer;">
+                                    <!-- Calendar Icon -->
+                                    <div class="calendar-icon me-3">
+                                        <div class="calendar-header">{{ concert.date.strftime('%B').upper() }}</div>
+                                        <div class="calendar-day">{{ concert.date.strftime('%d') }}</div>
+                                        <div class="calendar-time">{{ concert.date.strftime('%H:%M') }}</div>
+                                    </div>
+                                    
+                                    <div class="flex-grow-1">
+                                    <a href="{{ url_for('index', venue_id=concert.venue.id) }}" class="text-decoration-none me-3" style="cursor: pointer; color: #007aff; font-weight: 600; font-size: 17px;">
                                         {{ concert.venue.name }}
                                     </a>
-                                    {% if concert.city %}
-                                    <small class="text-muted">
-                                        <i class="fas fa-map-marker-alt me-1"></i>{{ concert.city }}
-                                    </small>
-                                    {% endif %}
+                                        {% if concert.city %}
+                                        <small style="color: #86868b; font-size: 15px; font-weight: 500;">
+                                            <i class="fas fa-map-marker-alt me-1"></i>{{ concert.city }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             {% if concert.external_url %}
@@ -109,12 +119,12 @@
                         <div class="row">
                             {% if concert.performers %}
                             <div class="col-md-6">
-                                <h6 class="text-muted mb-2">
+                                <h6 style="color: #86868b; font-size: 15px; font-weight: 600; margin-bottom: 12px;">
                                     <i class="fas fa-users me-1"></i>Performers
                                 </h6>
                                 <div class="mb-2">
                                     {% for performer in concert.performers %}
-                                    <span class="badge bg-light text-dark me-1 mb-1">
+                                    <span class="badge me-2 mb-2" style="background-color: #f5f5f7; color: #1d1d1f; font-weight: 500; font-size: 15px; padding: 8px 12px; border-radius: 8px;">
                                         {% if performer.role == 'conductor' %}
                                         <i class="fas fa-baton me-1"></i>
                                         {% elif performer.role == 'soloist' %}
@@ -134,13 +144,13 @@
                             
                             {% if concert.pieces %}
                             <div class="col-md-6">
-                                <h6 class="text-muted mb-2">
+                                <h6 style="color: #86868b; font-size: 15px; font-weight: 600; margin-bottom: 12px;">
                                     <i class="fas fa-music me-1"></i>Program
                                 </h6>
                                 <div class="mb-2">
                                     {% for piece in concert.pieces %}
-                                    <div class="small mb-1">
-                                        <strong>{{ piece.composer }}</strong>: {{ piece.title }}
+                                    <div class="mb-2" style="color: #1d1d1f; font-size: 15px; line-height: 1.4;">
+                                        <strong style="font-weight: 600;">{{ piece.composer }}</strong>: {{ piece.title }}
                                     </div>
                                     {% endfor %}
                                 </div>
@@ -165,9 +175,6 @@
          id="venues-content" role="tabpanel" aria-labelledby="venues-tab">
         <div class="d-flex justify-content-between mb-3">
             <h3>Monitored Venues</h3>
-            <a href="{{ url_for('add_venue') }}" class="btn btn-success">
-                <i class="fas fa-plus me-1"></i> Add New Venue
-            </a>
         </div>
 
         <div class="table-responsive">
@@ -203,6 +210,10 @@
                             <td>
                                 <button class="btn btn-sm btn-primary scrape-venue-btn" data-venue-id="{{ venue.id }}">
                                     <i class="fas fa-sync-alt me-1"></i> Scrape
+                                </button>
+                                <button class="btn btn-sm btn-warning clear-venue-btn" data-venue-id="{{ venue.id }}" 
+                                        data-venue-name="{{ venue.name }}">
+                                    <i class="fas fa-eraser me-1"></i> Clear
                                 </button>
                                 <button class="btn btn-sm btn-danger delete-venue-btn" data-venue-id="{{ venue.id }}" 
                                         data-venue-name="{{ venue.name }}">
@@ -246,6 +257,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Loading Modal with Progress Bar -->
 <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
@@ -318,6 +330,92 @@
                 
                 // Start scraping
                 startScraping(venueId);
+            });
+        });
+        
+        // Clear venue events button handler
+        document.querySelectorAll('.clear-venue-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const venueId = this.dataset.venueId;
+                const venueName = this.dataset.venueName;
+                
+                if (confirm(`Are you sure you want to clear all events for ${venueName}? This will remove all concerts, performers, and pieces associated with this venue.`)) {
+                    // Show loading modal
+                    showLoadingModal(`Clearing events for ${venueName}`);
+                    
+                    // Clear venue events
+                    fetch(`/api/venues/${venueId}/clear`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        if (data.success) {
+                            alert(data.message);
+                            window.location.reload(); // Refresh the page to show updated data
+                        } else {
+                            alert('Error clearing events: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        console.error('Error clearing venue events:', error);
+                        alert('Error clearing events: ' + error.message);
+                    });
+                }
+            });
+        });
+        
+        // Delete venue button handler
+        document.querySelectorAll('.delete-venue-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const venueId = this.dataset.venueId;
+                const venueName = this.dataset.venueName;
+                
+                if (confirm(`Are you sure you want to delete ${venueName}? This will permanently remove the venue and all its associated concerts.`)) {
+                    // Show loading modal
+                    showLoadingModal(`Deleting ${venueName}`);
+                    
+                    // Delete venue
+                    fetch(`/api/venues/${venueId}/delete`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        if (data.status === 'success') {
+                            alert(`Venue "${venueName}" deleted successfully.`);
+                            window.location.reload(); // Refresh the page to show updated data
+                        } else {
+                            alert('Error deleting venue: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        console.error('Error deleting venue:', error);
+                        alert('Error deleting venue: ' + error.message);
+                    });
+                }
             });
         });
         
